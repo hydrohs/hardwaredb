@@ -1,0 +1,1 @@
+Database for keeping track of computer hardware; built using Django
