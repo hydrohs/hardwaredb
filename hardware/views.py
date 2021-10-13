@@ -4,7 +4,7 @@ from django.shortcuts import render
 from .models import CPU
 
 def index(request):
-    cpu = CPU.objects.get(pk='34dc0a24-0dad-42fe-a662-86b93d68f2f7')
+    cpu = CPU.objects.get(pk='1')
     context = {
         'cpu': cpu,
     }

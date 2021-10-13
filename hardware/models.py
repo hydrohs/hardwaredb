@@ -1,26 +1,34 @@
 from django.db import models
-import os
-from uuid import uuid4
-from django.utils.deconstruct import deconstructible
 
-@deconstructible
-class GetImageName(object):
+def HumanReadable(calc, value, ram_type):
+    def Size():
+        if value > 1024:
+            return '{}{}'.format(str(int(value / 1024)), 'GB')
+        else:
+            return '{}{}'.format(str(int(value)), 'MB')
+    
+    def CpuFreq():
+        if value > 1000:
+            return '{}{}'.format(str(value / 1000), 'GHz')
+        else:
+            return '{}{}'.format(value, 'MHz')
+    
+    def RamSpeed():
+        if ram_type == 'FPM' or ram_type =='EDO':
+            return '{}{}'.format(str(int(value)), 'ns')
+        else:
+            return '{}{}'.format(str(int(value)), 'MHz')
 
-    def __init__(self, base_path, uuid_folder, image_name):
-        self.base_path = base_path
-        self.uuid = uuid_folder
-        self.image_name = image_name
-
-    def __call__(self, instance, filename):
-        ext = filename.split('.')[-1]
-        # get filename
-        filename = '{}.{}'.format(self.image_name, ext)
-        return os.path.join(self.base_path, self.uuid, filename)
-
+    if calc == 'cpu':
+        return CpuFreq()
+    elif calc == 'size':
+        return Size()
+    elif calc == 'ram':
+        return RamSpeed()
+    else:
+        return 'None'
 
 class CPU(models.Model):
-    tempid = uuid4()
-    id = models.UUIDField(primary_key=True, default=tempid, editable=False)
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200)
@@ -29,13 +37,15 @@ class CPU(models.Model):
     cores = models.IntegerField()
     hyperthreading = models.BooleanField()
     notes = models.TextField(null=True, blank=True)
-    get_path = GetImageName('cpus', str(tempid), 'top')
-    top_img = models.ImageField(upload_to=get_path, max_length=255, null=True, blank=True)
-    get_path = GetImageName('cpus', str(tempid), 'bottom')
-    bottom_img = models.ImageField(upload_to=get_path, max_length=255, null=True, blank=True)
+    top_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True)
+    bottom_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'CPU'
+        verbose_name_plural = 'CPUs'
 
 class RAM(models.Model):
     class Type(models.TextChoices):
@@ -54,9 +64,20 @@ class RAM(models.Model):
         DIMM = 'DIMM', 'DIMM'
         SODIMM = 'SODIMM', 'SO-DIMM'
 
-    id = models.UUIDField(primary_key=True, default=uuid4(), editable=False)
     type = models.CharField(max_length=5, choices=Type.choices, default=Type.FPM)
     interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.SIMM30)
     size = models.IntegerField()
     speed = models.IntegerField()
-    ecc = models.BooleanField
+    ecc = models.BooleanField()
+
+    def __str__(self):
+        if self.ecc:
+            is_ecc = 'ECC'
+        else:
+            is_ecc = ''
+        
+        return '{} {} {} {} {}'.format(HumanReadable('size', self.size, ''), self.type, self.get_interface_display(), HumanReadable('ram', self.speed, self.type), is_ecc)
+
+    class Meta:
+        verbose_name = 'RAM'
+        verbose_name_plural = 'RAM'
