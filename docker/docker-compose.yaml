@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  hardwaredb:
+    build: .
+    container_name: hardwaredb
+    ports:
+      - "8003:8000"
+    volumes:
+      - ../app:/app
