@@ -3,13 +3,13 @@ from multiselectfield import MultiSelectField
 
 def HumanReadable(calc, value, ram_type):
     def Size():
-        if value > 1024:
+        if value >= 1024:
             return '{}{}'.format(str(int(value / 1024)), 'GB')
         else:
             return '{}{}'.format(str(int(value)), 'MB')
     
     def CpuFreq():
-        if value > 1000:
+        if value >= 1000:
             return '{}{}'.format(str(value / 1000), 'GHz')
         else:
             return '{}{}'.format(value, 'MHz')
@@ -80,7 +80,7 @@ class RAM(models.Model):
     interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.SIMM30)
     size = models.IntegerField(verbose_name='Size (MB)')
     speed = models.IntegerField(verbose_name='Speed (ns or MHz)')
-    ecc = models.BooleanField()
+    ecc = models.BooleanField(verbose_name='ECC')
 
     def __str__(self):
         if self.ecc:
@@ -88,7 +88,7 @@ class RAM(models.Model):
         else:
             is_ecc = ''
         
-        return '{} {} {} {} {}'.format(HumanReadable('size', self.size, ''), self.type, self.get_interface_display(), HumanReadable('ram', self.speed, self.type), is_ecc)
+        return '{} {} {} {} {}'.format(HumanReadable('size', self.size, ''), self.get_type_display(), self.get_interface_display(), HumanReadable('ram', self.speed, self.type), is_ecc)
 
     class Meta:
         verbose_name = 'RAM'
