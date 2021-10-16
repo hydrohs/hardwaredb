@@ -88,7 +88,7 @@ class RAM(models.Model):
         else:
             is_ecc = ''
         
-        return '{} {} {} {} {}'.format(HumanReadable('size', self.size, ''), self.get_type_display(), self.get_interface_display(), HumanReadable('ram', self.speed, self.type), is_ecc)
+        return '{} {} {} {} {}'.format(HumanReadable('size', self.size, ''), self.get_type_display(), HumanReadable('ram', self.speed, self.type), is_ecc, self.get_interface_display())
 
     class Meta:
         verbose_name = 'RAM'
