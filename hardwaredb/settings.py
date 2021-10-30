@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 
 INSTALLED_APPS = [
     'hardware.apps.HardwareConfig',
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'multiselectfield',
+    'django_tables2',
 ]
 
 MIDDLEWARE = [

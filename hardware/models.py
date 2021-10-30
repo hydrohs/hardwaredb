@@ -287,6 +287,7 @@ class Peripheral(models.Model):
         SCSI = 'SCSI', 'SCSI'
         PS2 = 'PS2', 'PS/2'
         USB = 'USB', 'USB'
+        OTHER = 'OTHER', 'Other'
 
     class Type(models.TextChoices):
         MOUSE = 'M', 'Mouse'
@@ -294,6 +295,9 @@ class Peripheral(models.Model):
         ZIP = 'ZIP', 'Zip Drive'
         GAME = 'GAME', 'Gameport'
         MIDI = 'MIDI', 'Midi'
+        SPK = 'SPK', 'Speakers'
+        LCD = 'LCD', 'LCD'
+        CRT = 'CRT', 'CRT'
 
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
