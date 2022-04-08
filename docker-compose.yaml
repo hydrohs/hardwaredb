@@ -4,6 +4,7 @@ services:
   hardwaredb:
     build: ./docker
     container_name: hardwaredb
+    restart: unless-stopped
     ports:
       - "8003:8000"
     volumes:
