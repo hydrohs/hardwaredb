@@ -54,6 +54,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://hardware.lan.hydrohs.com']
+
 ROOT_URLCONF = 'hardwaredb.urls'
 
 TEMPLATES = [
