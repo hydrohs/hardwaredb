@@ -2,6 +2,7 @@ from django.db import models
 from multiselectfield import MultiSelectField
 
 def HumanReadable(calc, value, ram_type):
+    # Converts db values into more friendly human readable numbers for display
     def Size():
         if value >= 1024:
             return '{}{}'.format(str(int(value / 1024)), 'GB')

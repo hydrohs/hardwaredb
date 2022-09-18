@@ -4,11 +4,7 @@ from django.views.generic import ListView
 from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, Case, Peripheral, PSU
 
 def index(request):
-    cpu = CPU.objects.get(pk='1')
-    context = {
-        'cpu': cpu,
-    }
-    return render(request, 'hardware/index.html', context)
+    return render(request, 'hardware/index.html')
 
 class CPUList(ListView):
     model = CPU
