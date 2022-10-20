@@ -207,6 +207,7 @@ class NIC(models.Model):
         PCIE4 = 'PCIE4', 'PCIe x4'
         PCIE8 = 'PCIE8', 'PCIe x8'
         PCIE16 = 'PCI16', 'PCIe x16'
+        PCIEM230 = 'M2', 'M.2 2230'
 
     class Speed(models.TextChoices):
         A = 'A'
