@@ -16,4 +16,5 @@ urlpatterns = [
     path('cases', views.CaseList.as_view(), name="cases"),
     path('peripherals', views.PeripheralList.as_view(), name="peripherals"),
     path('psus', views.PSUList.as_view(), name="psus"),
+    path('cables', views.CableList.as_view(), name="cables"),
 ]

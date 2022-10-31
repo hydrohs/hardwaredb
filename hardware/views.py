@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView
 
-from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, Case, Peripheral, PSU
+from .models import CPU, RAM, GPU, Cables, SoundCard, ExpansionCard, NIC, Motherboard, Case, Peripheral, PSU
 
 def index(request):
     return render(request, 'hardware/index.html')
@@ -44,4 +44,8 @@ class PeripheralList(ListView):
 
 class PSUList(ListView):
     model = PSU
+    template_name = 'hardware/hardware_list.html'
+
+class CableList(ListView):
+    model = Cables
     template_name = 'hardware/hardware_list.html'

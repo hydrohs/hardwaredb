@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from multiselectfield import MultiSelectField
 
@@ -40,6 +41,21 @@ class FormFactor(models.TextChoices):
         MATX = 'MATX', 'Micro ATX'
         ITX = 'ITX', 'Mini ITX'
         PROP = 'PROP', 'Proprietary'
+
+class Interface(models.TextChoices):
+    # Likewise both peripherals and cables use mostly the same
+    # connector so this avoids needless duplications even if some
+    # don't apply
+    SERIAL = 'SERIAL', 'Serial'
+    PARALLEL = 'PARALLEL', 'Parallel'
+    GAME = 'GAME', 'Gameport'
+    MIDI = 'MIDI', 'Midi'
+    ADB = 'ADB', 'ADB'
+    SCSI = 'SCSI', 'SCSI'
+    PS2 = 'PS2', 'PS/2'
+    USB = 'USB', 'USB'
+    PIN = 'PIN', 'PIN Connector'
+    OTHER = 'OTHER', 'Other'
 
 class CPU(models.Model):
     brand = models.CharField(max_length=200)
@@ -280,17 +296,6 @@ class PSU(models.Model):
         verbose_name_plural = 'PSUs'
 
 class Peripheral(models.Model):
-    class Interface(models.TextChoices):
-        SERIAL = 'SERIAL', 'Serial'
-        PARALLEL = 'PARALLEL', 'Parallel'
-        GAME = 'GAME', 'Gameport'
-        MIDI = 'MIDI', 'Midi'
-        ADB = 'ADB', 'ADB'
-        SCSI = 'SCSI', 'SCSI'
-        PS2 = 'PS2', 'PS/2'
-        USB = 'USB', 'USB'
-        OTHER = 'OTHER', 'Other'
-
     class Type(models.TextChoices):
         MOUSE = 'M', 'Mouse'
         KB = 'KB', 'Keyboard'
@@ -306,6 +311,31 @@ class Peripheral(models.Model):
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.MOUSE)
     interface = MultiSelectField(choices=Interface.choices, default=Interface.USB)
     notes = models.TextField(null=True, blank=True)
+    image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.name)
+
+class Cables(models.Model):
+    class Type(models.TextChoices):
+        CABLE = 'CABLE', 'Cable'
+        IO = 'IO', 'I/O Bracket'
+        ADAPT = 'ADAPT', 'Adapter'
+
+    type = models.CharField(max_length=10, choices=Type.choices, default=Type.CABLE)
+    interface_a = MultiSelectField(choices=Interface.choices, default=Interface.OTHER, verbose_name="Interface A")
+    interface_b = MultiSelectField(choices=Interface.choices, default=Interface.OTHER, verbose_name="Interface B")
+    description = models.CharField(max_length=200, blank=True)
+    quantity = models.IntegerField(default=1)
+    notes = models.TextField(null=True, blank=True)
+    image_1 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return '{} {}'.format(self.brand, self.name)
+
+    class Meta:
+        verbose_name = 'Cable, Adapter, I/O Bracket'
+        verbose_name_plural = 'Cables, Adapters, IO Brackets'

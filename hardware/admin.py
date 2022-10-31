@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, Case, Peripheral, PSU
+from .models import CPU, RAM, GPU, Cables, SoundCard, ExpansionCard, NIC, Motherboard, Case, Peripheral, PSU
 
 admin.site.register(CPU)
 admin.site.register(RAM)
@@ -12,3 +12,4 @@ admin.site.register(NIC)
 admin.site.register(Case)
 admin.site.register(PSU)
 admin.site.register(Peripheral)
+admin.site.register(Cables)
