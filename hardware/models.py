@@ -54,7 +54,10 @@ class Interface(models.TextChoices):
     SCSI = 'SCSI', 'SCSI'
     PS2 = 'PS2', 'PS/2'
     USB = 'USB', 'USB'
-    PIN = 'PIN', 'PIN Connector'
+    PIN = 'PIN', 'Pin Connector'
+    MM35 = 'MM35', '3.5MM'
+    MM63 = 'MM63', '6.3MM'
+    RCA = 'RCA', 'RCA'
     OTHER = 'OTHER', 'Other'
 
 class CPU(models.Model):
