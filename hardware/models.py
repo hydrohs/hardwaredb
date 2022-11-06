@@ -303,11 +303,13 @@ class Peripheral(models.Model):
         MOUSE = 'M', 'Mouse'
         KB = 'KB', 'Keyboard'
         ZIP = 'ZIP', 'Zip Drive'
-        GAME = 'GAME', 'Gameport'
+        GAME = 'GAME', 'Gamepad'
+        JOY = 'JOY', 'Joystick'
         MIDI = 'MIDI', 'Midi'
         SPK = 'SPK', 'Speakers'
         LCD = 'LCD', 'LCD'
         CRT = 'CRT', 'CRT'
+        OTHER = 'OTHER', 'Other'
 
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
