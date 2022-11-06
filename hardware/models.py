@@ -308,6 +308,7 @@ class Peripheral(models.Model):
 
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.MOUSE)
     interface = MultiSelectField(choices=Interface.choices, default=Interface.USB)
     notes = models.TextField(null=True, blank=True)
@@ -316,7 +317,7 @@ class Peripheral(models.Model):
     image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.name)
+        return self.name
 
 class Cables(models.Model):
     class Type(models.TextChoices):
@@ -334,7 +335,7 @@ class Cables(models.Model):
     image_2 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.name)
+        return '{} to {} {}'.format(self.interface_a, self.interface_b, self.type)
 
     class Meta:
         verbose_name = 'Cable, Adapter, I/O Bracket'
