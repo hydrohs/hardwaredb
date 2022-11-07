@@ -57,7 +57,16 @@ class Interface(models.TextChoices):
     PIN = 'PIN', 'Pin Connector'
     MM35 = 'MM35', '3.5MM'
     MM63 = 'MM63', '6.3MM'
+    XLR = 'XLR', 'XLR'
     RCA = 'RCA', 'RCA'
+    BT = 'BT', 'Bluetooth'
+    MDA = 'MDA', 'MDA'
+    CGA = 'CGA', 'CGA'
+    EGA = 'EGA', 'EGA'
+    VGA = 'VGA', 'VGA'
+    DVI = 'DVI', 'DVI'
+    HDMI = 'HDMI', 'HDMI'
+    DP = 'DP', 'DisplayPort'
     OTHER = 'OTHER', 'Other'
 
 class CPU(models.Model):
