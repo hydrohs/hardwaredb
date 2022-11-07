@@ -42,33 +42,6 @@ class FormFactor(models.TextChoices):
         ITX = 'ITX', 'Mini ITX'
         PROP = 'PROP', 'Proprietary'
 
-class Interface(models.TextChoices):
-    # Likewise both peripherals and cables use mostly the same
-    # connector so this avoids needless duplications even if some
-    # don't apply
-    SERIAL = 'SERIAL', 'Serial'
-    PARALLEL = 'PARALLEL', 'Parallel'
-    GAME = 'GAME', 'Gameport'
-    MIDI = 'MIDI', 'Midi'
-    ADB = 'ADB', 'ADB'
-    SCSI = 'SCSI', 'SCSI'
-    PS2 = 'PS2', 'PS/2'
-    USB = 'USB', 'USB'
-    PIN = 'PIN', 'Pin Connector'
-    MM35 = 'MM35', '3.5MM'
-    MM63 = 'MM63', '6.3MM'
-    XLR = 'XLR', 'XLR'
-    RCA = 'RCA', 'RCA'
-    BT = 'BT', 'Bluetooth'
-    MDA = 'MDA', 'MDA'
-    CGA = 'CGA', 'CGA'
-    EGA = 'EGA', 'EGA'
-    VGA = 'VGA', 'VGA'
-    DVI = 'DVI', 'DVI'
-    HDMI = 'HDMI', 'HDMI'
-    DP = 'DP', 'DisplayPort'
-    OTHER = 'OTHER', 'Other'
-
 class CPU(models.Model):
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200, null=True, blank=True)
@@ -320,6 +293,30 @@ class Peripheral(models.Model):
         CRT = 'CRT', 'CRT'
         OTHER = 'OTHER', 'Other'
 
+    class Interface(models.TextChoices):
+    SERIAL = 'SERIAL', 'Serial'
+    PARALLEL = 'PARALLEL', 'Parallel'
+    GAME = 'GAME', 'Gameport'
+    MIDI = 'MIDI', 'Midi'
+    ADB = 'ADB', 'ADB'
+    SCSI = 'SCSI', 'SCSI'
+    PS2 = 'PS2', 'PS/2'
+    USB = 'USB', 'USB'
+    PIN = 'PIN', 'Pin Connector'
+    MM35 = 'MM35', '3.5MM'
+    MM63 = 'MM63', '6.3MM'
+    XLR = 'XLR', 'XLR'
+    RCA = 'RCA', 'RCA'
+    BT = 'BT', 'Bluetooth'
+    MDA = 'MDA', 'MDA'
+    CGA = 'CGA', 'CGA'
+    EGA = 'EGA', 'EGA'
+    VGA = 'VGA', 'VGA'
+    DVI = 'DVI', 'DVI'
+    HDMI = 'HDMI', 'HDMI'
+    DP = 'DP', 'DisplayPort'
+    OTHER = 'OTHER', 'Other'
+
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
@@ -339,17 +336,87 @@ class Cables(models.Model):
         IO = 'IO', 'I/O Bracket'
         ADAPT = 'ADAPT', 'Adapter'
 
+    class Interface(models.TextChoices):
+        OTHER = 'OTHER', 'Other'
+        DB9SM = 'DB9SM', 'DB-9 Serial Male'
+        DB9SF = 'DB9SF', 'DB-9 Serial Female'
+        DB25PM = 'DB25PM', 'DB-25 Parallel Male'
+        DB25PF = 'DB25PF', 'DB-25 Parallel Female'
+        AMPH36M = 'AMPH36M', '36-Pin Amphenol Parallel Male'
+        AMPH36F = 'AMPH36F', '36-Pin Amphenol Parallel Female'
+        DB25SM = 'DB25SM', 'DB-25 SCSI Male'
+        DB25SF = 'DB25SF', 'DB-25 SCSI Female'
+        AMPH50M = 'AMPH50M', '50-Pin Amphenol SCSI Male'
+        AMPH50F = 'AMPH50F', '50-Pin Amphenol SCSI Female'
+        VHDCI68M = 'VHDCI68M', 'VHDCI-68 SCSI Male'
+        VHDCI68F = 'VHDCI68F', 'VHDCI-68 SCSI Female'
+        DB15GM = 'DB15GM', 'DB-15 Gameport Male'
+        DB15GF = 'DB15GF', 'DB-15 Gameport Female'
+        USBAM = 'USBAM', 'USB A Male'
+        USBAF = 'USBAF', 'USB A Female'
+        USBBM = 'USBBM', 'USB B Male'
+        USBBF = 'USBBF', 'USB B Female'
+        USBMICROBM = 'USBMICROBM', 'USB Micro B Male'
+        USBMICROBF = 'USBMICROBF', 'USB Micro B Female'
+        USBMINIBM = 'USBMINIBM', 'USB Mini B Male'
+        USBMINIBF = 'USBMINIBF', 'USB Mini B Female'
+        DIN5M = 'DIN5M', '5-Pin DIN Male'
+        DIN5F = 'DIN5F', '5-Pin DIN Female'
+        ADBM = 'ADBM', 'ADB Male'
+        ADBF = 'ADBF', 'ADB Female'
+        PS2M = 'PS2M', 'PS/2 Male'
+        PS2F = 'PS2F', 'PS/2 Female'
+        PIN4 = 'PIN4', '4-Pin Connector'
+        PIN6 = 'PIN6', '6-Pin Connector'
+        PIN8 = 'PIN8', '8-Pin Connector'
+        MM35M = 'MM35M', '3.5MM Male'
+        MM35F = 'MM35F', '3.5MM Female'
+        MM63M = 'MM63M', '6.3MM Male'
+        MM63F = 'MM63F', '6.3MM Female'
+        XLRM = 'XLRM', 'XLR Male'
+        XLRF = 'XLRF', 'XLR Female'
+        RCAM = 'RCAM', 'RCA Male'
+        RCAF = 'RCAF', 'RCA Female'
+        MDAM = 'MDAM', 'DB-9 MDA Male'
+        MDAF = 'MDAF', 'DB-9 MDA Female'
+        CGAM = 'CGAM', 'DB-9 CGA Male'
+        CGAF = 'CGAF', 'DB-9 CGA Female'
+        EGAM = 'EGAM', 'DB-9 EGA Male'
+        EGAF = 'EGAF', 'DB-9 EGA Female'
+        VGAM = 'VGAM', 'DB-15 VGA Male'
+        VGAF = 'VGAF', 'DB-15 VGA Female'
+        DVIDDM = 'DVIDDM', 'DVI-D Dual-Link Male'
+        DVIDDF = 'DVIDDF', 'DVI-D Dual-Link Female'
+        DVIDSM = 'DVIDSM', 'DVI-D Single-Link Male'
+        DVIDSF = 'DVIDSF', 'DVI-D Single-Link Female'
+        DVIIDM = 'DVIIDM', 'DVI-I Dual-Link Male'
+        DVIIDF = 'DVIIDF', 'DVI-I Dual-Link Female'
+        DVIISM = 'DVIISM', 'DVI-I Single-Link Male'
+        DVIISF = 'DVIISF', 'DVI-I Single-Link Female'
+        DVIAM = 'DVIAM', 'DVI-A Male'
+        DVIAF = 'DVIAF', 'DVI-A Female'
+        HDMIM = 'HDMIM', 'HDMI Male'
+        HDMIF = 'HDMIF', 'HDMI Female'
+        MINIHDMIM = 'MINIHDMIM', 'Mini HDMI Male'
+        MINIHDMIF = 'MINIHDMIF', 'Mini HDMI Female'
+        MICROHDMIM = 'MICROHDMIM', 'Micro HDMI Male'
+        MICROHDMIF = 'MICROHDMIF', 'Micro HDMI Female'
+        DPM = 'DPM', 'DisplayPort Male'
+        DPF = 'DPF', 'DisplayPort Female'
+        MINIDPM = 'MINIDPM', 'Mini DisplayPort Male'
+        MINIDPF = 'MINIDPF', 'Mini DisplayPort Female'
+
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.CABLE)
+    name = models.CharField(max_length=200)
     interface_a = MultiSelectField(choices=Interface.choices, default=Interface.OTHER, verbose_name="Interface A")
     interface_b = MultiSelectField(choices=Interface.choices, default=Interface.OTHER, verbose_name="Interface B")
-    description = models.CharField(max_length=200, blank=True)
     quantity = models.IntegerField(default=1)
     notes = models.TextField(null=True, blank=True)
     image_1 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
     image_2 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return '{} to {} {}'.format(self.interface_a, self.interface_b, self.type)
+        return self.name
 
     class Meta:
         verbose_name = 'Cable, Adapter, I/O Bracket'
