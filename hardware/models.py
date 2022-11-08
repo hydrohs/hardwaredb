@@ -1,6 +1,7 @@
 from email.policy import default
 from django.db import models
 from multiselectfield import MultiSelectField
+from .interfaces import Cables, Peripherals, Slots
 
 def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display
@@ -97,21 +98,10 @@ class RAM(models.Model):
         verbose_name_plural = 'RAM'
 
 class GPU(models.Model):
-    class Interface(models.TextChoices):
-        ISA = 'ISA', '8-bit ISA'
-        ISA16 = 'ISA16', '16-bit ISA'
-        VLB = 'VLB', 'VLB'
-        PCI = 'PCI', 'PCI'
-        AGP = 'AGP', 'AGP'
-        AGP2 = 'AGP2', 'AGP 2x'
-        AGP4 = 'AGP4', 'AGP 4x'
-        AGP8 = 'AGP8', 'AGP 8x'
-        PCIE16 = 'PCIE16', 'PCIe x16'
-
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200)
-    interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.ISA)
+    interface = models.CharField(max_length=6, choices=Slots.choices, default=Slots.ISA)
     mda = models.IntegerField(default=0, verbose_name='MDA Ports')
     cga = models.IntegerField(default=0, verbose_name='CGA Ports')
     vga = models.IntegerField(default=0, verbose_name='VGA Ports')
@@ -132,17 +122,11 @@ class GPU(models.Model):
         verbose_name_plural = 'GPUs'
 
 class SoundCard(models.Model):
-    class Interface(models.TextChoices):
-        ISA = 'ISA', '8-bit ISA'
-        ISA16 = 'ISA16', '16-bit ISA'
-        PCI = 'PCI', 'PCI'
-        PCIE1 = 'PCIE1', 'PCIe x1'
-
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200)
     sb = models.CharField(max_length=200, verbose_name='SB Compatibility')
-    interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.ISA)
+    interface = models.CharField(max_length=6, choices=Slots.choices, default=Slots.ISA)
     notes = models.TextField(null=True, blank=True)
     top_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='Top Image')
     bottom_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
@@ -152,20 +136,10 @@ class SoundCard(models.Model):
         return self.name
 
 class ExpansionCard(models.Model):
-    class Interface(models.TextChoices):
-        ISA = 'ISA', '8-bit ISA'
-        ISA16 = 'ISA16', '16-bit ISA'
-        VLB = 'VLB', 'VLB'
-        PCI = 'PCI', 'PCI'
-        PCIE1 = 'PCIE1', 'PCIe x1'
-        PCIE4 = 'PCIE4', 'PCIe x4'
-        PCIE8 = 'PCIE8', 'PCIe x8'
-        PCIE16 = 'PCI16', 'PCIe x16'
-
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200)
-    interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.ISA)
+    interface = models.CharField(max_length=6, choices=Slots.choices, default=Slots.ISA)
     io_panel = models.CharField(max_length=255, null=True, blank=True, verbose_name='IO Panel (comma separated)')
     notes = models.TextField(null=True, blank=True)
     top_img = models.ImageField(upload_to='expansion_cards', max_length=255, null=True, blank=True, verbose_name='Top Image')
@@ -199,16 +173,6 @@ class Motherboard(models.Model):
         return '{} {}'.format(self.brand, self.model)
 
 class NIC(models.Model):
-    class Interface(models.TextChoices):
-        ISA = 'ISA', '8-bit ISA'
-        ISA16 = 'ISA16', '16-bit ISA'
-        VLB = 'VLB', 'VLB'
-        PCI = 'PCI', 'PCI'
-        PCIE1 = 'PCIE1', 'PCIe x1'
-        PCIE4 = 'PCIE4', 'PCIe x4'
-        PCIE8 = 'PCIE8', 'PCIe x8'
-        PCIE16 = 'PCI16', 'PCIe x16'
-        PCIEM230 = 'M2', 'M.2 2230'
 
     class Speed(models.TextChoices):
         A = 'A'
@@ -227,7 +191,7 @@ class NIC(models.Model):
     model = models.CharField(max_length=200)
     wireless = models.BooleanField()
     speed = models.CharField(max_length=7, choices=Speed.choices, default=Speed.TEN)
-    interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.ISA)
+    interface = models.CharField(max_length=6, choices=Slots.choices, default=Slots.ISA)
     aui = models.IntegerField(default=0, verbose_name='AUI Ports')
     bnc = models.IntegerField(default=0, verbose_name='BNC Ports')
     tp = models.IntegerField(default=0, verbose_name='Ethernet Ports')
@@ -293,35 +257,11 @@ class Peripheral(models.Model):
         CRT = 'CRT', 'CRT'
         OTHER = 'OTHER', 'Other'
 
-    class Interface(models.TextChoices):
-        SERIAL = 'SERIAL', 'Serial'
-        PARALLEL = 'PARALLEL', 'Parallel'
-        GAME = 'GAME', 'Gameport'
-        MIDI = 'MIDI', 'Midi'
-        ADB = 'ADB', 'ADB'
-        SCSI = 'SCSI', 'SCSI'
-        PS2 = 'PS2', 'PS/2'
-        USB = 'USB', 'USB'
-        PIN = 'PIN', 'Pin Connector'
-        MM35 = 'MM35', '3.5MM'
-        MM63 = 'MM63', '6.3MM'
-        XLR = 'XLR', 'XLR'
-        RCA = 'RCA', 'RCA'
-        BT = 'BT', 'Bluetooth'
-        MDA = 'MDA', 'MDA'
-        CGA = 'CGA', 'CGA'
-        EGA = 'EGA', 'EGA'
-        VGA = 'VGA', 'VGA'
-        DVI = 'DVI', 'DVI'
-        HDMI = 'HDMI', 'HDMI'
-        DP = 'DP', 'DisplayPort'
-        OTHER = 'OTHER', 'Other'
-
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.MOUSE)
-    interface = MultiSelectField(choices=Interface.choices, default=Interface.USB)
+    interface = MultiSelectField(choices=Peripherals.choices, default=Peripherals.USB)
     notes = models.TextField(null=True, blank=True)
     image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
     image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
@@ -336,84 +276,10 @@ class Cables(models.Model):
         IO = 'IO', 'I/O Bracket'
         ADAPT = 'ADAPT', 'Adapter'
 
-    class Interface(models.TextChoices):
-        OTHER = 'OTHER', 'Other'
-        DB9SM = 'DB9SM', 'DB-9 Serial Male'
-        DB9SF = 'DB9SF', 'DB-9 Serial Female'
-        DB25PM = 'DB25PM', 'DB-25 Parallel Male'
-        DB25PF = 'DB25PF', 'DB-25 Parallel Female'
-        AMPH36M = 'AMPH36M', '36-Pin Amphenol Parallel Male'
-        AMPH36F = 'AMPH36F', '36-Pin Amphenol Parallel Female'
-        DB25SM = 'DB25SM', 'DB-25 SCSI Male'
-        DB25SF = 'DB25SF', 'DB-25 SCSI Female'
-        AMPH50M = 'AMPH50M', '50-Pin Amphenol SCSI Male'
-        AMPH50F = 'AMPH50F', '50-Pin Amphenol SCSI Female'
-        VHDCI68M = 'VHDCI68M', 'VHDCI-68 SCSI Male'
-        VHDCI68F = 'VHDCI68F', 'VHDCI-68 SCSI Female'
-        DB15GM = 'DB15GM', 'DB-15 Gameport Male'
-        DB15GF = 'DB15GF', 'DB-15 Gameport Female'
-        USBAM = 'USBAM', 'USB A Male'
-        USBAF = 'USBAF', 'USB A Female'
-        USBBM = 'USBBM', 'USB B Male'
-        USBBF = 'USBBF', 'USB B Female'
-        USBMICROBM = 'USBMICROBM', 'USB Micro B Male'
-        USBMICROBF = 'USBMICROBF', 'USB Micro B Female'
-        USBMINIBM = 'USBMINIBM', 'USB Mini B Male'
-        USBMINIBF = 'USBMINIBF', 'USB Mini B Female'
-        DIN5M = 'DIN5M', '5-Pin DIN Male'
-        DIN5F = 'DIN5F', '5-Pin DIN Female'
-        ADBM = 'ADBM', 'ADB Male'
-        ADBF = 'ADBF', 'ADB Female'
-        PS2M = 'PS2M', 'PS/2 Male'
-        PS2F = 'PS2F', 'PS/2 Female'
-        PIN4 = 'PIN4', '4-Pin Connector'
-        PIN6 = 'PIN6', '6-Pin Connector'
-        PIN8 = 'PIN8', '8-Pin Connector'
-        PIN34 = 'PIN34', '34-Pin Connector'
-        PIN40 = 'PIN40', '40-Pin Connector'
-        PIN44 = 'PIN44', '44-Pin Connector'
-        PIN50 = 'PIN50', '50-Pin Connector'
-        MM35M = 'MM35M', '3.5MM Male'
-        MM35F = 'MM35F', '3.5MM Female'
-        MM63M = 'MM63M', '6.3MM Male'
-        MM63F = 'MM63F', '6.3MM Female'
-        XLRM = 'XLRM', 'XLR Male'
-        XLRF = 'XLRF', 'XLR Female'
-        RCAM = 'RCAM', 'RCA Male'
-        RCAF = 'RCAF', 'RCA Female'
-        MDAM = 'MDAM', 'DB-9 MDA Male'
-        MDAF = 'MDAF', 'DB-9 MDA Female'
-        CGAM = 'CGAM', 'DB-9 CGA Male'
-        CGAF = 'CGAF', 'DB-9 CGA Female'
-        EGAM = 'EGAM', 'DB-9 EGA Male'
-        EGAF = 'EGAF', 'DB-9 EGA Female'
-        VGAM = 'VGAM', 'DB-15 VGA Male'
-        VGAF = 'VGAF', 'DB-15 VGA Female'
-        DVIDDM = 'DVIDDM', 'DVI-D Dual-Link Male'
-        DVIDDF = 'DVIDDF', 'DVI-D Dual-Link Female'
-        DVIDSM = 'DVIDSM', 'DVI-D Single-Link Male'
-        DVIDSF = 'DVIDSF', 'DVI-D Single-Link Female'
-        DVIIDM = 'DVIIDM', 'DVI-I Dual-Link Male'
-        DVIIDF = 'DVIIDF', 'DVI-I Dual-Link Female'
-        DVIISM = 'DVIISM', 'DVI-I Single-Link Male'
-        DVIISF = 'DVIISF', 'DVI-I Single-Link Female'
-        DVIAM = 'DVIAM', 'DVI-A Male'
-        DVIAF = 'DVIAF', 'DVI-A Female'
-        HDMIM = 'HDMIM', 'HDMI Male'
-        HDMIF = 'HDMIF', 'HDMI Female'
-        MINIHDMIM = 'MINIHDMIM', 'Mini HDMI Male'
-        MINIHDMIF = 'MINIHDMIF', 'Mini HDMI Female'
-        MICROHDMIM = 'MICROHDMIM', 'Micro HDMI Male'
-        MICROHDMIF = 'MICROHDMIF', 'Micro HDMI Female'
-        DPM = 'DPM', 'DisplayPort Male'
-        DPF = 'DPF', 'DisplayPort Female'
-        MINIDPM = 'MINIDPM', 'Mini DisplayPort Male'
-        MINIDPF = 'MINIDPF', 'Mini DisplayPort Female'
-
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.CABLE)
     name = models.CharField(max_length=200)
-    interface_a = MultiSelectField(choices=Interface.choices, default=Interface.OTHER, verbose_name="Interface A")
-    interface_b = MultiSelectField(choices=Interface.choices, default=Interface.OTHER, verbose_name="Interface B")
+    interface_a = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface A")
+    interface_b = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface B")
     quantity = models.IntegerField(default=1)
     notes = models.TextField(null=True, blank=True)
     image_1 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
