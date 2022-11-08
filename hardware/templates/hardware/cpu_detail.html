@@ -1,0 +1,60 @@
+{% extends "hardware/base.html" %}
+{% block title %}{{ cpu.name }}{% endblock %}
+{% block content %}
+<h1>{{ cpu.brand }} {{ cpu.name }} ({{ cpu.model }})</h1>
+<p>
+    <h3>
+    <table>
+        <tr>
+          <td>Socket: {{ cpu.socket }}</td>
+          <td>Speed: {{ cpu_speed }}</td>
+        </tr>
+        <tr>
+          <td>Cores: {{ cpu.cores }}</td>
+          <td>Hyperthreading: {{ cpu.hyperthreading }}</td>
+        </tr>
+      </table>
+    </h3>
+    <h4>Notes:</h4>
+    {{ cpu.notes }}
+</p>
+<p>
+    {% if cpu.top_img or cpu.bottom_img %}
+    <div class="pswp-gallery pswp-gallery--single-column" id="cpu-gallery">
+        {% if cpu.top_img %}
+        <a href="/images/{{ cpu.top_img }}" 
+          data-pswp-width="{{ cpu.top_img.width }}" 
+          data-pswp-height="{{ cpu.top_img.height }}" 
+          target="_blank">
+          <img src="/images/{{ cpu.top_img }}" alt="Top" width="25%"/>
+        </a>
+        {% endif %}
+        {% if cpu.bottom_img %}
+        <a href="/images/{{ cpu.bottom_img }}" 
+          data-pswp-width="{{ cpu.bottom_img.width }}" 
+          data-pswp-height="{{ cpu.bottom_img.height }}" 
+          target="_blank">
+          <img src="/images/{{ cpu.bottom_img }}" alt="bottom" width="25%" />
+        </a>
+        {% endif %}
+      </div>
+
+      <script type="module">
+        // Include Lightbox 
+        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+
+        const lightbox = new PhotoSwipeLightbox({
+        // may select multiple "galleries"
+        gallery: '#cpu-gallery',
+
+        // Elements within gallery (slides)
+        children: 'a',
+
+        // setup PhotoSwipe Core dynamic import
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+        });
+        lightbox.init();
+    </script>
+    {% endif %}
+</p>
+{% endblock %}
