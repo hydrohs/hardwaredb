@@ -1,4 +1,3 @@
-from re import template
 from django.urls import path
 
 from . import views
@@ -6,6 +5,7 @@ from . import views
 app_name = 'hardware'
 urlpatterns = [
     path('', views.index, name = "index"),
+    path('cpus/<int:pk>', views.CPUDetailView.as_view(), name="cpu_detail"),
     path('cpus/all', views.CPUList.as_view(), name="cpus_all"),
     path('ram/all', views.RAMList.as_view(), name="ram_all"),
     path('gpus/all', views.GPUList.as_view(), name="gpus_all"),

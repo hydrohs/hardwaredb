@@ -1,7 +1,7 @@
 from email.policy import default
 from django.db import models
 from multiselectfield import MultiSelectField
-from .interfaces import Cables, Peripherals, Slots
+from .interfaces import *
 
 def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display

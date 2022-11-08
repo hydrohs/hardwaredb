@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
-from .models import CPU, RAM, GPU, Cables, SoundCard, ExpansionCard, NIC, Motherboard, Case, Peripheral, PSU
+from .models import *
 
 def index(requet):
     # Count number of objects for all classes
@@ -32,6 +32,14 @@ def index(requet):
     }
 
     return render(requet, 'hardware/index.html', context=context)
+
+class CPUDetailView(DetailView):
+    model = CPU
+
+    def get_context_data(self, **kwargs):
+        context = super(CPUDetailView, self).get_context_data(**kwargs)
+        context['cpu_speed'] = HumanReadable('cpu', context['object'].speed, '')
+        return context
 
 class CPUList(ListView):
     model = CPU
