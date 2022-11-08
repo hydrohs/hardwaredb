@@ -49,40 +49,50 @@ class CPUList(SingleTableView):
 
 class RAMList(SingleTableView):
     model = RAM
+    table_class = RAMTable
     template_name = 'hardware/hardware_list.html'
 
 class GPUList(SingleTableView):
     model = GPU
+    table_class = GPUTable
     template_name = 'hardware/hardware_list.html'
 
 class SoundCardList(SingleTableView):
     model = SoundCard
+    table_class = SoundCardTable
     template_name = 'hardware/hardware_list.html'
 
 class ExpansionCardList(SingleTableView):
     model = ExpansionCard
+    table_class = ExpansionCardTable
     template_name = 'hardware/hardware_list.html'
 
 class NICList(SingleTableView):
     model = NIC
+    table_class = NICTable
     template_name = 'hardware/hardware_list.html'
 
 class MotherboardList(SingleTableView):
     model = Motherboard
+    table_class = MotherboardTable
     template_name = 'hardware/hardware_list.html'
 
 class CaseList(SingleTableView):
     model = Case
+    table_class = CaseTable
     template_name = 'hardware/hardware_list.html'
 
 class PeripheralList(SingleTableView):
     model = Peripheral
+    table_class = PeripheralTable
     template_name = 'hardware/hardware_list.html'
 
 class PSUList(SingleTableView):
     model = PSU
+    table_class = PSUTable
     template_name = 'hardware/hardware_list.html'
 
 class CableList(SingleTableView):
     model = Cables
+    table_class = CableTable
     template_name = 'hardware/hardware_list.html'
