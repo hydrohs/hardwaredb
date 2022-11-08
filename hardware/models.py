@@ -369,6 +369,10 @@ class Cables(models.Model):
         PIN4 = 'PIN4', '4-Pin Connector'
         PIN6 = 'PIN6', '6-Pin Connector'
         PIN8 = 'PIN8', '8-Pin Connector'
+        PIN34 = 'PIN34', '34-Pin Connector'
+        PIN40 = 'PIN40', '40-Pin Connector'
+        PIN44 = 'PIN44', '44-Pin Connector'
+        PIN50 = 'PIN50', '50-Pin Connector'
         MM35M = 'MM35M', '3.5MM Male'
         MM35F = 'MM35F', '3.5MM Female'
         MM63M = 'MM63M', '6.3MM Male'
@@ -416,7 +420,7 @@ class Cables(models.Model):
     image_2 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return '{} to {} {}'.format(self.interface_a, self.interface_b, self.get_type_display())
 
     class Meta:
         verbose_name = 'Cable, Adapter, I/O Bracket'
