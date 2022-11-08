@@ -55,6 +55,9 @@ class CPU(models.Model):
     top_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True, verbose_name='Top Image')
     bottom_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
 
+    def get_absolute_url(self):
+        return "/cpus/%i" % self.id
+
     def __str__(self):
         return self.name
 
@@ -85,6 +88,9 @@ class RAM(models.Model):
     speed = models.IntegerField(verbose_name='Speed (ns or MHz)')
     ecc = models.BooleanField(verbose_name='ECC')
 
+    def get_absolute_url(self):
+        return "/ram/%i" % self.id
+
     def __str__(self):
         if self.ecc:
             is_ecc = 'ECC'
@@ -114,6 +120,9 @@ class GPU(models.Model):
     bottom_img = models.ImageField(upload_to='gpus', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
     io_img = models.ImageField(upload_to='gpus', max_length=255, null=True, blank=True, verbose_name='IO Panel')
 
+    def get_absolute_url(self):
+        return "/gpus/%i" % self.id
+
     def __str__(self):
         return self.name
 
@@ -132,6 +141,9 @@ class SoundCard(models.Model):
     bottom_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
     io_img = models.ImageField(upload_to='sond_cards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
 
+    def get_absolute_url(self):
+        return "/sound_cards/%i" % self.id
+
     def __str__(self):
         return self.name
 
@@ -145,6 +157,9 @@ class ExpansionCard(models.Model):
     top_img = models.ImageField(upload_to='expansion_cards', max_length=255, null=True, blank=True, verbose_name='Top Image')
     bottom_img = models.ImageField(upload_to='expansion_cards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
     io_img = models.ImageField(upload_to='expansion_cards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+
+    def get_absolute_url(self):
+        return "/expansion_cards/%i" % self.id
 
     def __str__(self):
         return self.name
@@ -168,6 +183,9 @@ class Motherboard(models.Model):
     top_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Top Image')
     bottom_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
     io_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+
+    def get_absolute_url(self):
+        return "/motherboards/%i" % self.id
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
@@ -200,6 +218,9 @@ class NIC(models.Model):
     bottom_img = models.ImageField(upload_to='nics', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
     io_img = models.ImageField(upload_to='nics', max_length=255, null=True, blank=True, verbose_name='IO Panel')
 
+    def get_absolute_url(self):
+        return "/nics/%i" % self.id
+
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
 
@@ -211,6 +232,9 @@ class Case(models.Model):
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
     mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
+
+    def get_absolute_url(self):
+        return "/cases/%i" % self.id
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
@@ -236,6 +260,9 @@ class PSU(models.Model):
     pcie8pin = models.IntegerField(default=0, verbose_name='8-pin PCIe Connectors')
     notes = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='psus', max_length=255, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return "/psus/%i" % self.id
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
@@ -267,6 +294,9 @@ class Peripheral(models.Model):
     image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
     image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
 
+    def get_absolute_url(self):
+        return "/peripherals/%i" % self.id
+
     def __str__(self):
         return self.name
 
@@ -284,6 +314,9 @@ class Cables(models.Model):
     notes = models.TextField(null=True, blank=True)
     image_1 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
     image_2 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return "/cables/%i" % self.id
 
     def __str__(self):
         return '{} to {} {}'.format(self.interface_a, self.interface_b, self.get_type_display())

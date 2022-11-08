@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
-
+from django.views.generic import DetailView
+from django_tables2 import SingleTableView
 from .models import *
+from .tables import *
 
 def index(requet):
     # Count number of objects for all classes
@@ -41,46 +42,47 @@ class CPUDetailView(DetailView):
         context['cpu_speed'] = HumanReadable('cpu', context['object'].speed, '')
         return context
 
-class CPUList(ListView):
+class CPUList(SingleTableView):
     model = CPU
+    table_class = CPUTable
     template_name = 'hardware/hardware_list.html'
 
-class RAMList(ListView):
+class RAMList(SingleTableView):
     model = RAM
     template_name = 'hardware/hardware_list.html'
 
-class GPUList(ListView):
+class GPUList(SingleTableView):
     model = GPU
     template_name = 'hardware/hardware_list.html'
 
-class SoundCardList(ListView):
+class SoundCardList(SingleTableView):
     model = SoundCard
     template_name = 'hardware/hardware_list.html'
 
-class ExpansionCardList(ListView):
+class ExpansionCardList(SingleTableView):
     model = ExpansionCard
     template_name = 'hardware/hardware_list.html'
 
-class NICList(ListView):
+class NICList(SingleTableView):
     model = NIC
     template_name = 'hardware/hardware_list.html'
 
-class MotherboardList(ListView):
+class MotherboardList(SingleTableView):
     model = Motherboard
     template_name = 'hardware/hardware_list.html'
 
-class CaseList(ListView):
+class CaseList(SingleTableView):
     model = Case
     template_name = 'hardware/hardware_list.html'
 
-class PeripheralList(ListView):
+class PeripheralList(SingleTableView):
     model = Peripheral
     template_name = 'hardware/hardware_list.html'
 
-class PSUList(ListView):
+class PSUList(SingleTableView):
     model = PSU
     template_name = 'hardware/hardware_list.html'
 
-class CableList(ListView):
+class CableList(SingleTableView):
     model = Cables
     template_name = 'hardware/hardware_list.html'
