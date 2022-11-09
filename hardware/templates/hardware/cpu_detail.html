@@ -2,23 +2,12 @@
 {% block title %}{{ cpu.name }}{% endblock %}
 {% block content %}
 <h1>{{ cpu.brand }} {{ cpu.name }} ({{ cpu.model }})</h1>
-<p>
-    <h3>
-    <table>
-        <tr>
-          <td>Socket: {{ cpu.socket }}</td>
-          <td>Speed: {{ cpu_speed }}</td>
-        </tr>
-        <tr>
-          <td>Cores: {{ cpu.cores }}</td>
-          <td>Hyperthreading: {{ cpu.hyperthreading }}</td>
-        </tr>
-      </table>
-    </h3>
-    <h4>Notes:</h4>
+<div class="row align-items-center">
+  <div class="col-sm-5">
+    {{ cpu.cpu_world | safe }}
     {{ cpu.notes }}
-</p>
-<p>
+  </div>
+  <div class="col">
     {% if cpu.top_img or cpu.bottom_img %}
     <div class="pswp-gallery pswp-gallery--single-column" id="cpu-gallery">
         {% if cpu.top_img %}
@@ -38,7 +27,8 @@
         </a>
         {% endif %}
       </div>
-
+    </div>
+    </div>
       <script type="module">
         // Include Lightbox 
         import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
