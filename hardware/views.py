@@ -37,11 +37,6 @@ def index(requet):
 class CPUDetailView(DetailView):
     model = CPU
 
-    def get_context_data(self, **kwargs):
-        context = super(CPUDetailView, self).get_context_data(**kwargs)
-        context['cpu_speed'] = HumanReadable('cpu', context['object'].speed, '')
-        return context
-
 class CPUList(SingleTableView):
     model = CPU
     table_class = CPUTable

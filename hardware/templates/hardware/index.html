@@ -1,10 +1,11 @@
 {% extends "hardware/base.html" %}
 {% block content %}
 <p>
-        List of hardware including images. Choose a category along the side of the page.
+    List of hardware including images. Choose a category along the top of the page.
 </p>
 <p>
-        <h4>Currently cataloguing the following:</h4>
+    <h4>Currently cataloguing the following:</h4>
+    <ul>
         <li>{{ num_cpu }} CPUs</li>
         <li>{{ num_ram }} sticks of RAM</li>
         <li>{{ num_gpu }} GPUs</li>
@@ -16,5 +17,6 @@
         <li>{{ num_psu }} PSUs</li>
         <li>{{ num_periph }} Peripherals</li>
         <li>{{ num_cables }} Cables</li>
+    </ul>
 </p>
 {% endblock %}
