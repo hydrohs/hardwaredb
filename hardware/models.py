@@ -178,7 +178,7 @@ class Motherboard(models.Model):
     vlb = models.IntegerField(default=0, verbose_name='VLB Slots')
     pci = models.IntegerField(default=0, verbose_name='PCI Slots')
     agp = models.IntegerField(default=0, verbose_name='AGP Slots')
-    pice1 = models.IntegerField(default=0, verbose_name='PCIe x1 Slots')
+    pcie1 = models.IntegerField(default=0, verbose_name='PCIe x1 Slots')
     pcie4 = models.IntegerField(default=0, verbose_name='PCIe x4 Slots')
     pcie8 = models.IntegerField(default=0, verbose_name='PCIe x8 Slots')
     pcie16 = models.IntegerField(default=0, verbose_name='PCIe x16 Slots')
