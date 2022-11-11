@@ -113,6 +113,14 @@ class SoundCardList(SingleTableView):
     table_class = SoundCardTable
     template_name = 'hardware/hardware_list.html'
 
+class SoundCardDetailView(DetailView):
+    model = SoundCard
+
+    def get_context_data(self, **kwargs):
+        context = super(SoundCardDetailView, self).get_context_data(**kwargs)
+        context['interface_verbose'] = context['object'].get_interface_display()
+        return context
+
 class ExpansionCardList(SingleTableView):
     model = ExpansionCard
     table_class = ExpansionCardTable
