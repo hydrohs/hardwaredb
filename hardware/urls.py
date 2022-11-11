@@ -15,6 +15,7 @@ urlpatterns = [
     path('expansion_cards/all', ExpansionCardList.as_view(), name="expansioncards_all"),
     path('expansion_cards/<int:pk>', ExpansionCardDetailView.as_view(), name="expansioncards_detail"),
     path('nics/all', NICList.as_view(), name="nics_all"),
+    path('nics/<int:pk>', NICDetailView.as_view(), name="nic_detail"),
     path('motherboards/all', MotherboardList.as_view(), name="motherboards_all"),
     path('cases/all', CaseList.as_view(), name="cases_all"),
     path('peripherals/all', PeripheralList.as_view(), name="peripherals_all"),

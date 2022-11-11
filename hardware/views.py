@@ -140,6 +140,33 @@ class NICList(SingleTableView):
     table_class = NICTable
     template_name = 'hardware/hardware_list.html'
 
+class NICDetailView(DetailView):
+    model = NIC
+
+    def get_context_data(self, **kwargs):
+        context = super(NICDetailView, self).get_context_data(**kwargs)
+        context['interface_verbose'] = context['object'].get_interface_display()
+        ports = []
+        if context['object'].aui:
+            if context['object'].aui > 1:
+                ports.append("AUI (%i)" % context['object'].aui)
+            else:
+                ports.append("AUI")
+        if context['object'].bnc:
+            if context['object'].bnc > 1:
+                ports.append("BNC (%i)" % context['object'].bnc)
+            else:
+                ports.append("BNC")
+        if context['object'].tp:
+            if context['object'].tp > 1:
+                ports.append("Twisted-Pair (%i)" % context['object'].tp)
+            else:
+                ports.append("Twisted-Pair")
+
+        context['speed'] = context['object'].get_speed_display()
+        context['ports'] = ', '.join(ports)
+        return context
+
 class MotherboardList(SingleTableView):
     model = Motherboard
     table_class = MotherboardTable

@@ -49,6 +49,8 @@ class NICTable(tables.Table):
         attrs = {"class": "table table-hover"}
         exclude = ("id", "top_img", "bottom_img", "io_img")
 
+    model = tables.Column(linkify=True)
+
 class MotherboardTable(tables.Table):
     class Meta:
         model = Motherboard
