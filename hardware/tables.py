@@ -6,7 +6,7 @@ class CPUTable(tables.Table):
         model = CPU
         attrs = {"class": "table table-hover"}
         sequence = ("brand", "name")
-        exclude = ("id", "cpu_world", )
+        exclude = ("id", "cpu_world", "top_img", "bottom_img")
 
     name = tables.Column(linkify=True)
 
@@ -21,7 +21,7 @@ class GPUTable(tables.Table):
         model = GPU
         attrs = {"class": "table table-hover"}
         sequence = ("brand", "name", )
-        exclude = ("id", )
+        exclude = ("id", "top_img", "bottom_img", "io_img")
 
     name = tables.Column(linkify=True)
 
@@ -29,25 +29,25 @@ class SoundCardTable(tables.Table):
     class Meta:
         model = SoundCard
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "top_img", "bottom_img", "io_img")
 
 class ExpansionCardTable(tables.Table):
     class Meta:
         model = ExpansionCard
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "top_img", "bottom_img", "io_img")
 
 class NICTable(tables.Table):
     class Meta:
         model = NIC
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "top_img", "bottom_img", "io_img")
 
 class MotherboardTable(tables.Table):
     class Meta:
         model = Motherboard
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "top_img", "bottom_img", "io_img")
 
 class CaseTable(tables.Table):
     class Meta:
@@ -59,16 +59,16 @@ class PSUTable(tables.Table):
     class Meta:
         model = PSU
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "image")
 
 class PeripheralTable(tables.Table):
     class Meta:
         model = Peripheral
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "image_1", "image_2", "image_3")
 
 class CableTable(tables.Table):
     class Meta:
         model = Cables
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "image_1", "image_2")
