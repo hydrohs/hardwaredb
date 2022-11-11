@@ -29,13 +29,19 @@ class SoundCardTable(tables.Table):
     class Meta:
         model = SoundCard
         attrs = {"class": "table table-hover"}
+        sequence = ("brand", "name", )
         exclude = ("id", "top_img", "bottom_img", "io_img")
+
+    name = tables.Column(linkify=True)
 
 class ExpansionCardTable(tables.Table):
     class Meta:
         model = ExpansionCard
         attrs = {"class": "table table-hover"}
+        sequence = ("brand", "name", )
         exclude = ("id", "top_img", "bottom_img", "io_img")
+
+    name = tables.Column(linkify=True)
 
 class NICTable(tables.Table):
     class Meta:

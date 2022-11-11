@@ -13,6 +13,7 @@ urlpatterns = [
     path('sound_cards/all', SoundCardList.as_view(), name="soundcards_all"),
     path('sound_cards/<int:pk>', SoundCardDetailView.as_view(), name="soundcard_detail"),
     path('expansion_cards/all', ExpansionCardList.as_view(), name="expansioncards_all"),
+    path('expansion_cards/<int:pk>', ExpansionCardDetailView.as_view(), name="expansioncards_detail"),
     path('nics/all', NICList.as_view(), name="nics_all"),
     path('motherboards/all', MotherboardList.as_view(), name="motherboards_all"),
     path('cases/all', CaseList.as_view(), name="cases_all"),

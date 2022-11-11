@@ -126,6 +126,15 @@ class ExpansionCardList(SingleTableView):
     table_class = ExpansionCardTable
     template_name = 'hardware/hardware_list.html'
 
+class ExpansionCardDetailView(DetailView):
+    model = ExpansionCard
+    template_name = 'hardware/expansion_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ExpansionCardDetailView, self).get_context_data(**kwargs)
+        context['interface_verbose'] = context['object'].get_interface_display()
+        return context
+
 class NICList(SingleTableView):
     model = NIC
     table_class = NICTable

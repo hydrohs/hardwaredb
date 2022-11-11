@@ -1,0 +1,72 @@
+{% extends "hardware/base.html" %}
+{% block title %}{{ expansioncard.name }}{% endblock %}
+{% block content %}
+<h1>{{ expansioncard.brand }} {{ expansioncard.name }} ({{ expansioncard.model }})</h1>
+<div class="row align-items-center">
+  <div class="col-sm-5">
+    <table class="table">
+      <tr>
+        <td><b>Interface:</b></td><td>{{ interface_verbose }}</td>
+      </tr>
+      <tr>
+        <td>
+          <b>Ports:</b>
+        </td>
+        <td>
+          {{ expansioncard.io_panel }}
+        </td>
+      </tr>
+      <tr>
+        <td><b>Notes:</b></td><td>{{ expansioncard.notes }}</td>
+      </tr>
+    </table>
+  </div>
+  <div class="col">
+    {% if expansioncard.top_img or expansioncard.bottom_img or expansioncard.io_img %}
+    <div class="pswp-gallery pswp-gallery--single-column" id="expansioncard-gallery">
+        {% if expansioncard.top_img %}
+        <a href="/images/{{ expansioncard.top_img }}" 
+          data-pswp-width="{{ expansioncard.top_img.width }}" 
+          data-pswp-height="{{ expansioncard.top_img.height }}" 
+          target="_blank">
+          <img src="/images/{{ expansioncard.top_img }}" alt="Top" width="50%"/>
+        </a>
+        {% endif %}
+        {% if expansioncard.bottom_img %}
+        <a href="/images/{{ expansioncard.bottom_img }}" 
+          data-pswp-width="{{ expansioncard.bottom_img.width }}" 
+          data-pswp-height="{{ expansioncard.bottom_img.height }}" 
+          target="_blank">
+          <img src="/images/{{ expansioncard.bottom_img }}" alt="bottom" width="50%" />
+        </a>
+        {% endif %}
+        {% if expansioncard.io_img %}
+        <a href="/images/{{ expansioncard.io_img }}" 
+          data-pswp-width="{{ expansioncard.io_img.width }}" 
+          data-pswp-height="{{ expansioncard.io_img.height }}" 
+          target="_blank">
+          <img src="/images/{{ expansioncard.io_img }}" alt="bottom" width="50%" />
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    </div>
+      <script type="module">
+        // Include Lightbox 
+        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+
+        const lightbox = new PhotoSwipeLightbox({
+        // may select multiple "galleries"
+        gallery: '#expansioncard-gallery',
+
+        // Elements within gallery (slides)
+        children: 'a',
+
+        // setup PhotoSwipe Core dynamic import
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
+        });
+        lightbox.init();
+    </script>
+    {% endif %}
+</p>
+{% endblock %}
