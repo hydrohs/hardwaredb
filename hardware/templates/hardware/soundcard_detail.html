@@ -3,7 +3,7 @@
 {% block content %}
 <h1>{{ soundcard.brand }} {{ soundcard.name }} ({{ soundcard.model }})</h1>
 <div class="row align-items-center">
-  <div class="col-sm-5">
+  <div class="col-sm">
     <table class="table">
       <tr>
         <td><b>Interface:</b></td><td>{{ interface_verbose }}</td>
@@ -21,7 +21,7 @@
       </tr>
     </table>
   </div>
-  <div class="col">
+  <div class="col-sm">
     {% if soundcard.top_img or soundcard.bottom_img or soundcard.io_img %}
     <div class="pswp-gallery pswp-gallery--single-column" id="soundcard-gallery">
         {% if soundcard.top_img %}
@@ -29,7 +29,7 @@
           data-pswp-width="{{ soundcard.top_img.width }}" 
           data-pswp-height="{{ soundcard.top_img.height }}" 
           target="_blank">
-          <img src="/images/{{ soundcard.top_img }}" alt="Top" width="50%"/>
+          <img src="/images/{{ soundcard.top_img }}" alt="Top" width="30%"/>
         </a>
         {% endif %}
         {% if soundcard.bottom_img %}
@@ -37,7 +37,7 @@
           data-pswp-width="{{ soundcard.bottom_img.width }}" 
           data-pswp-height="{{ soundcard.bottom_img.height }}" 
           target="_blank">
-          <img src="/images/{{ soundcard.bottom_img }}" alt="bottom" width="50%" />
+          <img src="/images/{{ soundcard.bottom_img }}" alt="bottom" width="30%" />
         </a>
         {% endif %}
         {% if soundcard.io_img %}
@@ -45,7 +45,7 @@
           data-pswp-width="{{ soundcard.io_img.width }}" 
           data-pswp-height="{{ soundcard.io_img.height }}" 
           target="_blank">
-          <img src="/images/{{ soundcard.io_img }}" alt="bottom" width="50%" />
+          <img src="/images/{{ soundcard.io_img }}" alt="bottom" width="30%" />
         </a>
         {% endif %}
       </div>

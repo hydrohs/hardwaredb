@@ -3,11 +3,11 @@
 {% block content %}
 <h1>{{ cpu.brand }} {{ cpu.name }} ({{ cpu.model }})</h1>
 <div class="row align-items-center">
-  <div class="col-sm-5">
+  <div class="col-sm">
     {{ cpu.cpu_world | safe }}
     {{ cpu.notes }}
   </div>
-  <div class="col">
+  <div class="col-sm">
     {% if cpu.top_img or cpu.bottom_img %}
     <div class="pswp-gallery pswp-gallery--single-column" id="cpu-gallery">
         {% if cpu.top_img %}
@@ -15,7 +15,7 @@
           data-pswp-width="{{ cpu.top_img.width }}" 
           data-pswp-height="{{ cpu.top_img.height }}" 
           target="_blank">
-          <img src="/images/{{ cpu.top_img }}" alt="Top" width="50%"/>
+          <img src="/images/{{ cpu.top_img }}" alt="Top" width="40%"/>
         </a>
         {% endif %}
         {% if cpu.bottom_img %}
@@ -23,7 +23,7 @@
           data-pswp-width="{{ cpu.bottom_img.width }}" 
           data-pswp-height="{{ cpu.bottom_img.height }}" 
           target="_blank">
-          <img src="/images/{{ cpu.bottom_img }}" alt="bottom" width="50%" />
+          <img src="/images/{{ cpu.bottom_img }}" alt="bottom" width="40%" />
         </a>
         {% endif %}
       </div>
