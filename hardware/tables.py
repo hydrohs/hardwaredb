@@ -5,7 +5,7 @@ class CPUTable(tables.Table):
     class Meta:
         model = CPU
         attrs = {"class": "table table-hover"}
-        sequence = ("brand", "name", "model")
+        sequence = ("brand", "name")
         exclude = ("id", "cpu_world", )
 
     name = tables.Column(linkify=True)
@@ -20,7 +20,10 @@ class GPUTable(tables.Table):
     class Meta:
         model = GPU
         attrs = {"class": "table table-hover"}
+        sequence = ("brand", "name", )
         exclude = ("id", )
+
+    name = tables.Column(linkify=True)
 
 class SoundCardTable(tables.Table):
     class Meta:

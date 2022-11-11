@@ -52,6 +52,62 @@ class GPUList(SingleTableView):
     table_class = GPUTable
     template_name = 'hardware/hardware_list.html'
 
+class GPUDetailView(DetailView):
+    model = GPU
+
+    def get_context_data(self, **kwargs):
+        context = super(GPUDetailView, self).get_context_data(**kwargs)
+        context['interface_verbose'] = context['object'].get_interface_display()
+        ports = []
+        if context['object'].mda:
+            if context['object'].mda > 1:
+                ports.append("MDA (%i)" % context['object'].mda)
+            else:
+                ports.append("MDA")
+        if context['object'].cga:
+            if context['object'].cga > 1:
+                ports.append("CGA (%i)" % context['object'].cga)
+            else:
+                ports.append("CGA")
+        if context['object'].composite:
+            if context['object'].composite > 1:
+                ports.append("Composite (%i)" % context['object'].composite)
+            else:
+                ports.append("Composite")
+        if context['object'].vga:
+            if context['object'].vga > 1:
+                ports.append("VGA (%i)" % context['object'].vga)
+            else:
+                ports.append("VGA")
+        if context['object'].svideo:
+            if context['object'].svideo > 1:
+                ports.append("S-Video (%i)" % context['object'].svideo)
+            else:
+                ports.append("S-Video")
+        if context['object'].component:
+            if context['object'].component > 1:
+                ports.append("Component (%i)" % context['object'].component)
+            else:
+                ports.append("Component")
+        if context['object'].dvi:
+            if context['object'].dvi > 1:
+                ports.append("DVI (%i)" % context['object'].dvi)
+            else:
+                ports.append("DVI")
+        if context['object'].hdmi:
+            if context['object'].hdmi > 1:
+                ports.append("HDMI (%i)" % context['object'].hdmi)
+            else:
+                ports.append("HDMI")
+        if context['object'].dp:
+            if context['object'].dp > 1:
+                ports.append("DisplayPort (%i)" % context['object'].dp)
+            else:
+                ports.append("DisplayPort")
+
+        context['ports'] = ', '.join(ports)
+        return context
+
 class SoundCardList(SingleTableView):
     model = SoundCard
     table_class = SoundCardTable

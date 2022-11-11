@@ -9,6 +9,7 @@ urlpatterns = [
     path('cpus/all', CPUList.as_view(), name="cpus_all"),
     path('ram/all', RAMList.as_view(), name="ram_all"),
     path('gpus/all', GPUList.as_view(), name="gpus_all"),
+    path('gpus/<int:pk>', GPUDetailView.as_view(), name="gpu_detail"),
     path('sound_cards/all', SoundCardList.as_view(), name="soundcards_all"),
     path('expansion_cards/all', ExpansionCardList.as_view(), name="expansioncards_all"),
     path('nics/all', NICList.as_view(), name="nics_all"),
