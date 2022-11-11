@@ -17,6 +17,7 @@ urlpatterns = [
     path('nics/all', NICList.as_view(), name="nics_all"),
     path('nics/<int:pk>', NICDetailView.as_view(), name="nic_detail"),
     path('motherboards/all', MotherboardList.as_view(), name="motherboards_all"),
+    path('motherboards/<int:pk>', MotherboardDetailView.as_view(), name="motherboards_detail"),
     path('cases/all', CaseList.as_view(), name="cases_all"),
     path('peripherals/all', PeripheralList.as_view(), name="peripherals_all"),
     path('psus/all', PSUList.as_view(), name="psus_all"),

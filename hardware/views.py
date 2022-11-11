@@ -172,6 +172,62 @@ class MotherboardList(SingleTableView):
     table_class = MotherboardTable
     template_name = 'hardware/hardware_list.html'
 
+class MotherboardDetailView(DetailView):
+    model = Motherboard
+
+    def get_context_data(self, **kwargs):
+        context = super(MotherboardDetailView, self).get_context_data(**kwargs)
+        context['form_factor'] = context['object'].get_form_factor_display()
+        slots = []
+        if context['object'].isa:
+            if context['object'].isa > 1:
+                slots.append("8-Bit ISA (%i)" % context['object'].isa)
+            else:
+                slots.append("8-Bit ISA")
+        if context['object'].isa16:
+            if context['object'].isa16 > 1:
+                slots.append("16-Bit ISA (%i)" % context['object'].isa16)
+            else:
+                slots.append("16-Bit ISA")
+        if context['object'].vlb:
+            if context['object'].vlb > 1:
+                slots.append("VLB (%i)" % context['object'].vlb)
+            else:
+                slots.append("VLB")
+        if context['object'].pci:
+            if context['object'].pci > 1:
+                slots.append("PCI (%i)" % context['object'].pci)
+            else:
+                slots.append("PCI")
+        if context['object'].agp:
+            if context['object'].agp > 1:
+                slots.append("AGP (%i)" % context['object'].agp)
+            else:
+                slots.append("AGP")
+        if context['object'].pcie1:
+            if context['object'].pcie1 > 1:
+                slots.append("PCIe x1 (%i)" % context['object'].pcie1)
+            else:
+                slots.append("PCIe x1")
+        if context['object'].pcie4:
+            if context['object'].pcie4 > 1:
+                slots.append("PCIe x4 (%i)" % context['object'].pcie4)
+            else:
+                slots.append("PCIe x4")
+        if context['object'].pcie8:
+            if context['object'].pcie8 > 1:
+                slots.append("PCIe x8 (%i)" % context['object'].pcie8)
+            else:
+                slots.append("PCIe x8")
+        if context['object'].pcie16:
+            if context['object'].pcie16 > 1:
+                slots.append("PCIe x16 (%i)" % context['object'].pcie16)
+            else:
+                slots.append("PCIe x16")
+
+        context['slots'] = ', '.join(slots)
+        return context
+
 class CaseList(SingleTableView):
     model = Case
     table_class = CaseTable
