@@ -58,52 +58,24 @@ class GPUDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(GPUDetailView, self).get_context_data(**kwargs)
         context['interface_verbose'] = context['object'].get_interface_display()
+
+        port_type = {'MDA': context['object'].mda,
+        'CGA': context['object'].cga,
+        'Composite': context['object'].composite,
+        'VGA': context['object'].vga,
+        'S-Video': context['object'].svideo,
+        'Component': context['object'].component,
+        'DVI': context['object'].dvi,
+        'HDMI': context['object'].hdmi,
+        'Mini HDMI': context['object'].minihdmi,
+        'Micro HDMI': context['object'].microhdmi,
+        'DisplayPort': context['object'].dp,
+        'Mini DisplayPort': context['object'].minidp}
+
         ports = []
-        if context['object'].mda:
-            if context['object'].mda > 1:
-                ports.append("MDA (%i)" % context['object'].mda)
-            else:
-                ports.append("MDA")
-        if context['object'].cga:
-            if context['object'].cga > 1:
-                ports.append("CGA (%i)" % context['object'].cga)
-            else:
-                ports.append("CGA")
-        if context['object'].composite:
-            if context['object'].composite > 1:
-                ports.append("Composite (%i)" % context['object'].composite)
-            else:
-                ports.append("Composite")
-        if context['object'].vga:
-            if context['object'].vga > 1:
-                ports.append("VGA (%i)" % context['object'].vga)
-            else:
-                ports.append("VGA")
-        if context['object'].svideo:
-            if context['object'].svideo > 1:
-                ports.append("S-Video (%i)" % context['object'].svideo)
-            else:
-                ports.append("S-Video")
-        if context['object'].component:
-            if context['object'].component > 1:
-                ports.append("Component (%i)" % context['object'].component)
-            else:
-                ports.append("Component")
-        if context['object'].dvi:
-            if context['object'].dvi > 1:
-                ports.append("DVI (%i)" % context['object'].dvi)
-            else:
-                ports.append("DVI")
-        if context['object'].hdmi:
-            if context['object'].hdmi > 1:
-                ports.append("HDMI (%i)" % context['object'].hdmi)
-            else:
-                ports.append("HDMI")
-        if context['object'].dp:
-            if context['object'].dp > 1:
-                ports.append("DisplayPort (%i)" % context['object'].dp)
-            else:
-                ports.append("DisplayPort")
+        for key, value in port_type.items():
+            if value != 0:
+                ports.append('{} ({})'.format(key, value))
 
         context['ports'] = ', '.join(ports)
         return context
@@ -146,22 +118,16 @@ class NICDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(NICDetailView, self).get_context_data(**kwargs)
         context['interface_verbose'] = context['object'].get_interface_display()
+        port_type = {'AUI': context['object'].aui,
+        'BNC': context['object'].bnc,
+        'Ethernet': context['object'].tp}
+
         ports = []
-        if context['object'].aui:
-            if context['object'].aui > 1:
-                ports.append("AUI (%i)" % context['object'].aui)
-            else:
-                ports.append("AUI")
-        if context['object'].bnc:
-            if context['object'].bnc > 1:
-                ports.append("BNC (%i)" % context['object'].bnc)
-            else:
-                ports.append("BNC")
-        if context['object'].tp:
-            if context['object'].tp > 1:
-                ports.append("Twisted-Pair (%i)" % context['object'].tp)
-            else:
-                ports.append("Twisted-Pair")
+        for key, value in port_type.items():
+            if value != 0:
+                ports.append('{} ({})'.format(key, value))
+
+        context['ports'] = ', '.join(ports)
 
         context['speed'] = context['object'].get_speed_display()
         context['ports'] = ', '.join(ports)
@@ -178,52 +144,20 @@ class MotherboardDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(MotherboardDetailView, self).get_context_data(**kwargs)
         context['form_factor'] = context['object'].get_form_factor_display()
+        slot_type = {'8-Bit ISA': context['object'].isa,
+        '16-Bit ISA': context['object'].isa16,
+        'VLB': context['object'].vlb,
+        'PCI': context['object'].pci,
+        'AGP': context['object'].agp,
+        'PCIe x1': context['object'].pcie1,
+        'PCIe x4': context['object'].pcie4,
+        'PCIe x8': context['object'].pcie8,
+        'PCIe x16': context['object'].pcie16}
+
         slots = []
-        if context['object'].isa:
-            if context['object'].isa > 1:
-                slots.append("8-Bit ISA (%i)" % context['object'].isa)
-            else:
-                slots.append("8-Bit ISA")
-        if context['object'].isa16:
-            if context['object'].isa16 > 1:
-                slots.append("16-Bit ISA (%i)" % context['object'].isa16)
-            else:
-                slots.append("16-Bit ISA")
-        if context['object'].vlb:
-            if context['object'].vlb > 1:
-                slots.append("VLB (%i)" % context['object'].vlb)
-            else:
-                slots.append("VLB")
-        if context['object'].pci:
-            if context['object'].pci > 1:
-                slots.append("PCI (%i)" % context['object'].pci)
-            else:
-                slots.append("PCI")
-        if context['object'].agp:
-            if context['object'].agp > 1:
-                slots.append("AGP (%i)" % context['object'].agp)
-            else:
-                slots.append("AGP")
-        if context['object'].pcie1:
-            if context['object'].pcie1 > 1:
-                slots.append("PCIe x1 (%i)" % context['object'].pcie1)
-            else:
-                slots.append("PCIe x1")
-        if context['object'].pcie4:
-            if context['object'].pcie4 > 1:
-                slots.append("PCIe x4 (%i)" % context['object'].pcie4)
-            else:
-                slots.append("PCIe x4")
-        if context['object'].pcie8:
-            if context['object'].pcie8 > 1:
-                slots.append("PCIe x8 (%i)" % context['object'].pcie8)
-            else:
-                slots.append("PCIe x8")
-        if context['object'].pcie16:
-            if context['object'].pcie16 > 1:
-                slots.append("PCIe x16 (%i)" % context['object'].pcie16)
-            else:
-                slots.append("PCIe x16")
+        for key, value in slot_type.items():
+            if value != 0:
+                slots.append('{} ({})'.format(key, value))
 
         context['slots'] = ', '.join(slots)
         return context
