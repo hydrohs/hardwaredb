@@ -9,7 +9,7 @@ def index(requet):
     num_cpu = CPU.objects.count()
     num_ram = RAM.objects.count()
     num_gpu = GPU.objects.count()
-    num_cables = Cables.objects.count()
+    num_cables = Cable.objects.count()
     num_sound = SoundCard.objects.count()
     num_exp = ExpansionCard.objects.count()
     num_nic = NIC.objects.count()
@@ -57,7 +57,7 @@ class GPUDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(GPUDetailView, self).get_context_data(**kwargs)
-        context['interface_verbose'] = context['object'].get_interface_display()
+        context['interface'] = context['object'].get_interface_display()
 
         port_type = {'MDA': context['object'].mda,
         'CGA': context['object'].cga,
@@ -90,7 +90,7 @@ class SoundCardDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(SoundCardDetailView, self).get_context_data(**kwargs)
-        context['interface_verbose'] = context['object'].get_interface_display()
+        context['interface'] = context['object'].get_interface_display()
         return context
 
 class ExpansionCardList(SingleTableView):
@@ -104,7 +104,7 @@ class ExpansionCardDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ExpansionCardDetailView, self).get_context_data(**kwargs)
-        context['interface_verbose'] = context['object'].get_interface_display()
+        context['interface'] = context['object'].get_interface_display()
         return context
 
 class NICList(SingleTableView):
@@ -117,7 +117,7 @@ class NICDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(NICDetailView, self).get_context_data(**kwargs)
-        context['interface_verbose'] = context['object'].get_interface_display()
+        context['interface'] = context['object'].get_interface_display()
         port_type = {'AUI': context['object'].aui,
         'BNC': context['object'].bnc,
         'Ethernet': context['object'].tp}
@@ -162,28 +162,6 @@ class MotherboardDetailView(DetailView):
         context['slots'] = ', '.join(slots)
         return context
 
-class CaseList(SingleTableView):
-    model = Case
-    table_class = CaseTable
-    template_name = 'hardware/hardware_list.html'
-
-class CaseDetailView(DetailView):
-    model = Case
-
-class PeripheralList(SingleTableView):
-    model = Peripheral
-    table_class = PeripheralTable
-    template_name = 'hardware/hardware_list.html'
-
-class PeripheralDetailView(DetailView):
-    model = Peripheral
-
-    def get_context_data(self, **kwargs):
-        context = super(PeripheralDetailView, self).get_context_data(**kwargs)
-        context['type'] = context['object'].get_type_display()
-        context['interface'] = context['object'].get_interface_display()
-        return context
-
 class PSUList(SingleTableView):
     model = PSU
     table_class = PSUTable
@@ -211,17 +189,38 @@ class PSUDetailView(DetailView):
         context['connectors'] = ', '.join(connectors)
         return context
 
+class CaseList(SingleTableView):
+    model = Case
+    table_class = CaseTable
+    template_name = 'hardware/hardware_list.html'
+
+class CaseDetailView(DetailView):
+    model = Case
+
+class PeripheralList(SingleTableView):
+    model = Peripheral
+    table_class = PeripheralTable
+    template_name = 'hardware/hardware_list.html'
+
+class PeripheralDetailView(DetailView):
+    model = Peripheral
+
+    def get_context_data(self, **kwargs):
+        context = super(PeripheralDetailView, self).get_context_data(**kwargs)
+        context['type'] = context['object'].get_type_display()
+        context['interface'] = context['object'].get_interface_display()
+        return context
+
+
 class CableList(SingleTableView):
-    model = Cables
+    model = Cable
     table_class = CableTable
     template_name = 'hardware/hardware_list.html'
 
 class CableDetailView(DetailView):
-    model = Cables
+    model = Cable
 
     def get_context_data(self, **kwargs):
         context = super(CableDetailView, self).get_context_data(**kwargs)
         context['type'] = context['object'].get_type_display()
-        context['interface_a'] = context['object'].get_interface_a_display()
-        context['interface_b'] = context['object'].get_interface_b_display()
         return context

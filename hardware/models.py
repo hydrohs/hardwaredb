@@ -171,32 +171,6 @@ class ExpansionCard(models.Model):
     def __str__(self):
         return self.name
 
-class Motherboard(models.Model):
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
-    form_factor = models.CharField(max_length=6, choices=FormFactor.choices, default=FormFactor.ATX)
-    socket = models.CharField(max_length=200)
-    isa = models.IntegerField(default=0, verbose_name='8-bit ISA Slots')
-    isa16 = models.IntegerField(default=0, verbose_name='16-bit ISA Slots')
-    vlb = models.IntegerField(default=0, verbose_name='VLB Slots')
-    pci = models.IntegerField(default=0, verbose_name='PCI Slots')
-    agp = models.IntegerField(default=0, verbose_name='AGP Slots')
-    pcie1 = models.IntegerField(default=0, verbose_name='PCIe x1 Slots')
-    pcie4 = models.IntegerField(default=0, verbose_name='PCIe x4 Slots')
-    pcie8 = models.IntegerField(default=0, verbose_name='PCIe x8 Slots')
-    pcie16 = models.IntegerField(default=0, verbose_name='PCIe x16 Slots')
-    ram = models.IntegerField(default=0, verbose_name='RAM Slots')
-    notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
-    io_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
-
-    def get_absolute_url(self):
-        return "/motherboards/%i" % self.id
-
-    def __str__(self):
-        return '{} {}'.format(self.brand, self.model)
-
 class NIC(models.Model):
 
     class Speed(models.TextChoices):
@@ -235,16 +209,28 @@ class NIC(models.Model):
         verbose_name = 'NIC'
         verbose_name_plural = 'NICs'
 
-class Case(models.Model):
+class Motherboard(models.Model):
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
-    mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
-    image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
-    image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
-    image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
+    form_factor = models.CharField(max_length=6, choices=FormFactor.choices, default=FormFactor.ATX)
+    socket = models.CharField(max_length=200)
+    isa = models.IntegerField(default=0, verbose_name='8-bit ISA Slots')
+    isa16 = models.IntegerField(default=0, verbose_name='16-bit ISA Slots')
+    vlb = models.IntegerField(default=0, verbose_name='VLB Slots')
+    pci = models.IntegerField(default=0, verbose_name='PCI Slots')
+    agp = models.IntegerField(default=0, verbose_name='AGP Slots')
+    pcie1 = models.IntegerField(default=0, verbose_name='PCIe x1 Slots')
+    pcie4 = models.IntegerField(default=0, verbose_name='PCIe x4 Slots')
+    pcie8 = models.IntegerField(default=0, verbose_name='PCIe x8 Slots')
+    pcie16 = models.IntegerField(default=0, verbose_name='PCIe x16 Slots')
+    ram = models.IntegerField(default=0, verbose_name='RAM Slots')
+    notes = models.TextField(null=True, blank=True)
+    top_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Top Image')
+    bottom_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
+    io_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
 
     def get_absolute_url(self):
-        return "/cases/%i" % self.id
+        return "/motherboards/%i" % self.id
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
@@ -281,6 +267,20 @@ class PSU(models.Model):
         verbose_name = 'PSU'
         verbose_name_plural = 'PSUs'
 
+class Case(models.Model):
+    brand = models.CharField(max_length=200)
+    model = models.CharField(max_length=200)
+    mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
+    image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return "/cases/%i" % self.id
+
+    def __str__(self):
+        return '{} {}'.format(self.brand, self.model)
+
 class Peripheral(models.Model):
     class Type(models.TextChoices):
         MOUSE = 'M', 'Mouse'
@@ -313,7 +313,7 @@ class Peripheral(models.Model):
     def __str__(self):
         return self.name
 
-class Cables(models.Model):
+class Cable(models.Model):
     class Type(models.TextChoices):
         CABLE = 'CABLE', 'Cable'
         IO = 'IO', 'I/O Bracket'

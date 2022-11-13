@@ -1,7 +1,7 @@
 {% extends "hardware/base.html" %}
-{% block title %}{{ cables.name }}{% endblock %}
+{% block title %}{{ cable.name }}{% endblock %}
 {% block content %}
-<h1>{{ cables.name }}</h1>
+<h1>{{ cable.name }}</h1>
 <div class="row align-items-center">
   <div class="col-sm">
     <table class="table">
@@ -11,35 +11,35 @@
       </tr>
       <tr>
         <td><b>Interface A:</b></td>
-        <td>{{ interface_a }}</td>
+        <td>{{ cable.interface_a }}</td>
       </tr>
       <tr>
         <td><b>Interface B:</b></td>
-        <td>{{ interface_b }}</td>
+        <td>{{ cable.interface_b }}</td>
       </tr>
       <tr>
         <td><b>Notes:</b></td>
-        <td>{{ cables.notes }}</td>
+        <td>{{ cable.notes }}</td>
       </tr>
     </table>
   </div>
   <div class="col-sm">
-    {% if cables.image_1 or cables.image_2 %}
-    <div class="pswp-gallery pswp-gallery--single-column" id="cables-gallery">
-        {% if cables.image_1 %}
-        <a href="/images/{{ cables.image_1 }}" 
-          data-pswp-width="{{ cables.image_1.width }}" 
-          data-pswp-height="{{ cables.image_1.height }}" 
+    {% if cable.image_1 or cable.image_2 %}
+    <div class="pswp-gallery pswp-gallery--single-column" id="cable-gallery">
+        {% if cable.image_1 %}
+        <a href="/images/{{ cable.image_1 }}" 
+          data-pswp-width="{{ cable.image_1.width }}" 
+          data-pswp-height="{{ cable.image_1.height }}" 
           target="_blank">
-          <img src="/images/{{ cables.image_1 }}" alt="Top" width="30%"/>
+          <img src="/images/{{ cable.image_1 }}" alt="Top" width="30%"/>
         </a>
         {% endif %}
-        {% if cables.image_2 %}
-        <a href="/images/{{ cables.image_2 }}" 
-          data-pswp-width="{{ cables.image_2.width }}" 
-          data-pswp-height="{{ cables.image_2.height }}" 
+        {% if cable.image_2 %}
+        <a href="/images/{{ cable.image_2 }}" 
+          data-pswp-width="{{ cable.image_2.width }}" 
+          data-pswp-height="{{ cable.image_2.height }}" 
           target="_blank">
-          <img src="/images/{{ cables.image_2 }}" alt="bottom" width="30%" />
+          <img src="/images/{{ cable.image_2 }}" alt="bottom" width="30%" />
         </a>
         {% endif %}
       </div>
@@ -51,7 +51,7 @@
 
         const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
-        gallery: '#cables-gallery',
+        gallery: '#cable-gallery',
 
         // Elements within gallery (slides)
         children: 'a',

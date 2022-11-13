@@ -59,20 +59,20 @@ class MotherboardTable(tables.Table):
 
     model = tables.Column(linkify=True)
 
-class CaseTable(tables.Table):
-    class Meta:
-        model = Case
-        attrs = {"class": "table table-hover"}
-        exclude = ("id", "image_1", "image_2", "image_3" )
-
-    model = tables.Column(linkify=True)
-
 class PSUTable(tables.Table):
     class Meta:
         model = PSU
         attrs = {"class": "table table-hover"}
         exclude = ("id", "image")
     
+    model = tables.Column(linkify=True)
+    
+class CaseTable(tables.Table):
+    class Meta:
+        model = Case
+        attrs = {"class": "table table-hover"}
+        exclude = ("id", "image_1", "image_2", "image_3" )
+
     model = tables.Column(linkify=True)
 
 class PeripheralTable(tables.Table):
@@ -85,7 +85,7 @@ class PeripheralTable(tables.Table):
 
 class CableTable(tables.Table):
     class Meta:
-        model = Cables
+        model = Cable
         attrs = {"class": "table table-hover"}
         sequence = {"name", "type"}
         exclude = ("id", "image_1", "image_2")
