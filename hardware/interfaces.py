@@ -23,6 +23,7 @@ class Peripherals(models.TextChoices):
     GAME = 'GAME', 'Gameport'
     MIDI = 'MIDI', 'Midi'
     ADB = 'ADB', 'ADB'
+    FLOPPY = 'FLOPPY', 'Apple Floppy'
     SCSI = 'SCSI', 'SCSI'
     PS2 = 'PS2', 'PS/2'
     USB = 'USB', 'USB'

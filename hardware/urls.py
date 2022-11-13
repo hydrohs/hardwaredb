@@ -20,6 +20,7 @@ urlpatterns = [
     path('motherboards/<int:pk>', MotherboardDetailView.as_view(), name="motherboards_detail"),
     path('cases/all', CaseList.as_view(), name="cases_all"),
     path('peripherals/all', PeripheralList.as_view(), name="peripherals_all"),
+    path('peripherals/<int:pk>', PeripheralDetailView.as_view(), name="peripheral_detail"),
     path('psus/all', PSUList.as_view(), name="psus_all"),
     path('psus/<int:pk>', PSUDetailView.as_view(), name="psu_detail"),
     path('cables/all', CableList.as_view(), name="cables_all"),

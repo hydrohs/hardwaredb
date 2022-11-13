@@ -77,7 +77,9 @@ class PeripheralTable(tables.Table):
     class Meta:
         model = Peripheral
         attrs = {"class": "table table-hover"}
-        exclude = ("id", "image_1", "image_2", "image_3")
+        exclude = ("id", "brand", "model", "image_1", "image_2", "image_3")
+
+    name = tables.Column(linkify=True)
 
 class CableTable(tables.Table):
     class Meta:

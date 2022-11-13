@@ -172,6 +172,15 @@ class PeripheralList(SingleTableView):
     table_class = PeripheralTable
     template_name = 'hardware/hardware_list.html'
 
+class PeripheralDetailView(DetailView):
+    model = Peripheral
+
+    def get_context_data(self, **kwargs):
+        context = super(PeripheralDetailView, self).get_context_data(**kwargs)
+        context['type'] = context['object'].get_type_display()
+        context['interface'] = context['object'].get_interface_display()
+        return context
+
 class PSUList(SingleTableView):
     model = PSU
     table_class = PSUTable
