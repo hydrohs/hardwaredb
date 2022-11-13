@@ -167,6 +167,9 @@ class CaseList(SingleTableView):
     table_class = CaseTable
     template_name = 'hardware/hardware_list.html'
 
+class CaseDetailView(DetailView):
+    model = Case
+
 class PeripheralList(SingleTableView):
     model = Peripheral
     table_class = PeripheralTable

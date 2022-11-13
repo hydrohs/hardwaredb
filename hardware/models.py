@@ -239,6 +239,9 @@ class Case(models.Model):
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
     mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
+    image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
 
     def get_absolute_url(self):
         return "/cases/%i" % self.id

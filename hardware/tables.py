@@ -63,7 +63,9 @@ class CaseTable(tables.Table):
     class Meta:
         model = Case
         attrs = {"class": "table table-hover"}
-        exclude = ("id", )
+        exclude = ("id", "image_1", "image_2", "image_3" )
+
+    model = tables.Column(linkify=True)
 
 class PSUTable(tables.Table):
     class Meta:
