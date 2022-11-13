@@ -213,6 +213,49 @@ class CaseList(SingleTableView):
 class CaseDetail(DetailView):
     model = Case
 
+class SystemDetail(DetailView):
+    model = System
+
+    def get_context_data(self, **kwargs):
+        context = super(SystemDetail, self).get_context_data(**kwargs)
+        # Gather all expansion card fields to pass only what is populated to context
+        all_cards = (context['object'].expansion1,
+        context['object'].expansion2,
+        context['object'].expansion3,
+        context['object'].expansion4,
+        context['object'].expansion5,
+        context['object'].expansion6
+        )
+
+        # Same as above but for drives
+        all_drives = (context['object'].drive1,
+        context['object'].drive2,
+        context['object'].drive3,
+        context['object'].drive4,
+        context['object'].drive5,
+        context['object'].drive6,
+        context['object'].drive7,
+        context['object'].drive8
+        )
+
+        # Filters out null fields
+        context['cards'] = []
+        for card in all_cards:
+            if card:
+                context['cards'].append(card)
+
+        # Same as above
+        context['external_drives'] = []
+        context['internal_drives'] = []
+        for drive in all_drives:
+            if drive:
+                if drive.type in ('SSD', 'HDD'):
+                    context['internal_drives'].append(drive)
+                else:
+                    context['external_drives'].append(drive)
+
+        return context
+
 class PeripheralList(SingleTableView):
     model = Peripheral
     table_class = PeripheralTable

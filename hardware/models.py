@@ -1,4 +1,4 @@
-from email.policy import default
+from django import forms
 from django.db import models
 from multiselectfield import MultiSelectField
 from .interfaces import *
@@ -7,11 +7,13 @@ def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display
     def Size():
         if value >= 1048576:
-            return '{}{}'.format(str(int(value / 1048576)), 'TB')
+            size = value / 1048576
+            return '{}{}'.format(str(int(size) if float(size).is_integer() else size), 'TB')
         elif value >= 1024:
-            return '{}{}'.format(str(int(value / 1024)), 'GB')
+            size = value / 1024
+            return '{}{}'.format(str(int(size) if float(size).is_integer() else size), 'GB')
         else:
-            return '{}{}'.format(str(int(value)), 'MB')
+            return '{}{}'.format(str(value), 'MB')
     
     def CpuFreq():
         if value >= 1000:
@@ -63,6 +65,9 @@ class CPU(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_speed_display(self):
+        return HumanReadable('cpu', self.speed, '')
 
     class Meta:
         verbose_name = 'CPU'
@@ -309,6 +314,67 @@ class Case(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
+
+class System(models.Model):
+    name = models.CharField(max_length=200)
+    os = models.CharField(max_length=200, blank=True, verbose_name='Operating System')
+    cpu1 = models.OneToOneField(CPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpu1', verbose_name='CPU')
+    cpu2 = models.OneToOneField(CPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpu2', verbose_name='CPU')
+    ram1 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram1', verbose_name='RAM')
+    ram2 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram2', verbose_name='RAM')
+    ram3 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram3', verbose_name='RAM')
+    ram4 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram4', verbose_name='RAM')
+    ram5 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram5', verbose_name='RAM')
+    ram6 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram6', verbose_name='RAM')
+    ram7 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram7', verbose_name='RAM')
+    ram8 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram8', verbose_name='RAM')
+    ram9 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram9', verbose_name='RAM')
+    ram10 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram10', verbose_name='RAM')
+    ram11 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram11', verbose_name='RAM')
+    ram12 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram12', verbose_name='RAM')
+    ram13 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram13', verbose_name='RAM')
+    ram14 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram14', verbose_name='RAM')
+    ram15 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram15', verbose_name='RAM')
+    ram16 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram16', verbose_name='RAM')
+    motherboard = models.OneToOneField(Motherboard, on_delete=models.SET_NULL, null=True, blank=True, related_name='motherboard')
+    gpu1 = models.OneToOneField(GPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpu1', verbose_name='GPU')
+    gpu2 = models.OneToOneField(GPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpu2', verbose_name='GPU')
+    soundcard1 = models.OneToOneField(SoundCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcard1', verbose_name='Sound Card')
+    soundcard2 = models.OneToOneField(SoundCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcard2', verbose_name='Sound Card')
+    nic = models.OneToOneField(NIC, on_delete=models.SET_NULL, null=True, blank=True, related_name='nic', verbose_name='NIC')
+    expansion1 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion1', verbose_name='Expansion Card')
+    expansion2 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion2', verbose_name='Expansion Card')
+    expansion3 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion3', verbose_name='Expansion Card')
+    expansion4 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion4', verbose_name='Expansion Card')
+    expansion5 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion5', verbose_name='Expansion Card')
+    expansion6 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion6', verbose_name='Expansion Card')
+    psu = models.OneToOneField(PSU, on_delete=models.SET_NULL, null=True, blank=True, related_name='psu', verbose_name='PSU')
+    drive1 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive1', verbose_name='Drive')
+    drive2 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive2', verbose_name='Drive')
+    drive3 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive3', verbose_name='Drive')
+    drive4 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive4', verbose_name='Drive')
+    drive5 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive5', verbose_name='Drive')
+    drive6 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive6', verbose_name='Drive')
+    drive7 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive7', verbose_name='Drive')
+    drive8 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive8', verbose_name='Drive')
+    case = models.OneToOneField(Case, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
+
+
+    def __str__(self):
+        return self.name
+
+    def get_ram(self):
+        fields = (self.ram1, self.ram2, self.ram3, self.ram4, self.ram5, self.ram6)
+        ram = 0
+        for f in fields:
+            if f:
+                ram += f.size
+        
+        return '{} {} {}'.format(
+            HumanReadable('size', ram, ''),
+            self.ram1.get_type_display(),
+            HumanReadable('ram', self.ram1.speed, self.ram1.get_type_display())
+            )
 
 class Peripheral(models.Model):
     class Type(models.TextChoices):

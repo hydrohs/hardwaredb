@@ -1,0 +1,73 @@
+{% extends "hardware/base.html" %}
+{% block title %}{{ system.name }}{% endblock %}
+{% block content %}
+<h1>{{ system.name }}</h1>
+<div class="row align-items-center">
+  <div class="col-sm">
+    <table class="table">
+      <tr>
+        <td><b>CPU:</b></td>
+        <td><a href="{{ system.cpu1.get_absolute_url }}">{{ system.cpu1 }}</a> @ {{ system.cpu1.get_speed_display }}</a></td>
+      </tr>
+      <tr>
+        <td><b>RAM:</b></td>
+        <td>{{ system.get_ram }}</a></td>
+      </tr>
+      <tr>
+        <td><b>Motherboard:</b></td>
+        <td><a href="{{ system.motherboard.get_absolute_url }}">{{ system.motherboard }}</a></td>
+      </tr>
+      <tr>
+        <td><b>GPU:</b></td>
+        <td><a href="{{ system.gpu1.get_absolute_url }}">{{ system.gpu1 }}</a></td>
+      </tr>
+      <tr>
+        <td><b>Soundcard:</b></td>
+        <td><a href="{{ system.soundcard1.get_absolute_url }}">{{ system.soundcard1 }}</a></td>
+      </tr>
+      <tr>
+        <td><b>NIC:</b></td>
+        <td><a href="{{ system.nic.get_absolute_url }}">{{ system.nic }}</a></td>
+      </tr>
+      {% if cards %}
+      <tr>
+        <td><b>Expansion Cards:</b></td>
+        <td>
+          {% for card in cards %}
+          <a href="{{ card.get_absolute_url }}">{{ card }}</a><br />
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td><b>PSU:</b></td>
+        <td><a href="{{ system.psu.get_absolute_url }}">{{ system.psu }}</a></td>
+      </tr>
+      {% if external_drives %}
+      <tr>
+        <td><b>External Drives:</b></td>
+        <td>
+          {% for drive in external_drives %}
+          <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br />
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      {% if internal_drives %}
+      <tr>
+        <td><b>Internal Drives:</b></td>
+        <td>
+          {% for drive in internal_drives %}
+          <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br />
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td><b>Case:</b></td>
+        <td><a href="{{ system.case.get_absolute_url }}">{{ system.case }}</a></td>
+      </tr>
+    </table>
+  </div>
+</p>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib import admin
+from django import forms
 
-from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, PSU, Drive, Case, Peripheral, Cable
+from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, PSU, Drive, Case, System, Peripheral, Cable
 
 admin.site.register(CPU)
 admin.site.register(RAM)
@@ -14,3 +15,18 @@ admin.site.register(Drive)
 admin.site.register(Case)
 admin.site.register(Peripheral)
 admin.site.register(Cable)
+
+# Next 2 classes format RAM so that it's clear which id is being selected
+# from admin panel, since there are many identically named RAM sticks
+class RAMChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "{} ({})".format(obj, obj.id)
+
+@admin.register(System)
+class SystemAdmin(admin.ModelAdmin):
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name in ('ram1', 'ram2', 'ram3', 'ram4', 'ram5', 'ram6', 'ram7', 'ram8', 
+        'ram9', 'ram10', 'ram11', 'ram12', 'ram13', 'ram14', 'ram15', 'ram16'):
+            # Passing this list ignores the verbose_name from the System model, so adding a label restores it
+            return RAMChoiceField(queryset=RAM.objects.all(), label='RAM')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

@@ -24,6 +24,7 @@ urlpatterns = [
     path('drives/<int:pk>', DriveDetail.as_view(), name="drive_detail"),
     path('cases/all', CaseList.as_view(), name="cases_all"),
     path('cases/<int:pk>', CaseDetail.as_view(), name="case_detail"),
+    path('systems/<int:pk>', SystemDetail.as_view(), name="system_detail"),
     path('peripherals/all', PeripheralList.as_view(), name="peripherals_all"),
     path('peripherals/<int:pk>', PeripheralDetail.as_view(), name="peripheral_detail"),
     path('cables/all', CableList.as_view(), name="cables_all"),
