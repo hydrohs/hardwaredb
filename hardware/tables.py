@@ -67,6 +67,14 @@ class PSUTable(tables.Table):
     
     model = tables.Column(linkify=True)
     
+class DriveTable(tables.Table):
+    class Meta:
+        model = Drive
+        attrs = {"class": "table table-hover"}
+        exclude = {"id", "top_img", "bezel_img", "rear_img"}
+
+    name = tables.Column(linkify=True)
+
 class CaseTable(tables.Table):
     class Meta:
         model = Case

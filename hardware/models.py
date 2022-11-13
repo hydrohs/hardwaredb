@@ -6,7 +6,9 @@ from .interfaces import *
 def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display
     def Size():
-        if value >= 1024:
+        if value >= 1048576:
+            return '{}{}'.format(str(int(value / 1048576)), 'TB')
+        elif value >= 1024:
             return '{}{}'.format(str(int(value / 1024)), 'GB')
         else:
             return '{}{}'.format(str(int(value)), 'MB')
@@ -267,13 +269,40 @@ class PSU(models.Model):
         verbose_name = 'PSU'
         verbose_name_plural = 'PSUs'
 
+class Drive(models.Model):
+    class Type(models.TextChoices):
+        FLOPPY5 = 'FLOPPY5', '5.25" Floppy'
+        FLOPPY3 = 'FLOPPY3', '3.5" Floppy'
+        ZIP = 'ZIP', 'Zip'
+        CD = 'CD', 'CD'
+        DVD = 'DVD', 'DVD'
+        BR = 'BR', 'Bluray'
+        HDD = 'HDD', 'HDD'
+        SSD = 'SSD', 'SSD'
+    
+    brand = models.CharField(max_length=200)
+    model = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    type = models.CharField(max_length=10, choices=Type.choices, default=Type.FLOPPY5)
+    interface = models.CharField(max_length=20, choices=Drives.choices, default=Drives.FLOPPYEDGE)
+    capacity = models.IntegerField(blank=True, null=True, verbose_name='Capacity (MB)')
+    top_img = models.ImageField(upload_to='drives', max_length=255, null=True, blank=True)
+    bezel_img = models.ImageField(upload_to='drives', max_length=255, null=True, blank=True)
+    rear_img = models.ImageField(upload_to='drives', max_length=255, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return "/drives/%i" % self.id
+
+    def __str__(self):
+        return self.name
+
 class Case(models.Model):
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
     mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
-    image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
-    image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
-    image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
+    image_1 = models.ImageField(upload_to='case', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='cases', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='cases', max_length=255, null=True, blank=True)
 
     def get_absolute_url(self):
         return "/cases/%i" % self.id

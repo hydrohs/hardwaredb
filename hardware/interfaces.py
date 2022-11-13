@@ -17,6 +17,15 @@ class Slots(models.TextChoices):
     PCIE16 = 'PCIE16', 'PCIe x16'
     PCIEM230 = 'M2', 'M.2 2230'
 
+class Drives(models.TextChoices):
+    FLOPPYEDGE = 'FLOPPYEDGE', '34-Pin Floppy Edge'
+    FLOPPY = 'FLOPPY', '34-Pin Floppy'
+    IDE = 'IDE', 'IDE'
+    SCSI = 'SCSI', 'SCSI'
+    SATA = 'SATA', 'SATA'
+    M240 = 'M240', 'M.2 2240'
+    M280 = 'M280', 'M.2 2280'
+
 class Peripherals(models.TextChoices):
     SERIAL = 'SERIAL', 'Serial'
     PARALLEL = 'PARALLEL', 'Parallel'

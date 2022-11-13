@@ -189,6 +189,22 @@ class PSUDetailView(DetailView):
         context['connectors'] = ', '.join(connectors)
         return context
 
+class DriveList(SingleTableView):
+    model = Drive
+    table_class = DriveTable
+    template_name = 'hardware/hardware_list.html'
+
+class DriveDetail(DetailView):
+    model = Drive
+
+    def get_context_data(self, **kwargs):
+        context = super(DriveDetail, self).get_context_data(**kwargs)
+        context['type'] = context['object'].get_type_display()
+        context['interface'] = context['object'].get_interface_display()
+        if context['object'].capacity:
+            context['capacity'] = HumanReadable('size', context['object'].capacity, '')
+        return context
+
 class CaseList(SingleTableView):
     model = Case
     table_class = CaseTable
