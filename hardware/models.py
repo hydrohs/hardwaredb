@@ -358,10 +358,17 @@ class System(models.Model):
     drive7 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive7', verbose_name='Drive')
     drive8 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive8', verbose_name='Drive')
     case = models.OneToOneField(Case, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
+    image_1 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_4 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
 
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return "/systems/%i" % self.id
 
     def get_ram(self):
         fields = (self.ram1, self.ram2, self.ram3, self.ram4, self.ram5, self.ram6)
@@ -400,7 +407,7 @@ class Peripheral(models.Model):
     notes = models.TextField(null=True, blank=True)
     image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
     image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
-    image_3 = models.ImageField(upload_to='perihperals', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
 
     def get_absolute_url(self):
         return "/peripherals/%i" % self.id

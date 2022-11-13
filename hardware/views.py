@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django_tables2 import SingleTableView
 from .models import *
 from .tables import *
@@ -212,6 +212,10 @@ class CaseList(SingleTableView):
 
 class CaseDetail(DetailView):
     model = Case
+
+class SystemList(ListView):
+    model = System
+    context_object_name = 'systems'
 
 class SystemDetail(DetailView):
     model = System

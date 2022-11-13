@@ -1,0 +1,10 @@
+{% extends "hardware/base.html" %}
+{% block content %}
+<table class="table">
+    {% for system in systems %}
+    <tr>
+        <td><a href="{{ system.get_absolute_url }}">{{ system.name }} ({{ system.os }})</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
