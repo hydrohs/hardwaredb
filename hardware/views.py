@@ -34,7 +34,7 @@ def index(requet):
 
     return render(requet, 'hardware/index.html', context=context)
 
-class CPUDetailView(DetailView):
+class CPUDetail(DetailView):
     model = CPU
 
 class CPUList(SingleTableView):
@@ -52,11 +52,11 @@ class GPUList(SingleTableView):
     table_class = GPUTable
     template_name = 'hardware/hardware_list.html'
 
-class GPUDetailView(DetailView):
+class GPUDetail(DetailView):
     model = GPU
 
     def get_context_data(self, **kwargs):
-        context = super(GPUDetailView, self).get_context_data(**kwargs)
+        context = super(GPUDetail, self).get_context_data(**kwargs)
         context['interface'] = context['object'].get_interface_display()
 
         port_type = {'MDA': context['object'].mda,
@@ -85,11 +85,11 @@ class SoundCardList(SingleTableView):
     table_class = SoundCardTable
     template_name = 'hardware/hardware_list.html'
 
-class SoundCardDetailView(DetailView):
+class SoundCardDetail(DetailView):
     model = SoundCard
 
     def get_context_data(self, **kwargs):
-        context = super(SoundCardDetailView, self).get_context_data(**kwargs)
+        context = super(SoundCardDetail, self).get_context_data(**kwargs)
         context['interface'] = context['object'].get_interface_display()
         return context
 
@@ -98,12 +98,12 @@ class ExpansionCardList(SingleTableView):
     table_class = ExpansionCardTable
     template_name = 'hardware/hardware_list.html'
 
-class ExpansionCardDetailView(DetailView):
+class ExpansionCardDetail(DetailView):
     model = ExpansionCard
     template_name = 'hardware/expansion_detail.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ExpansionCardDetailView, self).get_context_data(**kwargs)
+        context = super(ExpansionCardDetail, self).get_context_data(**kwargs)
         context['interface'] = context['object'].get_interface_display()
         return context
 
@@ -112,11 +112,11 @@ class NICList(SingleTableView):
     table_class = NICTable
     template_name = 'hardware/hardware_list.html'
 
-class NICDetailView(DetailView):
+class NICDetail(DetailView):
     model = NIC
 
     def get_context_data(self, **kwargs):
-        context = super(NICDetailView, self).get_context_data(**kwargs)
+        context = super(NICDetail, self).get_context_data(**kwargs)
         context['interface'] = context['object'].get_interface_display()
         port_type = {'AUI': context['object'].aui,
         'BNC': context['object'].bnc,
@@ -138,11 +138,11 @@ class MotherboardList(SingleTableView):
     table_class = MotherboardTable
     template_name = 'hardware/hardware_list.html'
 
-class MotherboardDetailView(DetailView):
+class MotherboardDetail(DetailView):
     model = Motherboard
 
     def get_context_data(self, **kwargs):
-        context = super(MotherboardDetailView, self).get_context_data(**kwargs)
+        context = super(MotherboardDetail, self).get_context_data(**kwargs)
         context['form_factor'] = context['object'].get_form_factor_display()
         slot_type = {'8-Bit ISA': context['object'].isa,
         '16-Bit ISA': context['object'].isa16,
@@ -167,11 +167,11 @@ class PSUList(SingleTableView):
     table_class = PSUTable
     template_name = 'hardware/hardware_list.html'
 
-class PSUDetailView(DetailView):
+class PSUDetail(DetailView):
     model = PSU
 
     def get_context_data(self, **kwargs):
-        context = super(PSUDetailView, self).get_context_data(**kwargs)
+        context = super(PSUDetail, self).get_context_data(**kwargs)
         connector_type = {'Molex': context['object'].molex,
         'Floppy': context['object'].floppy,
         'SATA': context['object'].sata,
@@ -210,7 +210,7 @@ class CaseList(SingleTableView):
     table_class = CaseTable
     template_name = 'hardware/hardware_list.html'
 
-class CaseDetailView(DetailView):
+class CaseDetail(DetailView):
     model = Case
 
 class PeripheralList(SingleTableView):
@@ -218,11 +218,11 @@ class PeripheralList(SingleTableView):
     table_class = PeripheralTable
     template_name = 'hardware/hardware_list.html'
 
-class PeripheralDetailView(DetailView):
+class PeripheralDetail(DetailView):
     model = Peripheral
 
     def get_context_data(self, **kwargs):
-        context = super(PeripheralDetailView, self).get_context_data(**kwargs)
+        context = super(PeripheralDetail, self).get_context_data(**kwargs)
         context['type'] = context['object'].get_type_display()
         context['interface'] = context['object'].get_interface_display()
         return context
@@ -233,10 +233,10 @@ class CableList(SingleTableView):
     table_class = CableTable
     template_name = 'hardware/hardware_list.html'
 
-class CableDetailView(DetailView):
+class CableDetail(DetailView):
     model = Cable
 
     def get_context_data(self, **kwargs):
-        context = super(CableDetailView, self).get_context_data(**kwargs)
+        context = super(CableDetail, self).get_context_data(**kwargs)
         context['type'] = context['object'].get_type_display()
         return context

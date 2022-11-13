@@ -71,6 +71,7 @@ class DriveTable(tables.Table):
     class Meta:
         model = Drive
         attrs = {"class": "table table-hover"}
+        sequence = {"name"}
         exclude = {"id", "top_img", "bezel_img", "rear_img"}
 
     name = tables.Column(linkify=True)
