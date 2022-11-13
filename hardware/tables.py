@@ -85,4 +85,7 @@ class CableTable(tables.Table):
     class Meta:
         model = Cables
         attrs = {"class": "table table-hover"}
+        sequence = {"name", "type"}
         exclude = ("id", "image_1", "image_2")
+    
+    name = tables.Column(linkify=True)

@@ -212,3 +212,13 @@ class CableList(SingleTableView):
     model = Cables
     table_class = CableTable
     template_name = 'hardware/hardware_list.html'
+
+class CableDetailView(DetailView):
+    model = Cables
+
+    def get_context_data(self, **kwargs):
+        context = super(CableDetailView, self).get_context_data(**kwargs)
+        context['type'] = context['object'].get_type_display()
+        context['interface_a'] = context['object'].get_interface_a_display()
+        context['interface_b'] = context['object'].get_interface_b_display()
+        return context

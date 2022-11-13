@@ -24,4 +24,5 @@ urlpatterns = [
     path('psus/all', PSUList.as_view(), name="psus_all"),
     path('psus/<int:pk>', PSUDetailView.as_view(), name="psu_detail"),
     path('cables/all', CableList.as_view(), name="cables_all"),
+    path('cables/<int:pk>', CableDetailView.as_view(), name="cable_detail")
 ]
