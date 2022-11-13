@@ -177,6 +177,28 @@ class PSUList(SingleTableView):
     table_class = PSUTable
     template_name = 'hardware/hardware_list.html'
 
+class PSUDetailView(DetailView):
+    model = PSU
+
+    def get_context_data(self, **kwargs):
+        context = super(PSUDetailView, self).get_context_data(**kwargs)
+        connector_type = {'Molex': context['object'].molex,
+        'Floppy': context['object'].floppy,
+        'SATA': context['object'].sata,
+        '4-Pin CPU': context['object'].cpu4pin,
+        '8-Pin CPU': context['object'].cpu8pin,
+        '6-Pin PEG': context['object'].pcie6pin,
+        '8-Pin PEG': context['object'].pcie8pin}
+
+        connectors = []
+        for key, value in connector_type.items():
+            if value != 0:
+                connectors.append('{} ({})'.format(key, value))
+
+        context['spec'] = context['object'].get_spec_display()
+        context['connectors'] = ', '.join(connectors)
+        return context
+
 class CableList(SingleTableView):
     model = Cables
     table_class = CableTable

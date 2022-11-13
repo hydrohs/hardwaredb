@@ -1,0 +1,60 @@
+{% extends "hardware/base.html" %}
+{% block title %}{{ psu.brand }} {{ psu.model }}{% endblock %}
+{% block content %}
+<h1>{{ psu.brand }} {{ psu.model }}</h1>
+<div class="row align-items-center">
+  <div class="col-sm">
+    <table class="table">
+      <tr>
+        <td><b>Spec:</b></td>
+        <td>{{ spec }}</td>
+      </tr>
+      <tr>
+        <td><b>Wattage:</b></td>
+        <td>{{ psu.wattage }}</td>
+      </tr>
+      <tr>
+        <td><b>-5v Rail:</b></td>
+        <td>{{ psu.minus5v }}</td>
+      </tr>
+      <tr>
+        <td><b>Connectors:</b></td>
+        <td>{{ connectors }}</td>
+      </tr>
+      <tr>
+        <td><b>Notes:</b></td>
+        <td>{{ psu.notes }}</td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-sm">
+    {% if psu.image %}
+    <div class="pswp-gallery pswp-gallery--single-column" id="psu-gallery">
+        <a href="/images/{{ psu.image }}" 
+          data-pswp-width="{{ psu.image.width }}" 
+          data-pswp-height="{{ psu.image.height }}" 
+          target="_blank">
+          <img src="/images/{{ psu.image }}" alt="Top" width="30%"/>
+        </a>
+      </div>
+    </div>
+    </div>
+      <script type="module">
+        // Include Lightbox 
+        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+
+        const lightbox = new PhotoSwipeLightbox({
+        // may select multiple "galleries"
+        gallery: '#psu-gallery',
+
+        // Elements within gallery (slides)
+        children: 'a',
+
+        // setup PhotoSwipe Core dynamic import
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
+        });
+        lightbox.init();
+    </script>
+    {% endif %}
+</p>
+{% endblock %}

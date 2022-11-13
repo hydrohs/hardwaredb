@@ -70,6 +70,8 @@ class PSUTable(tables.Table):
         model = PSU
         attrs = {"class": "table table-hover"}
         exclude = ("id", "image")
+    
+    model = tables.Column(linkify=True)
 
 class PeripheralTable(tables.Table):
     class Meta:
