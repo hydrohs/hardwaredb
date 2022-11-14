@@ -153,7 +153,7 @@ class SoundCard(models.Model):
     notes = models.TextField(null=True, blank=True)
     top_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='Top Image')
     bottom_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
-    io_img = models.ImageField(upload_to='sond_cards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+    io_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
 
     def get_absolute_url(self):
         return "/sound_cards/%i" % self.id
