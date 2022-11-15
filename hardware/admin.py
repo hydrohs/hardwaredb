@@ -28,5 +28,5 @@ class SystemAdmin(admin.ModelAdmin):
         if db_field.name in ('ram1', 'ram2', 'ram3', 'ram4', 'ram5', 'ram6', 'ram7', 'ram8', 
         'ram9', 'ram10', 'ram11', 'ram12', 'ram13', 'ram14', 'ram15', 'ram16'):
             # Passing this list ignores the verbose_name from the System model, so adding a label restores it
-            return RAMChoiceField(queryset=RAM.objects.all(), label='RAM')
+            return RAMChoiceField(queryset=RAM.objects.all(), label='RAM', required=False)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
