@@ -371,17 +371,20 @@ class System(models.Model):
         return "/systems/%i" % self.id
 
     def get_ram(self):
-        fields = (self.ram1, self.ram2, self.ram3, self.ram4, self.ram5, self.ram6)
+        fields = (self.ram1, self.ram2, self.ram3, self.ram4, self.ram5, self.ram6, self.ram7, self.ram8,
+        self.ram9, self.ram10, self.ram11, self.ram12, self.ram13, self.ram14, self.ram15, self.ram16)
         ram = 0
         for f in fields:
             if f:
                 ram += f.size
-        
-        return '{} {} {}'.format(
-            HumanReadable('size', ram, ''),
-            self.ram1.get_type_display(),
-            HumanReadable('ram', self.ram1.speed, self.ram1.get_type_display())
-            )
+        if ram:
+            return '{} {} {}'.format(
+                HumanReadable('size', ram, ''),
+                self.ram1.get_type_display(),
+                HumanReadable('ram', self.ram1.speed, self.ram1.get_type_display())
+                )
+        else:
+            return 0
 
 class Peripheral(models.Model):
     class Type(models.TextChoices):
