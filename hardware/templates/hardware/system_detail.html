@@ -7,28 +7,54 @@
     <table class="table">
       <tr>
         <td><b>CPU:</b></td>
-        <td><a href="{{ system.cpu1.get_absolute_url }}">{{ system.cpu1 }}</a> @ {{ system.cpu1.get_speed_display }}</a></td>
+        <td>
+          <a href="{{ system.cpu1.get_absolute_url }}">{{ system.cpu1 }}</a> @ {{ system.cpu1.get_speed_display }}</a>
+          {% if system.cpu2 %}
+          <br>
+          <a href="{{ system.cpu2.get_absolute_url }}">{{ system.cpu2 }}</a> @ {{ system.cpu2.get_speed_display }}</a>
+          {% endif %}
+        </td>
       </tr>
       <tr>
         <td><b>RAM:</b></td>
         <td>{{ system.get_ram }}</a></td>
       </tr>
+      {% if system.motherboard %}
       <tr>
         <td><b>Motherboard:</b></td>
         <td><a href="{{ system.motherboard.get_absolute_url }}">{{ system.motherboard }}</a></td>
       </tr>
+      {% endif %}
+      {% if system.gpu1 or system.gpu2 %}
       <tr>
         <td><b>GPU:</b></td>
-        <td><a href="{{ system.gpu1.get_absolute_url }}">{{ system.gpu1 }}</a></td>
+        <td>
+          <a href="{{ system.gpu1.get_absolute_url }}">{{ system.gpu1 }}</a>
+          {% if system.gpu2 %}
+          <br>
+          <a href="{{ system.gpu1.get_absolute_url }}">{{ system.gpu1 }}</a>
+          {% endif %}
+        </td>
       </tr>
+      {% endif %}
+      {% if system.soundcard1 or system.soundcard2 %}
       <tr>
         <td><b>Soundcard:</b></td>
-        <td><a href="{{ system.soundcard1.get_absolute_url }}">{{ system.soundcard1 }}</a></td>
+        <td>
+          <a href="{{ system.soundcard1.get_absolute_url }}">{{ system.soundcard1 }}</a>
+          {% if system.soundcard2 %}
+          <br>
+          <a href="{{ system.soundcard2.get_absolute_url }}">{{ system.soundcard2 }}</a>
+          {% endif %}
+        </td>
       </tr>
+      {% endif %}
+      {% if system.nic %}
       <tr>
         <td><b>NIC:</b></td>
         <td><a href="{{ system.nic.get_absolute_url }}">{{ system.nic }}</a></td>
       </tr>
+      {% endif %}
       {% if cards %}
       <tr>
         <td><b>Expansion Cards:</b></td>
@@ -39,10 +65,12 @@
         </td>
       </tr>
       {% endif %}
+      {% if system.psu %}
       <tr>
         <td><b>PSU:</b></td>
         <td><a href="{{ system.psu.get_absolute_url }}">{{ system.psu }}</a></td>
       </tr>
+      {% endif %}
       {% if external_drives %}
       <tr>
         <td><b>External Drives:</b></td>
@@ -63,10 +91,12 @@
         </td>
       </tr>
       {% endif %}
+      {% if system.case %}
       <tr>
         <td><b>Case:</b></td>
         <td><a href="{{ system.case.get_absolute_url }}">{{ system.case }}</a></td>
       </tr>
+      {% endif %}
     </table>
   </div>
   <div class="col-sm">

@@ -244,6 +244,7 @@ class Motherboard(models.Model):
 
 class PSU(models.Model):
     class Spec(models.TextChoices):
+        PROP = 'PROP', 'Proprietary'
         AT = 'AT', 'AT'
         ATX20 = 'AXT20', '20-pin ATX'
         ATX24 = 'ATX24', '24-pin ATX'

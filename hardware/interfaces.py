@@ -20,6 +20,7 @@ class Slots(models.TextChoices):
 class Drives(models.TextChoices):
     FLOPPYEDGE = 'FLOPPYEDGE', '34-Pin Floppy Edge'
     FLOPPY = 'FLOPPY', '34-Pin Floppy'
+    APPLE = 'APPLE', 'Apple 20-Pin'
     IDE = 'IDE', 'IDE'
     SCSI = 'SCSI', 'SCSI'
     SATA = 'SATA', 'SATA'
