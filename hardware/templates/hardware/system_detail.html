@@ -97,6 +97,12 @@
         <td><a href="{{ system.case.get_absolute_url }}">{{ system.case }}</a></td>
       </tr>
       {% endif %}
+      {% if system.notes %}
+      <tr>
+        <td><b>Notes:</b></td>
+        <td>{{ system.notes }}</a></td>
+      </tr>
+      {% endif %}
     </table>
   </div>
   <div class="col-sm">

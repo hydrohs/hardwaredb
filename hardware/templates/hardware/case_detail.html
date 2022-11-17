@@ -9,6 +9,12 @@
         <td><b>Supported Motherboards:</b></td>
         <td>{{ case.mb_support }}</td>
       </tr>
+      {% if case.notes %}
+      <tr>
+        <td><b>Notes:</b></td>
+        <td>{{ case.notes }}</td>
+      </tr>
+      {% endif %}
     </table>
   </div>
   <div class="col-sm">

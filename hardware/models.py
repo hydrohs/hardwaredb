@@ -1,4 +1,3 @@
-from django import forms
 from django.db import models
 from multiselectfield import MultiSelectField
 from .interfaces import *
@@ -6,22 +5,22 @@ from .interfaces import *
 def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display
     def Size():
-        if value >= 1048576:
+        if value >= 1048576: # If size is over this value we're dealing with terabytes
             size = value / 1048576
             return '{}{}'.format(str(int(size) if float(size).is_integer() else size), 'TB')
-        elif value >= 1024:
+        elif value >= 1024: # Over this value is gigabytes
             size = value / 1024
             return '{}{}'.format(str(int(size) if float(size).is_integer() else size), 'GB')
-        else:
+        else: # Else just add MB to stored database value
             return '{}{}'.format(str(value), 'MB')
     
     def CpuFreq():
-        if value >= 1000:
+        if value >= 1000: # Simply convert large MHz into GHz
             return '{}{}'.format(str(value / 1000), 'GHz')
         else:
             return '{}{}'.format(value, 'MHz')
     
-    def RamSpeed():
+    def RamSpeed(): # Add suffix based on RAM type
         if ram_type == 'FPM' or ram_type =='EDO':
             return '{}{}'.format(str(int(value)), 'ns')
         else:
@@ -306,6 +305,7 @@ class Case(models.Model):
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
     mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
+    notes = models.TextField(null=True, blank=True)
     image_1 = models.ImageField(upload_to='case', max_length=255, null=True, blank=True)
     image_2 = models.ImageField(upload_to='cases', max_length=255, null=True, blank=True)
     image_3 = models.ImageField(upload_to='cases', max_length=255, null=True, blank=True)
@@ -359,6 +359,7 @@ class System(models.Model):
     drive7 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive7', verbose_name='Drive')
     drive8 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive8', verbose_name='Drive')
     case = models.OneToOneField(Case, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
+    notes = models.TextField(blank=True, null=True)
     image_1 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
     image_2 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
     image_3 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
@@ -371,7 +372,11 @@ class System(models.Model):
     def get_absolute_url(self):
         return "/systems/%i" % self.id
 
-    def get_ram(self):
+    def get_ram(self): 
+        # Loops through all RAM fields in order to add up total
+        # then adds on RAM type/speed (even though this could technically be different, in my use it wont come up)
+        # This function is used on system detail page to show total ram, rather than potentially many different ram
+        # sticks (all likely to be the same) in a list
         fields = (self.ram1, self.ram2, self.ram3, self.ram4, self.ram5, self.ram6, self.ram7, self.ram8,
         self.ram9, self.ram10, self.ram11, self.ram12, self.ram13, self.ram14, self.ram15, self.ram16)
         ram = 0
