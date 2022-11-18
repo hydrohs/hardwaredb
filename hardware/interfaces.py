@@ -105,6 +105,8 @@ class Cables(models.TextChoices):
     EDGE34 = 'EDGE34', '34-Pin Edge Connector'
     SATAM = 'SATAM', 'SATA Male'
     SATAF = 'SATAF', 'SATA Female'
+    M2SATA = 'M2SATA', 'M.2 SATA'
+    M2NVME = 'M2NVME', 'M.2 NVME'
     MM25M = 'MM25M', '2.5MM Male'
     MM25F = 'MM25F', '2.5MM Female'
     MM35M = 'MM35M', '3.5MM Male'
