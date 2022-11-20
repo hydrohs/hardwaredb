@@ -3,6 +3,11 @@ Django application for tracking classic hardware and systems
 
 # Installation
 You can run it natively or with Docker
+First:
+
+    git clone https://github.com/hydrohs/hardwaredb.git --recurse-submodules
+
+In order to pull in the repo as well as [Photoswipe](https://github.com/dimsemenov/PhotoSwipe)(Used for image viewing).
 
 ## Native
 Install ``python3`` and ``pip``, and then run ``setup.sh`` to install required Django version and python dependencies. Then ``./migrate.py migrate`` to create the database
