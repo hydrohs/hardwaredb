@@ -2,8 +2,7 @@
 Django application for tracking classic hardware and systems
 
 # Installation
-You can run it natively or with Docker
-First:
+You can run it natively or with Docker, first:
 
     git clone https://github.com/hydrohs/hardwaredb.git --recurse-submodules
 
