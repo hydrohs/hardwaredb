@@ -386,8 +386,8 @@ class System(models.Model):
         if ram:
             return '{} {} {}'.format(
                 HumanReadable('size', ram, ''),
-                self.ram1.get_type_display(),
-                HumanReadable('ram', self.ram1.speed, self.ram1.get_type_display())
+                HumanReadable('ram', self.ram1.speed, self.ram1.get_type_display()),
+                self.ram1.get_type_display()
                 )
         else:
             return 0

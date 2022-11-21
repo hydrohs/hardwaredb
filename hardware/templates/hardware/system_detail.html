@@ -17,7 +17,18 @@
       </tr>
       <tr>
         <td><b>RAM:</b></td>
-        <td>{{ system.get_ram }}</a></td>
+        <td data-bs-toggle="collapse" data-bs-target="#ram-list" aria-expanded="false" aria-controls="ram-list">
+          {{ system.get_ram }}
+          {% if ram %}
+          <div class="collapse" id="ram-list">
+            <ul>
+              {% for stick in ram %}
+              <li>{{ stick }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </td>
       </tr>
       {% if system.motherboard %}
       <tr>

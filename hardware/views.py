@@ -246,6 +246,25 @@ class SystemDetail(DetailView):
         context['object'].drive8
         )
 
+        # Again same, but for RAM
+        all_ram = (context['object'].ram1,
+        context['object'].ram2,
+        context['object'].ram3,
+        context['object'].ram4,
+        context['object'].ram5,
+        context['object'].ram6,
+        context['object'].ram7,
+        context['object'].ram8,
+        context['object'].ram9,
+        context['object'].ram10,
+        context['object'].ram11,
+        context['object'].ram12,
+        context['object'].ram13,
+        context['object'].ram14,
+        context['object'].ram15,
+        context['object'].ram16,
+        )
+
         # Filters out null fields
         context['cards'] = []
         for card in all_cards:
@@ -261,6 +280,12 @@ class SystemDetail(DetailView):
                     context['internal_drives'].append(drive)
                 else:
                     context['external_drives'].append(drive)
+
+        # Same again
+        context['ram'] = []
+        for ram in all_ram:
+            if ram:
+                context['ram'].append(ram)
 
         return context
 
