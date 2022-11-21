@@ -243,7 +243,11 @@ class SystemDetail(DetailView):
         context['object'].drive5,
         context['object'].drive6,
         context['object'].drive7,
-        context['object'].drive8
+        context['object'].drive8,
+        context['object'].drive9,
+        context['object'].drive10,
+        context['object'].drive11,
+        context['object'].drive12
         )
 
         # Again same, but for RAM
