@@ -7,6 +7,8 @@ class Slots(models.TextChoices):
     ISA16 = 'ISA16', '16-bit ISA'
     VLB = 'VLB', 'VLB'
     PCI = 'PCI', 'PCI'
+    PCIX32 = 'PCIX32', 'PCI-X 32-bit'
+    PCIX64 = 'PCIX64', 'PCI-X 64-bit'
     PCMCIA = 'PCMCIA', 'PCMCIA'
     AGP = 'AGP', 'AGP'
     AGP2 = 'AGP2', 'AGP 2x'
