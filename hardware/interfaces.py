@@ -108,6 +108,8 @@ class Cables(models.TextChoices):
     SATAM = 'SATAM', 'SATA Male'
     SATAF = 'SATAF', 'SATA Female'
     M2SATA = 'M2SATA', 'M.2 SATA'
+    ESATAM = 'ESATAM', 'eSATA Male'
+    ESATAF = 'ESATAF', 'eSATA Female'
     M2NVME = 'M2NVME', 'M.2 NVME'
     MM25M = 'MM25M', '2.5MM Male'
     MM25F = 'MM25F', '2.5MM Female'
