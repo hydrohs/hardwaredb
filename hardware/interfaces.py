@@ -175,3 +175,5 @@ class Cables(models.TextChoices):
     PEG6F = 'PEG6F', '6-Pin PEG Female'
     PEG8M = 'PEG8M', '8-Pin PEG Male'
     PEG8F = 'PEG8F', '8-Pin PEG Female'
+    SLI = 'SLI', 'SLI'
+    XFIRE = 'XFIRE', 'Crossfire'
