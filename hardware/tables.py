@@ -84,6 +84,15 @@ class CaseTable(tables.Table):
 
     model = tables.Column(linkify=True)
 
+class MicroPropTable(tables.Table):
+    class Meta:
+        model = MicroProp
+        attrs = {"class": "table table-hover"}
+        exclude = {"id", "image_1", "image_2", "image_3", "image_4", "type"}
+        sequence = {"name"}
+    
+    name = tables.Column(linkify=True)
+
 class PeripheralTable(tables.Table):
     class Meta:
         model = Peripheral

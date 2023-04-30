@@ -295,7 +295,14 @@ class SystemDetail(DetailView):
 
 class MicroList(SingleTableView):
     model = MicroProp
-    
+    queryset = MicroProp.objects.filter(type="MICRO")
+    table_class = MicroPropTable
+    template_name = 'hardware/hardware_list.html'
+
+class PropList(SingleTableView):
+    model = MicroProp
+    queryset = MicroProp.objects.filter(type="PROP")
+    table_class = MicroPropTable
     template_name = 'hardware/hardware_list.html'
 
 class MicroPropDetail(DetailView):

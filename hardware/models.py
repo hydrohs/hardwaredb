@@ -406,10 +406,16 @@ class MicroProp(models.Model):
     model = models.CharField(max_length=200)
     type = models.CharField(max_length=20, choices=Type.choices, default=Type.PROP)
     notes = models.TextField(null=True, blank=True)
-    image1 = models.ImageField(upload_to='systems', max_length=255, null=True)
-    image2 = models.ImageField(upload_to='systems', max_length=255, null=True)
-    image3 = models.ImageField(upload_to='systems', max_length=255, null=True)
-    image4 = models.ImageField(upload_to='systems', max_length=255, null=True)
+    image_1 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_4 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return "/microprop/%i" % self.id
+
+    def __str__(self):
+        return self.name
 
 
 class Peripheral(models.Model):
