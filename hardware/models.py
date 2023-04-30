@@ -396,6 +396,28 @@ class System(models.Model):
         else:
             return 0
 
+class MicroProp(models.Model):
+    class Type(models.TextChoices):
+        MICRO = 'MICRO', 'Microcomputer'
+        PROP = 'PROP', 'Proprietary'
+
+    brand = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    model = models.CharField(max_length=200)
+    type = models.CharField(max_length=20, choices=Type.choices, default=Type.PROP)
+    notes = models.TextField(null=True, blank=True)
+    image_1 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_2 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_3 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+    image_4 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return "/microprop/%i" % self.id
+
+    def __str__(self):
+        return self.name
+
+
 class Peripheral(models.Model):
     class Type(models.TextChoices):
         MOUSE = 'M', 'Mouse'

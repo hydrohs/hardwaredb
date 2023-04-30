@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, PSU, Drive, Case, System, Peripheral, Cable
+from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, PSU, Drive, Case, System, MicroProp, Peripheral, Cable
 
 admin.site.register(CPU)
 admin.site.register(RAM)
@@ -15,6 +15,7 @@ admin.site.register(Drive)
 admin.site.register(Case)
 admin.site.register(Peripheral)
 admin.site.register(Cable)
+admin.site.register(MicroProp)
 
 # Next 2 classes format RAM so that it's clear which id is being selected
 # from admin panel, since there are many identically named RAM sticks

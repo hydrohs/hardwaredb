@@ -36,7 +36,16 @@
             <a class="nav-link" href="{% url 'hardware:psus_all' %}">PSUs</a>
             <a class="nav-link" href="{% url 'hardware:drives_all' %}">Drives</a>
             <a class="nav-link" href="{% url 'hardware:cases_all' %}">Cases</a>
-            <a class="nav-link" href="{% url 'hardware:systems_all' %}">Systems</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Systems
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'hardware:systems_all' %}">Custom</a></li>
+                <li><a class="dropdown-item" href="{% url 'hardware:micros_all' %}">Micros</a></li>
+                <li><a class="dropdown-item" href="{% url 'hardware:prop_all' %}">Prebuilt/Proprietary</a></li>
+              </ul>
+            </li>
             <a class="nav-link" href="{% url 'hardware:peripherals_all' %}">Peripherals</a>
             <a class="nav-link" href="{% url 'hardware:cables_all' %}">Cables, Adapters, I/O Brackets</a>
           </div>
