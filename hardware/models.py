@@ -396,6 +396,22 @@ class System(models.Model):
         else:
             return 0
 
+class MicroProp(models.Model):
+    class Type(models.TextChoices):
+        MICRO = 'MICRO', 'Microcomputer'
+        PROP = 'PROP', 'Proprietary'
+
+    brand = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    model = models.CharField(max_length=200)
+    type = models.CharField(max_length=20, choices=Type.choices, default=Type.PROP)
+    notes = models.TextField(null=True, blank=True)
+    image1 = models.ImageField(upload_to='systems', max_length=255, null=True)
+    image2 = models.ImageField(upload_to='systems', max_length=255, null=True)
+    image3 = models.ImageField(upload_to='systems', max_length=255, null=True)
+    image4 = models.ImageField(upload_to='systems', max_length=255, null=True)
+
+
 class Peripheral(models.Model):
     class Type(models.TextChoices):
         MOUSE = 'M', 'Mouse'

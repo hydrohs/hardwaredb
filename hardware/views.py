@@ -16,7 +16,7 @@ def index(requet):
     num_psus = PSU.objects.count()
     num_drives = Drive.objects.count()
     num_cases = Case.objects.count()
-    num_systems = System.objects.count()
+    num_systems = System.objects.count() + MicroProp.objects.count()
     num_periphs = Peripheral.objects.count()
     num_cables = Cable.objects.count()
 
@@ -293,6 +293,15 @@ class SystemDetail(DetailView):
 
         return context
 
+class MicroList(SingleTableView):
+    model = MicroProp
+    
+    template_name = 'hardware/hardware_list.html'
+
+class MicroPropDetail(DetailView):
+    model = MicroProp
+
+    
 class PeripheralList(SingleTableView):
     model = Peripheral
     table_class = PeripheralTable
