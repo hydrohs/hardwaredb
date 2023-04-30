@@ -416,6 +416,10 @@ class MicroProp(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = 'Microcomputer/Proprietary System'
+        verbose_name_plural = 'Microcomputers/Proprietary Systems'
 
 
 class Peripheral(models.Model):
