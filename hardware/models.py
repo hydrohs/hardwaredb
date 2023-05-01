@@ -428,6 +428,7 @@ class Peripheral(models.Model):
         KB = 'KB', 'Keyboard'
         ZIP = 'ZIP', 'Zip Drive'
         FLOPPY = 'FLOPPY', 'Floppy Drive'
+        CASS = 'CASS', 'Cassette Player'
         HDD = 'HDD', 'Hard Drive'
         DISC = 'DISC', 'Disc Drive'
         GAME = 'GAME', 'Gamepad'
