@@ -421,6 +421,21 @@ class MicroProp(models.Model):
         verbose_name = 'Microcomputer/Proprietary System'
         verbose_name_plural = 'Microcomputers/Proprietary Systems'
 
+class SBC(models.Model):
+    type = models.CharField(max_length=200)
+    model = models.CharField(max_length=200)
+    qty = models.IntegerField(default=1)
+    usage = models.TextField(null=True, blank=True)
+
+    def get_absolute_url(self):
+        return "/sbc/%i" % self.id
+    
+    def __str__(self):
+        return '{} {}'.format(self.type, self.model)
+    
+    class Meta:
+        verbose_name = 'Single-board Computer'
+        verbose_name_plural = 'Single-board Computers'
 
 class Peripheral(models.Model):
     class Type(models.TextChoices):

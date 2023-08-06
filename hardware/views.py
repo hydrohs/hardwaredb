@@ -307,7 +307,18 @@ class PropList(SingleTableView):
 
 class MicroPropDetail(DetailView):
     model = MicroProp
+    def get_context_data(self, **kwargs):
+        context = super(MicroPropDetail, self).get_context_data(**kwargs)
+        context['type'] = context['object'].get_type_display()
+        return context
 
+class SBCList(SingleTableView):
+    model = SBC
+    table_class = SBCTable
+    template_name = 'hardware/hardware_list.html'
+
+class SBCDetail(DetailView):
+    model = SBC
     
 class PeripheralList(SingleTableView):
     model = Peripheral

@@ -93,6 +93,15 @@ class MicroPropTable(tables.Table):
     
     name = tables.Column(linkify=True)
 
+class SBCTable(tables.Table):
+    class Meta:
+        model = SBC
+        attrs = {"class": "table table-hover"}
+        exclude = {"id", "usage"}
+        sequence = {"type"}
+    
+    model = tables.Column(linkify=True)
+
 class PeripheralTable(tables.Table):
     class Meta:
         model = Peripheral

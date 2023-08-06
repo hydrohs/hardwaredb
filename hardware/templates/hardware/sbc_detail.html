@@ -1,0 +1,19 @@
+{% extends "hardware/base.html" %}
+{% block title %}{{ sbc.type }} {{ sbc.model }}{% endblock %}
+{% block content %}
+<h1>{{ sbc.type }} {{ sbc.model }}</h1>
+<div class="row align-items-center">
+  <div class="col-sm">
+    <table class="table">
+      <tr>
+        <td><b>Quantity:</b></td>
+        <td>{{ sbc.qty }}</td>
+      </tr>
+      <tr>
+        <td><b>Usage:</b></td>
+        <td>{{ sbc.usage | safe }}</td>
+      </tr>
+    </table>
+  </div>
+</p>
+{% endblock %}
