@@ -4,7 +4,7 @@ COPY utils/ /bin
 COPY run.sh /bin
 
 RUN add-pkg python3 py3-pip py3-pillow tzdata\
-    && pip3 install django==4.0.7 django-multiselectfield django-tables2
+    && pip3 install django==4.0.7 django-multiselectfield django-tables2 django-cleanup django-unused-media
 
 ENV TZ=America/Halifax
 
