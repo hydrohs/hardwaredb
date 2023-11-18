@@ -63,7 +63,7 @@ class CPU(models.Model):
         return "/cpus/%i" % self.id
 
     def __str__(self):
-        return self.name
+        return '{} {}'.format(self.brand, self.name)
 
     def get_speed_display(self):
         return HumanReadable('cpu', self.speed, '')
@@ -112,6 +112,7 @@ class RAM(models.Model):
 
 class GPU(models.Model):
     brand = models.CharField(max_length=200)
+    gpu = models.CharField(max_length=32, verbose_name='GPU')
     model = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200)
     interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
@@ -137,7 +138,7 @@ class GPU(models.Model):
         return "/gpus/%i" % self.id
 
     def __str__(self):
-        return self.name
+        return '{} {}'.format(self.brand, self.name)
 
     class Meta:
         verbose_name = 'GPU'
@@ -158,7 +159,7 @@ class SoundCard(models.Model):
         return "/sound_cards/%i" % self.id
 
     def __str__(self):
-        return self.name
+        return '{} {}'.format(self.brand, self.name)
 
 class ExpansionCard(models.Model):
     brand = models.CharField(max_length=200)
@@ -175,7 +176,7 @@ class ExpansionCard(models.Model):
         return "/expansion_cards/%i" % self.id
 
     def __str__(self):
-        return self.name
+        return '{} {}'.format(self.brand, self.name)
 
 class NIC(models.Model):
 

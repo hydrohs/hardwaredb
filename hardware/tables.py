@@ -20,7 +20,7 @@ class GPUTable(tables.Table):
     class Meta:
         model = GPU
         attrs = {"class": "table table-hover"}
-        sequence = ("brand", "name", )
+        sequence = ("brand", "name", "model", "interface", )
         exclude = ("id", "top_img", "bottom_img", "io_img")
 
     name = tables.Column(linkify=True)
