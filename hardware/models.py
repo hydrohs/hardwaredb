@@ -1,6 +1,7 @@
 from django.db import models
 from multiselectfield import MultiSelectField
 from .interfaces import *
+import os
 
 def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display
@@ -46,6 +47,71 @@ class FormFactor(models.TextChoices):
         ITX = 'ITX', 'Mini ITX'
         PROP = 'PROP', 'Proprietary'
 
+def get_upload_path(instance, filename):
+    model = instance.album.type
+    name = instance.album.name
+    extension = os.path.splitext(filename)[1]
+    return f'{model}/{name}/{instance.name}{extension}'
+    
+def get_foreign_info(object):
+    if object.type == 'CPU':
+        return object.cpu
+    if object.type == 'GPU':
+        return object.gpu
+    if object.type == 'SOUND':
+        return object.sound
+    if object.type == 'EXPAND':
+        return object.expand
+    if object.type == 'NIC':
+        return object.nic
+    if object.type =='MB':
+        return object.mb
+    if object.type == 'PSU':
+        return object.psu
+    if object.type == 'DRIVE':
+        return object.drive
+    if object.type == 'CASE':
+        return object.case
+    if object.type == 'SYS':
+        return object.sys
+    if object.type == 'MICRO':
+        return object.micro
+    if object.type == 'PERIPH':
+        return object.periph
+    if object.type == 'CABLE':
+        return object.cable
+
+class ImageAlbum(models.Model):
+    class Type(models.TextChoices):
+        CPU = 'CPU', 'CPU'
+        GPU = 'GPU', 'GPU'
+        SOUND = 'SOUND', 'Sound Card'
+        EXPAND = 'EXPAND', 'Expansion Card'
+        NIC = 'NIC', 'NIC'
+        MB = 'MB', 'Motherboard'
+        PSU = 'PSU', 'PSU'
+        DRIVE = 'DRIVE', 'Drive'
+        CASE = 'CASE', 'Case'
+        SYS = 'SYS', 'System'
+        MICRO = 'MICRO', 'Microcomputer/Proprietary'
+        PERIPH = 'PERIPH', 'Peripheral'
+        CABLE = 'CABLE', 'Cable'
+
+    name = models.CharField(max_length=200)
+    type = models.CharField(max_length=10, choices=Type.choices, default=Type.CPU)
+
+    def __str__(self):
+        model = get_foreign_info(self)
+        return f'{model.__class__._meta.verbose_name} {model.pk}: {model.name}'
+
+class Image(models.Model):
+    name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to=get_upload_path)
+    album = models.ForeignKey(ImageAlbum, related_name='images', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.album} {self.name}'
+    
 class CPU(models.Model):
     brand = models.CharField(max_length=200)
     model = models.CharField(max_length=200, null=True, blank=True)
@@ -56,8 +122,7 @@ class CPU(models.Model):
     hyperthreading = models.BooleanField()
     cpu_world = models.TextField(null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
+    album = models.OneToOneField(ImageAlbum, related_name='cpu', on_delete=models.CASCADE, null=True, blank=True)
 
     def get_absolute_url(self):
         return "/cpus/%i" % self.id
@@ -179,7 +244,6 @@ class ExpansionCard(models.Model):
         return '{} {}'.format(self.brand, self.name)
 
 class NIC(models.Model):
-
     class Speed(models.TextChoices):
         A = 'A'
         B = 'B'
