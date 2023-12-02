@@ -4,7 +4,7 @@ from django_tables2 import SingleTableView
 from .models import *
 from .tables import *
 
-def index(request):
+def index(requet):
     # Count number of objects for all classes
     num_cpus = CPU.objects.count()
     num_ram = RAM.objects.count()
@@ -16,7 +16,6 @@ def index(request):
     num_psus = PSU.objects.count()
     num_drives = Drive.objects.count()
     num_cases = Case.objects.count()
-    num_systems = System.objects.count() + MicroProp.objects.count()
     num_periphs = Peripheral.objects.count()
     num_cables = Cable.objects.count()
 
@@ -31,12 +30,11 @@ def index(request):
         'num_psus': num_psus,
         'num_drives': num_drives,
         'num_cases': num_cases,
-        'num_systems': num_systems,
         'num_periphs': num_periphs,
         'num_cables': num_cables,
     }
 
-    return render(request, 'hardware/index.html', context=context)
+    return render(requet, 'hardware/index.html', context=context)
 
 class CPUDetail(DetailView):
     model = CPU
@@ -216,82 +214,6 @@ class CaseList(SingleTableView):
 
 class CaseDetail(DetailView):
     model = Case
-
-class SystemList(ListView):
-    model = System
-    context_object_name = 'systems'
-
-class SystemDetail(DetailView):
-    model = System
-
-    def get_context_data(self, **kwargs):
-        context = super(SystemDetail, self).get_context_data(**kwargs)
-        # Gather all expansion card fields to pass only what is populated to context
-        all_cards = (context['object'].expansion1,
-        context['object'].expansion2,
-        context['object'].expansion3,
-        context['object'].expansion4,
-        context['object'].expansion5,
-        context['object'].expansion6
-        )
-
-        # Same as above but for drives
-        all_drives = (context['object'].drive1,
-        context['object'].drive2,
-        context['object'].drive3,
-        context['object'].drive4,
-        context['object'].drive5,
-        context['object'].drive6,
-        context['object'].drive7,
-        context['object'].drive8,
-        context['object'].drive9,
-        context['object'].drive10,
-        context['object'].drive11,
-        context['object'].drive12
-        )
-
-        # Again same, but for RAM
-        all_ram = (context['object'].ram1,
-        context['object'].ram2,
-        context['object'].ram3,
-        context['object'].ram4,
-        context['object'].ram5,
-        context['object'].ram6,
-        context['object'].ram7,
-        context['object'].ram8,
-        context['object'].ram9,
-        context['object'].ram10,
-        context['object'].ram11,
-        context['object'].ram12,
-        context['object'].ram13,
-        context['object'].ram14,
-        context['object'].ram15,
-        context['object'].ram16,
-        )
-
-        # Filters out null fields
-        context['cards'] = []
-        for card in all_cards:
-            if card:
-                context['cards'].append(card)
-
-        # Same as above
-        context['external_drives'] = []
-        context['internal_drives'] = []
-        for drive in all_drives:
-            if drive:
-                if drive.type in ('SSD', 'HDD'):
-                    context['internal_drives'].append(drive)
-                else:
-                    context['external_drives'].append(drive)
-
-        # Same again
-        context['ram'] = []
-        for ram in all_ram:
-            if ram:
-                context['ram'].append(ram)
-
-        return context
 
 class MicroList(SingleTableView):
     model = MicroProp

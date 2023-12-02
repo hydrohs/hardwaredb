@@ -6,7 +6,7 @@ class CPUTable(tables.Table):
         model = CPU
         attrs = {"class": "table table-hover"}
         sequence = ("brand", "name")
-        exclude = ("id", "cpu_world", "top_img", "bottom_img")
+        exclude = ("id", "cpu_world", "polymorphic_ctype", "hardware_ptr", )
 
     name = tables.Column(linkify=True)
 
@@ -21,7 +21,7 @@ class GPUTable(tables.Table):
         model = GPU
         attrs = {"class": "table table-hover"}
         sequence = ("brand", "name", "model", "interface", )
-        exclude = ("id", "top_img", "bottom_img", "io_img")
+        exclude = ("id", "polymorphic_ctype", "hardware_ptr", )
 
     name = tables.Column(linkify=True)
 
@@ -30,7 +30,7 @@ class SoundCardTable(tables.Table):
         model = SoundCard
         attrs = {"class": "table table-hover"}
         sequence = ("brand", "name", )
-        exclude = ("id", "top_img", "bottom_img", "io_img")
+        exclude = ("id", "polymorphic_ctype", "hardware_ptr", )
 
     name = tables.Column(linkify=True)
 
@@ -39,7 +39,7 @@ class ExpansionCardTable(tables.Table):
         model = ExpansionCard
         attrs = {"class": "table table-hover"}
         sequence = ("brand", "name", )
-        exclude = ("id", "top_img", "bottom_img", "io_img")
+        exclude = ("id", "polymorphic_ctype", "hardware_ptr", )
 
     name = tables.Column(linkify=True)
 
@@ -47,7 +47,7 @@ class NICTable(tables.Table):
     class Meta:
         model = NIC
         attrs = {"class": "table table-hover"}
-        exclude = ("id", "top_img", "bottom_img", "io_img")
+        exclude = ("id", "name", "polymorphic_ctype", "hardware_ptr", )
 
     model = tables.Column(linkify=True)
 
@@ -55,7 +55,7 @@ class MotherboardTable(tables.Table):
     class Meta:
         model = Motherboard
         attrs = {"class": "table table-hover"}
-        exclude = ("id", "top_img", "bottom_img", "io_img")
+        exclude = ("id", "name", "polymorphic_ctype", "hardware_ptr", )
 
     model = tables.Column(linkify=True)
 
@@ -63,7 +63,7 @@ class PSUTable(tables.Table):
     class Meta:
         model = PSU
         attrs = {"class": "table table-hover"}
-        exclude = ("id", "image")
+        exclude = ("id", "name", "polymorphic_ctype", "hardware_ptr", )
     
     model = tables.Column(linkify=True)
     
@@ -71,8 +71,8 @@ class DriveTable(tables.Table):
     class Meta:
         model = Drive
         attrs = {"class": "table table-hover"}
-        sequence = {"name"}
-        exclude = {"id", "top_img", "bezel_img", "rear_img"}
+        sequence = ("name", )
+        exclude = ("id", "polymorphic_ctype", "hardware_ptr", )
 
     name = tables.Column(linkify=True)
 
@@ -80,7 +80,7 @@ class CaseTable(tables.Table):
     class Meta:
         model = Case
         attrs = {"class": "table table-hover"}
-        exclude = ("id", "image_1", "image_2", "image_3" )
+        exclude = ("id", "name", "polymorphic_ctype", "hardware_ptr", )
 
     model = tables.Column(linkify=True)
 
@@ -88,8 +88,8 @@ class MicroPropTable(tables.Table):
     class Meta:
         model = MicroProp
         attrs = {"class": "table table-hover"}
-        exclude = {"id", "image_1", "image_2", "image_3", "image_4", "type"}
-        sequence = {"name"}
+        exclude = ("id", "polymorphic_ctype", "hardware_ptr", "type")
+        sequence = ("name", )
     
     name = tables.Column(linkify=True)
 
@@ -97,8 +97,8 @@ class SBCTable(tables.Table):
     class Meta:
         model = SBC
         attrs = {"class": "table table-hover"}
-        exclude = {"id", "usage"}
-        sequence = {"type"}
+        exclude = ("id", "usage", )
+        sequence = ("type", )
     
     model = tables.Column(linkify=True)
 
@@ -106,7 +106,7 @@ class PeripheralTable(tables.Table):
     class Meta:
         model = Peripheral
         attrs = {"class": "table table-hover"}
-        exclude = ("id", "brand", "model", "image_1", "image_2", "image_3")
+        exclude = ("id", "brand", "model", "polymorphic_ctype", "hardware_ptr", )
 
     name = tables.Column(linkify=True)
 
@@ -114,7 +114,7 @@ class CableTable(tables.Table):
     class Meta:
         model = Cable
         attrs = {"class": "table table-hover"}
-        sequence = {"name", "type"}
-        exclude = ("id", "image_1", "image_2")
+        exclude = ("id", "brand", "model", "polymorphic_ctype", "hardware_ptr", )
+        sequence = ("name", "type", "interface_a", "interface_b", "quantity", )
     
     name = tables.Column(linkify=True)

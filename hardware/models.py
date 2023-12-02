@@ -1,8 +1,8 @@
 from django.db import models
-from polymorphic.models import PolymorphicModel
 from multiselectfield import MultiSelectField
+from polymorphic.models import PolymorphicModel
 from .interfaces import *
-import os
+import os.path
 
 def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display
@@ -36,8 +36,21 @@ def HumanReadable(calc, value, ram_type):
         return RamSpeed()
     else:
         return 'None'
+    
+def get_upload_path(instance, filename):
+    model = instance.part.__class__._meta.verbose_name_plural
+    name = instance.part.name
+    brand = instance.part.brand
+    extension = os.path.splitext(filename)[1]
+    return f'{model}/{brand}_{name}/{instance.name}{extension}'
 
-class FormFactor(models.TextChoices):
+class FormFactor(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f'{self.name}'
+
+class FormFactorOld(models.TextChoices):
     # Both motherboards and cases should have access to the same
     # form factors so this is global
         AT = 'AT', 'AT'
@@ -48,42 +61,23 @@ class FormFactor(models.TextChoices):
         ITX = 'ITX', 'Mini ITX'
         PROP = 'PROP', 'Proprietary'
 
-def get_upload_path(instance, filename):
-    model = instance.album.type
-    name = instance.album.name
-    extension = os.path.splitext(filename)[1]
-    return f'{model}/{name}/{instance.name}{extension}'
-
 class Hardware(PolymorphicModel):
-    shortname = 'Hardware'
-
-class Part(Hardware):
-    shortname = 'Part'
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
+    brand = models.CharField(max_length=200, null=True, blank=True)
+    model = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
-class ImageAlbum(models.Model):
-    name = models.CharField(max_length=200)
-    model = models.OneToOneField(Hardware, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        def __str__(self):
-            return f'{self.model.shortname} [{self.model.pk}]: {self.name}'
-
 class Image(models.Model):
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='images')
-    album = models.ForeignKey(ImageAlbum, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=get_upload_path)
+    part = models.ForeignKey(Hardware, related_name='images', on_delete=models.CASCADE)
 
-class CPU(Part):
+class CPU(Hardware):
     speed = models.IntegerField()
     socket = models.CharField(max_length=200)
     cores = models.IntegerField()
     hyperthreading = models.BooleanField()
     cpu_world = models.TextField(null=True, blank=True)
-
     shortname = 'CPU'
 
     def get_absolute_url(self):
@@ -137,7 +131,7 @@ class RAM(models.Model):
         verbose_name = 'RAM'
         verbose_name_plural = 'RAM'
 
-class GPU(Part):
+class GPU(Hardware):
     gpu_brand = models.CharField(max_length=32, verbose_name='GPU')
     interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
     mda = models.IntegerField(default=0, verbose_name='MDA Ports')
@@ -166,7 +160,7 @@ class GPU(Part):
         verbose_name = 'GPU'
         verbose_name_plural = 'GPUs'
 
-class SoundCard(Part):
+class SoundCard(Hardware):
     sb = models.CharField(max_length=200, verbose_name='SB Compatibility')
     interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
 
@@ -177,8 +171,8 @@ class SoundCard(Part):
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.name)
-    
-class ExpansionCard(Part):
+
+class ExpansionCard(Hardware):
     interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
     io_panel = models.CharField(max_length=255, null=True, blank=True, verbose_name='IO Panel (comma separated)')
 
@@ -189,8 +183,8 @@ class ExpansionCard(Part):
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.name)
-
-class NIC(Part):
+    
+class NIC(Hardware):
     class Speed(models.TextChoices):
         A = 'A'
         B = 'B'
@@ -223,9 +217,8 @@ class NIC(Part):
         verbose_name = 'NIC'
         verbose_name_plural = 'NICs'
 
-class Motherboard(Part):
-    name = None
-    form_factor = models.CharField(max_length=6, choices=FormFactor.choices, default=FormFactor.ATX)
+class Motherboard(Hardware):
+    form_factor = models.ForeignKey(FormFactor, on_delete=models.SET_NULL, null=True)
     socket = models.CharField(max_length=200)
     isa = models.IntegerField(default=0, verbose_name='8-bit ISA Slots')
     isa16 = models.IntegerField(default=0, verbose_name='16-bit ISA Slots')
@@ -246,7 +239,7 @@ class Motherboard(Part):
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
 
-class PSU(Part):
+class PSU(Hardware):
     class Spec(models.TextChoices):
         PROP = 'PROP', 'Proprietary'
         AT = 'AT', 'AT'
@@ -254,7 +247,6 @@ class PSU(Part):
         ATX24 = 'ATX24', '24-pin ATX'
         ATX2_4 = 'ATX2_4', '20+4-pin ATX'
 
-    name = None
     wattage  = models.IntegerField()
     spec = models.CharField(max_length=6, choices=Spec.choices, default=Spec.AT)
     minus5v = models.BooleanField(verbose_name='-5v rail')
@@ -278,7 +270,7 @@ class PSU(Part):
         verbose_name = 'PSU'
         verbose_name_plural = 'PSUs'
 
-class Drive(Part):
+class Drive(Hardware):
     class Type(models.TextChoices):
         FLOPPY5 = 'FLOPPY5', '5.25" Floppy'
         FLOPPY3 = 'FLOPPY3', '3.5" Floppy'
@@ -301,9 +293,8 @@ class Drive(Part):
     def __str__(self):
         return self.name
 
-class Case(Part):
-    name = None
-    mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
+class Case(Hardware):
+    mb_support = models.ManyToManyField(FormFactor, verbose_name='Motherboard Compatibility')
 
     shortname = 'Case'
 
@@ -316,89 +307,7 @@ class Case(Part):
     class Meta:
         verbose_name = 'Case'
 
-class System(Hardware):
-    name = models.CharField(max_length=200)
-    os = models.CharField(max_length=200, blank=True, verbose_name='Operating System')
-    cpu1 = models.OneToOneField(CPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpu1', verbose_name='CPU')
-    cpu2 = models.OneToOneField(CPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpu2', verbose_name='CPU')
-    ram1 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram1', verbose_name='RAM')
-    ram2 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram2', verbose_name='RAM')
-    ram3 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram3', verbose_name='RAM')
-    ram4 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram4', verbose_name='RAM')
-    ram5 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram5', verbose_name='RAM')
-    ram6 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram6', verbose_name='RAM')
-    ram7 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram7', verbose_name='RAM')
-    ram8 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram8', verbose_name='RAM')
-    ram9 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram9', verbose_name='RAM')
-    ram10 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram10', verbose_name='RAM')
-    ram11 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram11', verbose_name='RAM')
-    ram12 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram12', verbose_name='RAM')
-    ram13 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram13', verbose_name='RAM')
-    ram14 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram14', verbose_name='RAM')
-    ram15 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram15', verbose_name='RAM')
-    ram16 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram16', verbose_name='RAM')
-    motherboard = models.OneToOneField(Motherboard, on_delete=models.SET_NULL, null=True, blank=True, related_name='motherboard')
-    gpu1 = models.OneToOneField(GPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpu1', verbose_name='GPU')
-    gpu2 = models.OneToOneField(GPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpu2', verbose_name='GPU')
-    soundcard1 = models.OneToOneField(SoundCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcard1', verbose_name='Sound Card')
-    soundcard2 = models.OneToOneField(SoundCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcard2', verbose_name='Sound Card')
-    nic = models.OneToOneField(NIC, on_delete=models.SET_NULL, null=True, blank=True, related_name='nic', verbose_name='NIC')
-    expansion1 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion1', verbose_name='Expansion Card')
-    expansion2 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion2', verbose_name='Expansion Card')
-    expansion3 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion3', verbose_name='Expansion Card')
-    expansion4 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion4', verbose_name='Expansion Card')
-    expansion5 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion5', verbose_name='Expansion Card')
-    expansion6 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion6', verbose_name='Expansion Card')
-    psu = models.OneToOneField(PSU, on_delete=models.SET_NULL, null=True, blank=True, related_name='psu', verbose_name='PSU')
-    drive1 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive1', verbose_name='Drive')
-    drive2 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive2', verbose_name='Drive')
-    drive3 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive3', verbose_name='Drive')
-    drive4 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive4', verbose_name='Drive')
-    drive5 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive5', verbose_name='Drive')
-    drive6 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive6', verbose_name='Drive')
-    drive7 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive7', verbose_name='Drive')
-    drive8 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive8', verbose_name='Drive')
-    drive9 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive9', verbose_name='Drive')
-    drive10 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive10', verbose_name='Drive')
-    drive11 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive11', verbose_name='Drive')
-    drive12 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive12', verbose_name='Drive')
-    case = models.OneToOneField(Case, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
-    notes = models.TextField(blank=True, null=True)
-
-    shortname = 'System'
-
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return "/systems/%i" % self.id
-
-    def get_ram(self): 
-        # Loops through all RAM fields in order to add up total
-        # then adds on RAM type/speed (even though this could technically be different, in my use it wont come up)
-        # This function is used on system detail page to show total ram, rather than potentially many different ram
-        # sticks (all likely to be the same) in a list
-        fields = (self.ram1, self.ram2, self.ram3, self.ram4, self.ram5, self.ram6, self.ram7, self.ram8,
-        self.ram9, self.ram10, self.ram11, self.ram12, self.ram13, self.ram14, self.ram15, self.ram16)
-        ram = 0
-        for f in fields:
-            if f:
-                ram += f.size
-        if ram:
-            return '{} {} {}'.format(
-                HumanReadable('size', ram, ''),
-                HumanReadable('ram', self.ram1.speed, self.ram1.get_type_display()),
-                self.ram1.get_type_display()
-                )
-        else:
-            return 0
-        
-    class Meta:
-        verbose_name = 'System'
-        verbose_name_plural = 'Systems'
-
-class MicroProp(Part):
+class MicroProp(Hardware):
     class Type(models.TextChoices):
         MICRO = 'MICRO', 'Microcomputer'
         PROP = 'PROP', 'Proprietary'
@@ -417,13 +326,11 @@ class MicroProp(Part):
         verbose_name = 'Microcomputer/Proprietary System'
         verbose_name_plural = 'Microcomputers/Proprietary Systems'
 
-class SBC(Hardware):
+class SBC(models.Model):
     type = models.CharField(max_length=200)
     model = models.CharField(max_length=200)
     qty = models.IntegerField(default=1)
     usage = models.TextField(null=True, blank=True)
-
-    shortname = 'SBC'
 
     def get_absolute_url(self):
         return "/sbc/%i" % self.id
@@ -435,7 +342,7 @@ class SBC(Hardware):
         verbose_name = 'Single-board Computer'
         verbose_name_plural = 'Single-board Computers'
 
-class Peripheral(Part):
+class Peripheral(Hardware):
     class Type(models.TextChoices):
         MOUSE = 'M', 'Mouse'
         KB = 'KB', 'Keyboard'
@@ -474,11 +381,9 @@ class Cable(Hardware):
         ADAPT = 'ADAPT', 'Adapter'
 
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.CABLE)
-    name = models.CharField(max_length=200)
     interface_a = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface A")
     interface_b = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface B")
     quantity = models.IntegerField(default=1)
-    notes = models.TextField(null=True, blank=True)
 
     shortname = 'Cable'
 

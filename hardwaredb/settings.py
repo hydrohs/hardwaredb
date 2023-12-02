@@ -34,17 +34,17 @@ DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 
 INSTALLED_APPS = [
     'hardware.apps.HardwareConfig',
+    'baton',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'polymorphic',
     'multiselectfield',
     'django_tables2',
-    'django_unused_media',
     'django_cleanup.apps.CleanupConfig',
+    'baton.autodiscover',
 ]
 
 MIDDLEWARE = [

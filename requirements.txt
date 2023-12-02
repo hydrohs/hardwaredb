@@ -1,0 +1,8 @@
+setuptools
+django
+django-polymorphic
+django-tables2
+django-multiselectfield
+django-cleanup
+Pillow
+django-baton

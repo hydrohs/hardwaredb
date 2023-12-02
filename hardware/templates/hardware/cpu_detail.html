@@ -8,9 +8,9 @@
     {{ cpu.notes }}
   </div>
   <div class="col-sm">
-    {% if cpu.album %}
+    {% if cpu.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="cpu-gallery">
-      {% for image in cpu.album.images.all %}
+      {% for image in cpu.images.all %}
       <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
         target="_blank">
         <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
