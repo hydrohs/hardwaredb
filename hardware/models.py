@@ -39,10 +39,11 @@ def HumanReadable(calc, value, ram_type):
     
 def get_upload_path(instance, filename):
     model = instance.part.__class__._meta.verbose_name_plural
-    name = instance.part.name
     brand = instance.part.brand
+    name = instance.part.model
+    pk = instance.part.pk
     extension = os.path.splitext(filename)[1]
-    return f'{model}/{brand}_{name}/{instance.name}{extension}'
+    return f'{model}/{brand}_{name}_{pk}/{instance.name}{extension}'
 
 class FormFactor(models.Model):
     name = models.CharField(max_length=200)
