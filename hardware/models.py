@@ -38,12 +38,12 @@ def HumanReadable(calc, value, ram_type):
         return 'None'
     
 def get_upload_path(instance, filename):
-    model = instance.part.__class__._meta.verbose_name_plural
+    base = instance.part.upload_base
     brand = instance.part.brand
-    name = instance.part.model
+    model = instance.part.model
     pk = instance.part.pk
     extension = os.path.splitext(filename)[1]
-    return f'{model}/{brand}_{name}_{pk}/{instance.name}{extension}'
+    return f'{base}/{brand}_{model}_{pk}/{instance.name}{extension}'
 
 class FormFactor(models.Model):
     name = models.CharField(max_length=200)
@@ -79,7 +79,8 @@ class CPU(Hardware):
     cores = models.IntegerField()
     hyperthreading = models.BooleanField()
     cpu_world = models.TextField(null=True, blank=True)
-    shortname = 'CPU'
+
+    upload_base = 'cpus'
 
     def get_absolute_url(self):
         return "/cpus/%i" % self.id
@@ -149,7 +150,7 @@ class GPU(Hardware):
     minidp = models.IntegerField(default=0, verbose_name='Mini DisplayPort Ports')
     other = models.IntegerField(default=0, verbose_name='Other Ports (Use notes)')
 
-    shortname = 'GPU'
+    upload_base = 'gpus'
 
     def get_absolute_url(self):
         return "/gpus/%i" % self.id
@@ -165,7 +166,7 @@ class SoundCard(Hardware):
     sb = models.CharField(max_length=200, verbose_name='SB Compatibility')
     interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
 
-    shortname = 'Sound'
+    upload_base = 'sound_cards'
 
     def get_absolute_url(self):
         return "/sound_cards/%i" % self.id
@@ -177,7 +178,7 @@ class ExpansionCard(Hardware):
     interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
     io_panel = models.CharField(max_length=255, null=True, blank=True, verbose_name='IO Panel (comma separated)')
 
-    shortname = 'Expansion'
+    upload_base = 'expansion_cards'
 
     def get_absolute_url(self):
         return "/expansion_cards/%i" % self.id
@@ -206,7 +207,7 @@ class NIC(Hardware):
     bnc = models.IntegerField(default=0, verbose_name='BNC Ports')
     tp = models.IntegerField(default=0, verbose_name='Ethernet Ports')
 
-    shortname = 'NIC'
+    upload_base = 'nics'
 
     def get_absolute_url(self):
         return "/nics/%i" % self.id
@@ -232,7 +233,7 @@ class Motherboard(Hardware):
     pcie16 = models.IntegerField(default=0, verbose_name='PCIe x16 Slots')
     ram = models.IntegerField(default=0, verbose_name='RAM Slots')
 
-    shortname = 'MB'
+    upload_base = 'motherboards'
 
     def get_absolute_url(self):
         return "/motherboards/%i" % self.id
@@ -259,7 +260,7 @@ class PSU(Hardware):
     pcie6pin = models.IntegerField(default=0, verbose_name='6-pin PCIe Connectors')
     pcie8pin = models.IntegerField(default=0, verbose_name='8-pin PCIe Connectors')
 
-    shortname = 'PSU'
+    upload_base = 'psus'
 
     def get_absolute_url(self):
         return "/psus/%i" % self.id
@@ -286,7 +287,7 @@ class Drive(Hardware):
     interface = models.CharField(max_length=20, choices=Drives.choices, default=Drives.FLOPPYEDGE)
     capacity = models.IntegerField(blank=True, null=True, verbose_name='Capacity (MB)')
 
-    shortname = 'Drive'
+    upload_base= 'drives'
 
     def get_absolute_url(self):
         return "/drives/%i" % self.id
@@ -297,7 +298,7 @@ class Drive(Hardware):
 class Case(Hardware):
     mb_support = models.ManyToManyField(FormFactor, verbose_name='Motherboard Compatibility')
 
-    shortname = 'Case'
+    upload_base = 'cases'
 
     def get_absolute_url(self):
         return "/cases/%i" % self.id
@@ -315,7 +316,7 @@ class MicroProp(Hardware):
 
     type = models.CharField(max_length=20, choices=Type.choices, default=Type.PROP)
 
-    shortname = 'Micro/Prop'
+    upload_base = 'micros_proprietary'
 
     def get_absolute_url(self):
         return "/microprop/%i" % self.id
@@ -363,7 +364,7 @@ class Peripheral(Hardware):
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.MOUSE)
     interface = MultiSelectField(choices=Peripherals.choices, default=Peripherals.USB)
 
-    shortname = 'Peripheral'
+    upload_base = 'peripherals'
 
     def get_absolute_url(self):
         return "/peripherals/%i" % self.id
@@ -386,7 +387,7 @@ class Cable(Hardware):
     interface_b = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface B")
     quantity = models.IntegerField(default=1)
 
-    shortname = 'Cable'
+    upload_base = 'cables'
 
     def get_absolute_url(self):
         return "/cables/%i" % self.id
