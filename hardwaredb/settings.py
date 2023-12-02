@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'polymorphic',
     'multiselectfield',
     'django_tables2',
     'django_unused_media',

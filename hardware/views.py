@@ -4,7 +4,7 @@ from django_tables2 import SingleTableView
 from .models import *
 from .tables import *
 
-def index(requet):
+def index(request):
     # Count number of objects for all classes
     num_cpus = CPU.objects.count()
     num_ram = RAM.objects.count()
@@ -36,7 +36,7 @@ def index(requet):
         'num_cables': num_cables,
     }
 
-    return render(requet, 'hardware/index.html', context=context)
+    return render(request, 'hardware/index.html', context=context)
 
 class CPUDetail(DetailView):
     model = CPU
