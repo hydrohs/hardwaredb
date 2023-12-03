@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from .models import Image, FormFactor, CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, PSU, Drive, Case, MicroProp, SBC, Peripheral, Cable
+from .models import *
 
 admin.site.register(RAM)
 admin.site.register(SBC)
 admin.site.register(FormFactor)
+admin.site.register(Slot)
+admin.site.register(DriveInterface)
+admin.site.register(Port)
+admin.site.register(PeripheralType)
+admin.site.register(CableType)
 
 class ImageInline(admin.StackedInline):
     model = Image

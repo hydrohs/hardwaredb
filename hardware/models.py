@@ -51,17 +51,6 @@ class FormFactor(models.Model):
     def __str__(self):
         return f'{self.name}'
 
-class FormFactorOld(models.TextChoices):
-    # Both motherboards and cases should have access to the same
-    # form factors so this is global
-        AT = 'AT', 'AT'
-        BABY_AT = 'BABYAT', 'Baby AT'
-        ATX = 'ATX', 'ATX'
-        EATX = 'EATX', 'E-ATX'
-        MATX = 'MATX', 'Micro ATX'
-        ITX = 'ITX', 'Mini ITX'
-        PROP = 'PROP', 'Proprietary'
-
 class Hardware(PolymorphicModel):
     brand = models.CharField(max_length=200, null=True, blank=True)
     model = models.CharField(max_length=200, null=True, blank=True)
@@ -135,7 +124,7 @@ class RAM(models.Model):
 
 class GPU(Hardware):
     gpu_brand = models.CharField(max_length=32, verbose_name='GPU')
-    interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
+    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
     mda = models.IntegerField(default=0, verbose_name='MDA Ports')
     cga = models.IntegerField(default=0, verbose_name='CGA Ports')
     composite = models.IntegerField(default=0, verbose_name = 'Composite Ports')
@@ -164,7 +153,7 @@ class GPU(Hardware):
 
 class SoundCard(Hardware):
     sb = models.CharField(max_length=200, verbose_name='SB Compatibility')
-    interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
+    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
 
     upload_base = 'sound_cards'
 
@@ -175,7 +164,7 @@ class SoundCard(Hardware):
         return '{} {}'.format(self.brand, self.name)
 
 class ExpansionCard(Hardware):
-    interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
+    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
     io_panel = models.CharField(max_length=255, null=True, blank=True, verbose_name='IO Panel (comma separated)')
 
     upload_base = 'expansion_cards'
@@ -202,7 +191,7 @@ class NIC(Hardware):
     
     wireless = models.BooleanField()
     speed = models.CharField(max_length=7, choices=Speed.choices, default=Speed.TEN)
-    interface = models.CharField(max_length=6, choices=Slots.choices, default=Slots.ISA)
+    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
     aui = models.IntegerField(default=0, verbose_name='AUI Ports')
     bnc = models.IntegerField(default=0, verbose_name='BNC Ports')
     tp = models.IntegerField(default=0, verbose_name='Ethernet Ports')
@@ -284,7 +273,7 @@ class Drive(Hardware):
         SSD = 'SSD', 'SSD'
     
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.FLOPPY5)
-    interface = models.CharField(max_length=20, choices=Drives.choices, default=Drives.FLOPPYEDGE)
+    interface = models.ForeignKey(DriveInterface, on_delete=models.SET_NULL, null=True)
     capacity = models.IntegerField(blank=True, null=True, verbose_name='Capacity (MB)')
 
     upload_base= 'drives'
@@ -345,23 +334,8 @@ class SBC(models.Model):
         verbose_name_plural = 'Single-board Computers'
 
 class Peripheral(Hardware):
-    class Type(models.TextChoices):
-        MOUSE = 'M', 'Mouse'
-        KB = 'KB', 'Keyboard'
-        ZIP = 'ZIP', 'Zip Drive'
-        FLOPPY = 'FLOPPY', 'Floppy Drive'
-        CASS = 'CASS', 'Cassette Player'
-        HDD = 'HDD', 'Hard Drive'
-        DISC = 'DISC', 'Disc Drive'
-        GAME = 'GAME', 'Gamepad'
-        JOY = 'JOY', 'Joystick'
-        MIDI = 'MIDI', 'Midi'
-        SPK = 'SPK', 'Speakers'
-        LCD = 'LCD', 'LCD'
-        CRT = 'CRT', 'CRT'
-        OTHER = 'OTHER', 'Other'
-
-    type = models.CharField(max_length=10, choices=Type.choices, default=Type.MOUSE)
+    type = models.ForeignKey(PeripheralType, on_delete=models.SET_NULL, null=True)
+    ports = models.ManyToManyField(Port)
     interface = MultiSelectField(choices=Peripherals.choices, default=Peripherals.USB)
 
     upload_base = 'peripherals'
@@ -377,12 +351,8 @@ class Peripheral(Hardware):
         verbose_name_plural = 'Peripherals'
 
 class Cable(Hardware):
-    class Type(models.TextChoices):
-        CABLE = 'CABLE', 'Cable'
-        IO = 'IO', 'I/O Bracket'
-        ADAPT = 'ADAPT', 'Adapter'
-
-    type = models.CharField(max_length=10, choices=Type.choices, default=Type.CABLE)
+    type = models.ForeignKey(CableType, on_delete=models.SET_NULL, null=True)
+    ports = models.ManyToManyField(Port)
     interface_a = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface A")
     interface_b = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface B")
     quantity = models.IntegerField(default=1)
@@ -393,7 +363,7 @@ class Cable(Hardware):
         return "/cables/%i" % self.id
 
     def __str__(self):
-        return '{} to {} {}'.format(self.interface_a, self.interface_b, self.get_type_display())
+        return f'{self.interface_a} to {self.interface_b} {self.type}'
 
     class Meta:
         verbose_name = 'Cable, Adapter, I/O Bracket'

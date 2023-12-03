@@ -2,34 +2,56 @@ from django.db import models
 
 # Text choices for various interfaces shared between hardware classes
 
-class Slots(models.TextChoices):
-    ISA = 'ISA', '8-bit ISA'
-    ISA16 = 'ISA16', '16-bit ISA'
-    VLB = 'VLB', 'VLB'
-    PCI = 'PCI', 'PCI'
-    PCIX32 = 'PCIX32', 'PCI-X 32-bit'
-    PCIX64 = 'PCIX64', 'PCI-X 64-bit'
-    PCMCIA = 'PCMCIA', 'PCMCIA'
-    AGP = 'AGP', 'AGP'
-    AGP2 = 'AGP2', 'AGP 2x'
-    AGP4 = 'AGP4', 'AGP 4x'
-    AGP8 = 'AGP8', 'AGP 8x'
-    PCIE1 = 'PCIE1', 'PCIe x1'
-    PCIE4 = 'PCIE4', 'PCIe x4'
-    PCIE8 = 'PCIE8', 'PCIe x8'
-    PCIE16 = 'PCIE16', 'PCIe x16'
-    PCIEM230 = 'M2', 'M.2 2230'
+class Slot(models.Model):
+    name = models.CharField(max_length=64)
 
-class Drives(models.TextChoices):
-    FLOPPYEDGE = 'FLOPPYEDGE', '34-Pin Floppy Edge'
-    FLOPPY = 'FLOPPY', '34-Pin Floppy'
-    APPLE = 'APPLE', 'Apple 20-Pin'
-    IDE = 'IDE', 'IDE'
-    SCSI = 'SCSI', 'SCSI'
-    SATA = 'SATA', 'SATA'
-    M240 = 'M240', 'M.2 2240'
-    M280 = 'M280', 'M.2 2280'
+    def __str__(self):
+        return f'{self.name}'
 
+    class Meta:
+        verbose_name = 'Slot'
+        verbose_name_plural = 'Slots'
+
+class DriveInterface(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f'{self.name}'
+    
+    class Meta:
+        verbose_name = 'Drive Interface'
+        verbose_name_plural = 'Drive Interfaces'
+
+class Port(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f'{self.name}'
+    
+    class Meta:
+        verbose_name = 'Port'
+        verbose_name_plural = 'Ports'
+
+class PeripheralType(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f'{self.name}'
+    
+    class Meta:
+        verbose_name = 'Peripheral Type'
+        verbose_name_plural = 'Peripheral Types'
+
+class CableType(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f'{self.name}'
+    
+    class Meta:
+        verbose_name = 'Cable Type'
+        verbose_name_plural = 'Cable Types'
+        
 class Peripherals(models.TextChoices):
     SERIAL = 'SERIAL', 'Serial'
     PARALLEL = 'PARALLEL', 'Parallel'

@@ -59,7 +59,6 @@ class GPUDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(GPUDetail, self).get_context_data(**kwargs)
-        context['interface'] = context['object'].get_interface_display()
 
         port_type = {'MDA': context['object'].mda,
         'CGA': context['object'].cga,
@@ -250,13 +249,6 @@ class PeripheralList(SingleTableView):
 class PeripheralDetail(DetailView):
     model = Peripheral
 
-    def get_context_data(self, **kwargs):
-        context = super(PeripheralDetail, self).get_context_data(**kwargs)
-        context['type'] = context['object'].get_type_display()
-        context['interface'] = context['object'].get_interface_display()
-        return context
-
-
 class CableList(SingleTableView):
     model = Cable
     table_class = CableTable
@@ -264,8 +256,3 @@ class CableList(SingleTableView):
 
 class CableDetail(DetailView):
     model = Cable
-
-    def get_context_data(self, **kwargs):
-        context = super(CableDetail, self).get_context_data(**kwargs)
-        context['type'] = context['object'].get_type_display()
-        return context
