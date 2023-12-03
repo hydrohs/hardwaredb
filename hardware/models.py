@@ -352,9 +352,8 @@ class Peripheral(Hardware):
 
 class Cable(Hardware):
     type = models.ForeignKey(CableType, on_delete=models.SET_NULL, null=True)
-    ports = models.ManyToManyField(Port)
-    interface_a = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface A")
-    interface_b = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface B")
+    connectors_a = models.ManyToManyField(Port, related_name='cable_a', verbose_name='Connector(s) (A Side)')
+    connectors_b = models.ManyToManyField(Port, related_name='cable_b', verbose_name='Connector(s) (B Side)')
     quantity = models.IntegerField(default=1)
 
     upload_base = 'cables'
@@ -362,8 +361,13 @@ class Cable(Hardware):
     def get_absolute_url(self):
         return "/cables/%i" % self.id
 
-    def __str__(self):
-        return f'{self.interface_a} to {self.interface_b} {self.type}'
+    def __str__(self):    
+        connectors_a = ', '.join([str(i) for i in self.connectors_a.all()])
+        connectors_b = ', '.join([str(i) for i in self.connectors_b.all()])
+        if ( connectors_a == connectors_b) or (self.type.id == 2):
+            return f'{connectors_a} {self.type}'
+        else:
+            return f'{connectors_a} to {connectors_b} {self.type}'
 
     class Meta:
         verbose_name = 'Cable, Adapter, I/O Bracket'

@@ -54,11 +54,13 @@ class CaseAdmin(admin.ModelAdmin):
 @admin.register(Peripheral)
 class PeripheralAdmin(admin.ModelAdmin):
     inlines = (ImageInline, )
+    filter_horizontal = ['ports', ]
 
 @admin.register(Cable)
 class CableAdmin(admin.ModelAdmin):
     inlines = (ImageInline, )
     exclude = [ 'brand', 'model', ]
+    filter_horizontal = ['connectors_a', 'connectors_b', ]
 
 @admin.register(MicroProp)
 class MicroPropAdmin(admin.ModelAdmin):
