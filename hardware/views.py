@@ -16,6 +16,7 @@ def index(requet):
     num_psus = PSU.objects.count()
     num_drives = Drive.objects.count()
     num_cases = Case.objects.count()
+    num_systems = System.objects.count() + MicroProp.objects.count()
     num_periphs = Peripheral.objects.count()
     num_cables = Cable.objects.count()
 
@@ -30,6 +31,7 @@ def index(requet):
         'num_psus': num_psus,
         'num_drives': num_drives,
         'num_cases': num_cases,
+        'num_systems': num_systems,
         'num_periphs': num_periphs,
         'num_cables': num_cables,
     }
@@ -213,6 +215,28 @@ class CaseList(SingleTableView):
 
 class CaseDetail(DetailView):
     model = Case
+
+class SystemList(ListView):
+    model = System
+    context_object_name = 'systems'
+
+class SystemDetail(DetailView):
+    model = System
+
+    def get_context_data(self, **kwargs):
+        context = super(SystemDetail, self).get_context_data(**kwargs)
+
+        # Separate internal (HDD, SSD) from external (CD, DVD, Bluray) drives
+        context['external_drives'] = []
+        context['internal_drives'] = []
+        for drive in context['object'].drives.all():
+            if drive:
+                if drive.type in ('SSD', 'HDD'):
+                    context['internal_drives'].append(drive)
+                else:
+                    context['external_drives'].append(drive)
+
+        return context
 
 class MicroList(SingleTableView):
     model = MicroProp

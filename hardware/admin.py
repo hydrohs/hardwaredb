@@ -1,6 +1,6 @@
 from django.contrib import admin
-
 from .models import *
+from django.forms.models import BaseInlineFormSet
 
 admin.site.register(RAM)
 admin.site.register(SBC)
@@ -14,6 +14,24 @@ admin.site.register(CableType)
 class ImageInline(admin.StackedInline):
     model = Image
     extra = 0
+
+class CPUInline(admin.TabularInline):
+    model = CPU
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class RAMInline(admin.TabularInline):
+    model = RAM
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+@admin.register(System)
+class SystemAdmin(admin.ModelAdmin):
+    inlines = (CPUInline, RAMInline, ImageInline, )
+    fields = [ 'name', 'os', 'notes', ]
+    exclude = [ 'brand', 'model', ]
 
 @admin.register(CPU)
 class CPUAdmin(admin.ModelAdmin):

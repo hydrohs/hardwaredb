@@ -61,12 +61,39 @@ class Image(models.Model):
     image = models.ImageField(upload_to=get_upload_path)
     part = models.ForeignKey(Hardware, related_name='images', on_delete=models.CASCADE)
 
+class System(Hardware):
+    os = models.CharField(max_length=64, verbose_name='OS')
+
+    def __str__(self):
+        return f'{self.name}'
+    
+    def get_absolute_url(self):
+        return "/systems/%i" % self.id
+    
+    def get_ram(self):
+        # Loops through all RAM fields in order to add up total
+        # then adds on RAM type/speed (even though this could technically be different, in my use it wont come up)
+        # This function is used on system detail page to show total ram, rather than potentially many different ram
+        # sticks (all likely to be the same) in a list
+        ram = 0
+        for i in self.ram.all():
+            ram += i.size
+        if ram:
+            return '{} {} {}'.format(
+                HumanReadable('size', ram, ''),
+                HumanReadable('ram', self.ram.first().speed, self.ram.first().get_type_display()),
+                self.ram.first().get_type_display()
+                )
+        else:
+            return 0
+
 class CPU(Hardware):
     speed = models.IntegerField()
     socket = models.CharField(max_length=200)
     cores = models.IntegerField()
     hyperthreading = models.BooleanField()
     cpu_world = models.TextField(null=True, blank=True)
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpus')
 
     upload_base = 'cpus'
 
@@ -105,6 +132,7 @@ class RAM(models.Model):
     size = models.IntegerField(verbose_name='Size (MB)')
     speed = models.IntegerField(verbose_name='Speed (ns or MHz)')
     ecc = models.BooleanField(verbose_name='ECC')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram')
 
     def get_absolute_url(self):
         return "/ram/%i" % self.id
@@ -137,6 +165,7 @@ class GPU(Hardware):
     dp = models.IntegerField(default=0, verbose_name='Displayport Ports')
     minidp = models.IntegerField(default=0, verbose_name='Mini DisplayPort Ports')
     other = models.IntegerField(default=0, verbose_name='Other Ports (Use notes)')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpus')
 
     upload_base = 'gpus'
 
@@ -153,6 +182,7 @@ class GPU(Hardware):
 class SoundCard(Hardware):
     sb = models.CharField(max_length=200, verbose_name='SB Compatibility')
     interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcards')
 
     upload_base = 'sound_cards'
 
@@ -165,6 +195,7 @@ class SoundCard(Hardware):
 class ExpansionCard(Hardware):
     interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
     io_panel = models.CharField(max_length=255, null=True, blank=True, verbose_name='IO Panel (comma separated)')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansioncards')
 
     upload_base = 'expansion_cards'
 
@@ -194,6 +225,7 @@ class NIC(Hardware):
     aui = models.IntegerField(default=0, verbose_name='AUI Ports')
     bnc = models.IntegerField(default=0, verbose_name='BNC Ports')
     tp = models.IntegerField(default=0, verbose_name='Ethernet Ports')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='nics')
 
     upload_base = 'nics'
 
@@ -220,6 +252,7 @@ class Motherboard(Hardware):
     pcie8 = models.IntegerField(default=0, verbose_name='PCIe x8 Slots')
     pcie16 = models.IntegerField(default=0, verbose_name='PCIe x16 Slots')
     ram = models.IntegerField(default=0, verbose_name='RAM Slots')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='motherboard')
 
     upload_base = 'motherboards'
 
@@ -247,6 +280,7 @@ class PSU(Hardware):
     cpu8pin = models.IntegerField(default=0, verbose_name='8-pin CPU Connectors')
     pcie6pin = models.IntegerField(default=0, verbose_name='6-pin PCIe Connectors')
     pcie8pin = models.IntegerField(default=0, verbose_name='8-pin PCIe Connectors')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='psu')
 
     upload_base = 'psus'
 
@@ -274,6 +308,7 @@ class Drive(Hardware):
     type = models.CharField(max_length=10, choices=Type.choices, default=Type.FLOPPY5)
     interface = models.ForeignKey(DriveInterface, on_delete=models.SET_NULL, null=True)
     capacity = models.IntegerField(blank=True, null=True, verbose_name='Capacity (MB)')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='drives')
 
     upload_base= 'drives'
 
@@ -285,6 +320,7 @@ class Drive(Hardware):
 
 class Case(Hardware):
     mb_support = models.ManyToManyField(FormFactor, verbose_name='Motherboard Compatibility')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
 
     upload_base = 'cases'
 

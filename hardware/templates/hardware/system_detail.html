@@ -5,89 +5,123 @@
 <div class="row align-items-center">
   <div class="col-sm">
     <table class="table">
+      {% if system.cpus.count > 0 %}
       <tr>
+        {% if system.cpus.count > 1 %}
+        <td><b>CPUs:</b></td>
+        {% else %}
         <td><b>CPU:</b></td>
+        {% endif %}
         <td>
-          <a href="{{ system.cpu1.get_absolute_url }}">{{ system.cpu1 }}</a> @ {{ system.cpu1.get_speed_display }}</a>
-          {% if system.cpu2 %}
-          <br>
-          <a href="{{ system.cpu2.get_absolute_url }}">{{ system.cpu2 }}</a> @ {{ system.cpu2.get_speed_display }}</a>
-          {% endif %}
-        </td>
-      </tr>
-      <tr>
-        <td><b>RAM:</b></td>
-        <td data-bs-toggle="collapse" data-bs-target="#ram-list" aria-expanded="false" aria-controls="ram-list">
-          {{ system.get_ram }}
-          {% if ram %}
-          <div class="collapse" id="ram-list">
-            <ul>
-              {% for stick in ram %}
-              <li>{{ stick }}</a></li>
-              {% endfor %}
-            </ul>
-          </div>
-          {% endif %}
-        </td>
-      </tr>
-      {% if system.motherboard %}
-      <tr>
-        <td><b>Motherboard:</b></td>
-        <td><a href="{{ system.motherboard.get_absolute_url }}">{{ system.motherboard }}</a></td>
-      </tr>
-      {% endif %}
-      {% if system.gpu1 or system.gpu2 %}
-      <tr>
-        <td><b>GPU:</b></td>
-        <td>
-          <a href="{{ system.gpu1.get_absolute_url }}">{{ system.gpu1 }}</a>
-          {% if system.gpu2 %}
-          <br>
-          <a href="{{ system.gpu2.get_absolute_url }}">{{ system.gpu2 }}</a>
-          {% endif %}
-        </td>
-      </tr>
-      {% endif %}
-      {% if system.soundcard1 or system.soundcard2 %}
-      <tr>
-        <td><b>Soundcard:</b></td>
-        <td>
-          <a href="{{ system.soundcard1.get_absolute_url }}">{{ system.soundcard1 }}</a>
-          {% if system.soundcard2 %}
-          <br>
-          <a href="{{ system.soundcard2.get_absolute_url }}">{{ system.soundcard2 }}</a>
-          {% endif %}
-        </td>
-      </tr>
-      {% endif %}
-      {% if system.nic %}
-      <tr>
-        <td><b>NIC:</b></td>
-        <td><a href="{{ system.nic.get_absolute_url }}">{{ system.nic }}</a></td>
-      </tr>
-      {% endif %}
-      {% if cards %}
-      <tr>
-        <td><b>Expansion Cards:</b></td>
-        <td>
-          {% for card in cards %}
-          <a href="{{ card.get_absolute_url }}">{{ card }}</a><br />
+          {% for cpu in system.cpus.all %}
+          <a href="{{ cpu.get_absolute_url }}">{{ cpu }}</a> @ {{ cpu.get_speed_display }}<br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.psu %}
       <tr>
-        <td><b>PSU:</b></td>
-        <td><a href="{{ system.psu.get_absolute_url }}">{{ system.psu }}</a></td>
+        <td><b>RAM:</b></td>
+        <td data-bs-toggle="collapse" data-bs-target="#ram-list" aria-expanded="false" aria-controls="ram-list">
+          {{ system.get_ram }}
+          <div class="collapse" id="ram-list">
+            <ul>
+              {% for stick in system.ram.all %}
+              <li>{{ stick }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </td>
+      </tr>
+      {% if system.motherboard.count > 0 %}
+      <tr>
+        {% if system.motherboard.count > 1 %}
+        <td><b>Motherboards:</b></td>
+        {% else %}
+        <td><b>Motherboard:</b></td>
+        {% endif %}
+        <td>
+          {% for mb in system.motherboard.all %}
+          <a href="{{ mb.get_absolute_url }}">{{ mb }}</a><br>
+          {% endfor %}
+        </td>
       </tr>
       {% endif %}
-      {% if external_drives %}
+      {% if system.gpus.count > 0 %}
+      <tr>
+        {% if system.gpus.count > 1 %}
+        <td><b>GPUs:</b></td>
+        {% else %}
+        <td><b>GPU:</b></td>
+        {% endif %}
+        <td>
+          {% for gpu in system.gpus.all %}
+          <a href="{{ gpu.get_absolute_url }}">{{ gpu }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      {% if system.soundcards.count > 0 %}
+      <tr>
+        {% if system.soundcards.count > 1 %}
+        <td><b>Sound cards:</b></td>
+        {% else %}
+        <td><b>Sound card:</b></td>
+        {% endif %}
+        <td>
+          {% for soundcard in system.soundcards.all %}
+          <a href="{{ soundcard.get_absolute_url }}">{{ soundcard }}<br>
+            {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      {% if system.nics.count > 0 %}
+      <tr>
+        {% if system.nics.count > 1 %}
+        <td><b>NICs:</b></td>
+        {% else %}
+        <td><b>NIC:</b></td>
+        {% endif %}
+        <td>
+          {% for nic in system.nics.all %}
+          <a href="{{ nic.get_absolute_url }}">{{ nic }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      {% if system.expansioncards.count > 0 %}
+      <tr>
+        {% if system.expansioncards.count > 1 %}
+        <td><b>Expansion cards:</b></td>
+        {% else %}
+        <td><b>Expansion card:</b></td>
+        {% endif %}
+        <td>
+          {% for expansioncard in system.expansioncards.all %}
+          <a href="{{ expansioncard.get_absolute_url }}">{{ expansioncard }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      {% if system.psu.count > 0 %}
+      <tr>
+        {% if system.psu.count > 1 %}
+        <td><b>PSUs:</b></td>
+        {% else %}
+        <td><b>PSU:</b></td>
+        {% endif %}
+        <td>
+          {% for psu in system.psu.all %}
+          <a href="{{ psu.get_absolute_url }}">{{ psu }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
+      {% if external_drives%}
       <tr>
         <td><b>External Drives:</b></td>
         <td>
           {% for drive in external_drives %}
-          <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br />
+          <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br>
           {% endfor %}
         </td>
       </tr>
@@ -97,15 +131,23 @@
         <td><b>Internal Drives:</b></td>
         <td>
           {% for drive in internal_drives %}
-          <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br />
+          <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.case %}
+      {% if system.case.count > 0 %}
       <tr>
+        {% if system.case.count > 1 %}
+        <td><b>Cases:</b></td>
+        {% else %}
         <td><b>Case:</b></td>
-        <td><a href="{{ system.case.get_absolute_url }}">{{ system.case }}</a></td>
+        {% endif %}
+        <td>
+          {% for case in system.case.all %}
+          <a href="{{ case.get_absolute_url }}">{{ case }}<br>
+          {% endfor %}
+        </td>
       </tr>
       {% endif %}
       {% if system.notes %}
@@ -114,62 +156,35 @@
         <td>{{ system.notes }}</a></td>
       </tr>
       {% endif %}
-    </table>
-  </div>
-  <div class="col-sm">
-    {% if system.image_1 or system.image_2 or system.image_3 %}
-    <div class="pswp-gallery pswp-gallery--single-column" id="system-gallery">
-        {% if system.image_1 %}
-        <a href="/images/{{ system.image_1 }}" 
-          data-pswp-width="{{ system.image_1.width }}" 
-          data-pswp-height="{{ system.image_1.height }}" 
-          target="_blank">
-          <img src="/images/{{ system.image_1 }}" alt="Top" width="30%"/>
-        </a>
-        {% endif %}
-        {% if system.image_2 %}
-        <a href="/images/{{ system.image_2 }}" 
-          data-pswp-width="{{ system.image_2.width }}" 
-          data-pswp-height="{{ system.image_2.height }}" 
-          target="_blank">
-          <img src="/images/{{ system.image_2 }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-        {% if system.image_3 %}
-        <a href="/images/{{ system.image_3 }}" 
-          data-pswp-width="{{ system.image_3.width }}" 
-          data-pswp-height="{{ system.image_3.height }}" 
-          target="_blank">
-          <img src="/images/{{ system.image_3 }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-        {% if system.image_4 %}
-        <a href="/images/{{ system.image_4 }}" 
-          data-pswp-width="{{ system.image_4.width }}" 
-          data-pswp-height="{{ system.image_4.height }}" 
-          target="_blank">
-          <img src="/images/{{ system.image_4 }}" alt="bottom" width="30%" />
-        </a>
+      </table>
+      </div>
+      <div class="col-sm">
+        {% if cpu.images %}
+        <div class="pswp-gallery pswp-gallery--single-column" id="cpu-gallery">
+          {% for image in cpu.images.all %}
+          <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+            target="_blank">
+            <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+          </a>
+          {% endfor %}
+        </div>
+        <script type="module">
+          // Include Lightbox 
+          import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+        
+          const lightbox = new PhotoSwipeLightbox({
+            // may select multiple "galleries"
+            gallery: '#cpu-gallery',
+        
+            // Elements within gallery (slides)
+            children: 'a',
+        
+            // setup PhotoSwipe Core dynamic import
+            pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+          });
+          lightbox.init();
+        </script>
         {% endif %}
       </div>
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
-        // may select multiple "galleries"
-        gallery: '#system-gallery',
-
-        // Elements within gallery (slides)
-        children: 'a',
-
-        // setup PhotoSwipe Core dynamic import
-        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
-        });
-        lightbox.init();
-    </script>
-    {% endif %}
-</p>
 {% endblock %}
