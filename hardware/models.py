@@ -1,5 +1,4 @@
 from django.db import models
-from multiselectfield import MultiSelectField
 from polymorphic.models import PolymorphicModel
 from .interfaces import *
 import os.path
@@ -335,8 +334,7 @@ class SBC(models.Model):
 
 class Peripheral(Hardware):
     type = models.ForeignKey(PeripheralType, on_delete=models.SET_NULL, null=True)
-    ports = models.ManyToManyField(Port)
-    interface = MultiSelectField(choices=Peripherals.choices, default=Peripherals.USB)
+    ports = models.ManyToManyField(Port, blank=True)
 
     upload_base = 'peripherals'
 
@@ -364,8 +362,10 @@ class Cable(Hardware):
     def __str__(self):    
         connectors_a = ', '.join([str(i) for i in self.connectors_a.all()])
         connectors_b = ', '.join([str(i) for i in self.connectors_b.all()])
-        if ( connectors_a == connectors_b) or (self.type.id == 2):
+        if ( connectors_a == connectors_b and self.type.id == 1) or (self.type.id == 2):
             return f'{connectors_a} {self.type}'
+        elif connectors_b == 'None':
+            return f'{connectors_a} Terminator'
         else:
             return f'{connectors_a} to {connectors_b} {self.type}'
 
