@@ -16,7 +16,7 @@ def index(requet):
     num_psus = PSU.objects.count()
     num_drives = Drive.objects.count()
     num_cases = Case.objects.count()
-    num_systems = System.objects.count() + MicroProp.objects.count()
+    num_systems = System.objects.count() + Proprietary.objects.count()
     num_periphs = Peripheral.objects.count()
     num_cables = Cable.objects.count()
 
@@ -239,23 +239,20 @@ class SystemDetail(DetailView):
         return context
 
 class MicroList(SingleTableView):
-    model = MicroProp
-    queryset = MicroProp.objects.filter(type="MICRO")
-    table_class = MicroPropTable
+    model = Micro
+    table_class = MicroTable
     template_name = 'hardware/hardware_list.html'
+
+class MicroDetail(DetailView):
+    model = Micro
 
 class PropList(SingleTableView):
-    model = MicroProp
-    queryset = MicroProp.objects.filter(type="PROP")
-    table_class = MicroPropTable
+    model = Proprietary
+    table_class = PropTable
     template_name = 'hardware/hardware_list.html'
 
-class MicroPropDetail(DetailView):
-    model = MicroProp
-    def get_context_data(self, **kwargs):
-        context = super(MicroPropDetail, self).get_context_data(**kwargs)
-        context['type'] = context['object'].get_type_display()
-        return context
+class PropDetail(DetailView):
+    model = Proprietary
 
 class SBCList(SingleTableView):
     model = SBC

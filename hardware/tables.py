@@ -84,9 +84,18 @@ class CaseTable(tables.Table):
 
     model = tables.Column(linkify=True)
 
-class MicroPropTable(tables.Table):
+class MicroTable(tables.Table):
     class Meta:
-        model = MicroProp
+        model = Micro
+        attrs = {"class": "table table-hover"}
+        exclude = ("id", "polymorphic_ctype", "hardware_ptr", "type")
+        sequence = ("name", )
+    
+    name = tables.Column(linkify=True)
+
+class PropTable(tables.Table):
+    class Meta:
+        model = Proprietary
         attrs = {"class": "table table-hover"}
         exclude = ("id", "polymorphic_ctype", "hardware_ptr", "type")
         sequence = ("name", )

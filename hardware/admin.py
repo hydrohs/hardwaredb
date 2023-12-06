@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import *
-from django.forms.models import BaseInlineFormSet
 
 admin.site.register(RAM)
 admin.site.register(SBC)
@@ -32,6 +31,11 @@ class SystemAdmin(admin.ModelAdmin):
     inlines = (CPUInline, RAMInline, ImageInline, )
     fields = [ 'name', 'os', 'notes', ]
     exclude = [ 'brand', 'model', ]
+
+@admin.register(Proprietary)
+class ProprietaryAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+    fields = [ 'brand', 'model', 'name', 'os', 'notes' ]
 
 @admin.register(CPU)
 class CPUAdmin(admin.ModelAdmin):
@@ -80,6 +84,6 @@ class CableAdmin(admin.ModelAdmin):
     exclude = [ 'brand', 'model', ]
     filter_horizontal = ['connectors_a', 'connectors_b', ]
 
-@admin.register(MicroProp)
+@admin.register(Micro)
 class MicroPropAdmin(admin.ModelAdmin):
     inlines = (ImageInline, )

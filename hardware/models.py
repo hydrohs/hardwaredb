@@ -39,10 +39,18 @@ def HumanReadable(calc, value, ram_type):
 def get_upload_path(instance, filename):
     base = instance.part.upload_base
     brand = instance.part.brand
-    model = instance.part.model
+    model = instance.part.model.replace('/', '')
+    name = instance.part.name.replace('/', '')
     pk = instance.part.pk
     extension = os.path.splitext(filename)[1]
-    return f'{base}/{brand}_{model}_{pk}/{instance.name}{extension}'
+    if 'custom' in base:
+        path = f'{base}/{name}/{instance.name}{extension}'
+    elif ('micros' in base) or ('proprietary' in base):
+        path = f'{base}/{brand}/{name}/{instance.name}{extension}'
+    else:
+        path = f'{base}/{brand}_{model}_{pk}/{instance.name}{extension}'
+
+    return path
 
 class FormFactor(models.Model):
     name = models.CharField(max_length=200)
@@ -63,6 +71,7 @@ class Image(models.Model):
 
 class System(Hardware):
     os = models.CharField(max_length=64, verbose_name='OS')
+    upload_base = 'systems/custom'
 
     def __str__(self):
         return f'{self.name}'
@@ -203,7 +212,10 @@ class ExpansionCard(Hardware):
         return "/expansion_cards/%i" % self.id
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.name)
+        if self.name is None:
+            return f'{self.brand} {self.model}'
+        else:
+            return f'{self.name}'
     
 class NIC(Hardware):
     class Speed(models.TextChoices):
@@ -333,24 +345,31 @@ class Case(Hardware):
     class Meta:
         verbose_name = 'Case'
 
-class MicroProp(Hardware):
-    class Type(models.TextChoices):
-        MICRO = 'MICRO', 'Microcomputer'
-        PROP = 'PROP', 'Proprietary'
-
-    type = models.CharField(max_length=20, choices=Type.choices, default=Type.PROP)
-
-    upload_base = 'micros_proprietary'
+class Proprietary(System):
+    upload_base = 'systems/proprietary'
 
     def get_absolute_url(self):
-        return "/microprop/%i" % self.id
+        return "/systems/%i" % self.id
 
     def __str__(self):
-        return self.name
+        return f'{self.brand} {self.name}'
     
     class Meta:
-        verbose_name = 'Microcomputer/Proprietary System'
-        verbose_name_plural = 'Microcomputers/Proprietary Systems'
+        verbose_name = 'Proprietary System'
+        verbose_name_plural = 'Proprietary Systems'
+
+class Micro(Hardware):
+    upload_base = 'systems/micros'
+
+    def get_absolute_url(self):
+        return "/micros/%i" % self.id
+
+    def __str__(self):
+        return f'{self.brand} {self.name}'
+    
+    class Meta:
+        verbose_name = 'Microcomputer'
+        verbose_name_plural = 'Microcomputers'
 
 class SBC(models.Model):
     type = models.CharField(max_length=200)
