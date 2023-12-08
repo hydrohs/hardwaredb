@@ -38,10 +38,10 @@ class ExpansionCardTable(tables.Table):
     class Meta:
         model = ExpansionCard
         attrs = {"class": "table table-hover"}
-        sequence = ("brand", "name", )
+        sequence = ("brand", "model", "name", )
         exclude = ("id", "polymorphic_ctype", "hardware_ptr", )
 
-    name = tables.Column(linkify=True)
+    model = tables.Column(linkify=True)
 
 class NICTable(tables.Table):
     class Meta:
@@ -89,16 +89,16 @@ class MicroTable(tables.Table):
         model = Micro
         attrs = {"class": "table table-hover"}
         exclude = ("id", "polymorphic_ctype", "hardware_ptr", "type")
-        sequence = ("name", )
+        sequence = ("brand", "name", )
     
     name = tables.Column(linkify=True)
 
-class PropTable(tables.Table):
+class ProprietaryTable(tables.Table):
     class Meta:
         model = Proprietary
         attrs = {"class": "table table-hover"}
         exclude = ("id", "polymorphic_ctype", "hardware_ptr", "type")
-        sequence = ("name", )
+        sequence = ("brand", "name", )
     
     name = tables.Column(linkify=True)
 
@@ -124,6 +124,6 @@ class CableTable(tables.Table):
         model = Cable
         attrs = {"class": "table table-hover"}
         exclude = ("id", "brand", "model", "polymorphic_ctype", "hardware_ptr", )
-        sequence = ("name", "type", "interface_a", "interface_b", "quantity", )
+        sequence = ("name", "type", "quantity", )
     
     name = tables.Column(linkify=True)

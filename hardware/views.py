@@ -16,7 +16,7 @@ def index(requet):
     num_psus = PSU.objects.count()
     num_drives = Drive.objects.count()
     num_cases = Case.objects.count()
-    num_systems = System.objects.count() + Proprietary.objects.count()
+    num_systems = System.objects.count() + Proprietary.objects.count() + Micro.objects.count()
     num_periphs = Peripheral.objects.count()
     num_cables = Cable.objects.count()
 
@@ -218,6 +218,7 @@ class CaseDetail(DetailView):
 
 class SystemList(ListView):
     model = System
+    queryset = System.objects.filter(brand=None)
     context_object_name = 'systems'
 
 class SystemDetail(DetailView):
@@ -246,12 +247,12 @@ class MicroList(SingleTableView):
 class MicroDetail(DetailView):
     model = Micro
 
-class PropList(SingleTableView):
+class ProprietaryList(SingleTableView):
     model = Proprietary
-    table_class = PropTable
+    table_class = ProprietaryTable
     template_name = 'hardware/hardware_list.html'
 
-class PropDetail(DetailView):
+class ProprietaryDetail(DetailView):
     model = Proprietary
 
 class SBCList(SingleTableView):

@@ -1,6 +1,6 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
-from .interfaces import *
+import choices.models as Choices
 import os.path
 
 def HumanReadable(calc, value, ram_type):
@@ -39,8 +39,8 @@ def HumanReadable(calc, value, ram_type):
 def get_upload_path(instance, filename):
     base = instance.part.upload_base
     brand = instance.part.brand
-    model = instance.part.model.replace('/', '')
-    name = instance.part.name.replace('/', '')
+    model = instance.part.model.replace('/', '') if instance.part.model else instance.part.model
+    name = instance.part.name.replace('/', '') if instance.part.name else instance.part.name
     pk = instance.part.pk
     extension = os.path.splitext(filename)[1]
     if 'custom' in base:
@@ -51,12 +51,6 @@ def get_upload_path(instance, filename):
         path = f'{base}/{brand}_{model}_{pk}/{instance.name}{extension}'
 
     return path
-
-class FormFactor(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return f'{self.name}'
 
 class Hardware(PolymorphicModel):
     brand = models.CharField(max_length=200, null=True, blank=True)
@@ -120,24 +114,8 @@ class CPU(Hardware):
         verbose_name_plural = 'CPUs'
 
 class RAM(models.Model):
-    class Type(models.TextChoices):
-        FPM = 'FPM', 'FPM'
-        EDO = 'EDO', 'EDO'
-        SDRAM = 'SDRAM', 'SDRAM'
-        DDR = 'DDR1', 'DDR'
-        DDR2 = 'DDR2', 'DDR2'
-        DDR3 = 'DDR3', 'DDR3'
-        DDR4 = 'DDR4', 'DDR4'
-        DDR5 = 'DDR5', 'DDR5'
-
-    class Interface(models.TextChoices):
-        SIMM30 = 'SIMM30', '30-pin SIMM'
-        SIMM72 = 'SIMM72', '72-pin SIMM'
-        DIMM = 'DIMM', 'DIMM'
-        SODIMM = 'SODIMM', 'SO-DIMM'
-
-    type = models.CharField(max_length=5, choices=Type.choices, default=Type.FPM)
-    interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.SIMM30)
+    type = models.ForeignKey(Choices.RAMType, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.RAMInterface, on_delete=models.SET_NULL, null=True)
     size = models.IntegerField(verbose_name='Size (MB)')
     speed = models.IntegerField(verbose_name='Speed (ns or MHz)')
     ecc = models.BooleanField(verbose_name='ECC')
@@ -151,8 +129,8 @@ class RAM(models.Model):
             is_ecc = 'ECC'
         else:
             is_ecc = ''
-        
-        return '{} {} {} {} {}'.format(HumanReadable('size', self.size, ''), HumanReadable('ram', self.speed, self.type), self.get_type_display(), is_ecc, self.get_interface_display())
+
+        return f'{HumanReadable("size", self.size, "")} {HumanReadable("ram", self.speed, self.type.name)} {self.type.name} {is_ecc} {self.interface.name}'
 
     class Meta:
         verbose_name = 'RAM'
@@ -160,7 +138,7 @@ class RAM(models.Model):
 
 class GPU(Hardware):
     gpu_brand = models.CharField(max_length=32, verbose_name='GPU')
-    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
     mda = models.IntegerField(default=0, verbose_name='MDA Ports')
     cga = models.IntegerField(default=0, verbose_name='CGA Ports')
     composite = models.IntegerField(default=0, verbose_name = 'Composite Ports')
@@ -190,7 +168,7 @@ class GPU(Hardware):
 
 class SoundCard(Hardware):
     sb = models.CharField(max_length=200, verbose_name='SB Compatibility')
-    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
     installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcards')
 
     upload_base = 'sound_cards'
@@ -202,7 +180,7 @@ class SoundCard(Hardware):
         return '{} {}'.format(self.brand, self.name)
 
 class ExpansionCard(Hardware):
-    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
     io_panel = models.CharField(max_length=255, null=True, blank=True, verbose_name='IO Panel (comma separated)')
     installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansioncards')
 
@@ -217,23 +195,10 @@ class ExpansionCard(Hardware):
         else:
             return f'{self.name}'
     
-class NIC(Hardware):
-    class Speed(models.TextChoices):
-        A = 'A'
-        B = 'B'
-        G = 'G'
-        N = 'N'
-        AC = 'AC', 'AC'
-        AX = 'AX', 'AX'
-        TEN = '10', '10 Megabit'
-        HUN = '100', '10/100 Megabit'
-        GIG = '1000', 'Gigabit'
-        TWOFIVE = '2500', '2.5 Gigabit'
-        TENG = '10G', '10 Gigabit'
-    
+class NIC(Hardware):   
     wireless = models.BooleanField()
-    speed = models.CharField(max_length=7, choices=Speed.choices, default=Speed.TEN)
-    interface = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
+    speed = models.ForeignKey(Choices.NetSpeed, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
     aui = models.IntegerField(default=0, verbose_name='AUI Ports')
     bnc = models.IntegerField(default=0, verbose_name='BNC Ports')
     tp = models.IntegerField(default=0, verbose_name='Ethernet Ports')
@@ -252,7 +217,7 @@ class NIC(Hardware):
         verbose_name_plural = 'NICs'
 
 class Motherboard(Hardware):
-    form_factor = models.ForeignKey(FormFactor, on_delete=models.SET_NULL, null=True)
+    form_factor = models.ForeignKey(Choices.FormFactor, on_delete=models.SET_NULL, null=True)
     socket = models.CharField(max_length=200)
     isa = models.IntegerField(default=0, verbose_name='8-bit ISA Slots')
     isa16 = models.IntegerField(default=0, verbose_name='16-bit ISA Slots')
@@ -275,15 +240,8 @@ class Motherboard(Hardware):
         return '{} {}'.format(self.brand, self.model)
 
 class PSU(Hardware):
-    class Spec(models.TextChoices):
-        PROP = 'PROP', 'Proprietary'
-        AT = 'AT', 'AT'
-        ATX20 = 'AXT20', '20-pin ATX'
-        ATX24 = 'ATX24', '24-pin ATX'
-        ATX2_4 = 'ATX2_4', '20+4-pin ATX'
-
     wattage  = models.IntegerField()
-    spec = models.CharField(max_length=6, choices=Spec.choices, default=Spec.AT)
+    spec = models.ForeignKey(Choices.PSUSpec, null=True, on_delete=models.SET_NULL)
     minus5v = models.BooleanField(verbose_name='-5v rail')
     molex = models.IntegerField(default=0, verbose_name='Molex Connectors')
     floppy = models.IntegerField(default=0, verbose_name='Floppy Connectors')
@@ -300,26 +258,17 @@ class PSU(Hardware):
         return "/psus/%i" % self.id
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.model)
+        return f'{self.brand} {self.model}'
     
     class Meta:
         verbose_name = 'PSU'
         verbose_name_plural = 'PSUs'
 
 class Drive(Hardware):
-    class Type(models.TextChoices):
-        FLOPPY5 = 'FLOPPY5', '5.25" Floppy'
-        FLOPPY3 = 'FLOPPY3', '3.5" Floppy'
-        ZIP = 'ZIP', 'Zip'
-        CD = 'CD', 'CD'
-        DVD = 'DVD', 'DVD'
-        BR = 'BR', 'Bluray'
-        HDD = 'HDD', 'HDD'
-        SSD = 'SSD', 'SSD'
-    
-    type = models.CharField(max_length=10, choices=Type.choices, default=Type.FLOPPY5)
-    interface = models.ForeignKey(DriveInterface, on_delete=models.SET_NULL, null=True)
+    type = models.ForeignKey(Choices.DriveType, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.DriveInterface, on_delete=models.SET_NULL, null=True)
     capacity = models.IntegerField(blank=True, null=True, verbose_name='Capacity (MB)')
+    internal = models.BooleanField(default=False)
     installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='drives')
 
     upload_base= 'drives'
@@ -331,7 +280,7 @@ class Drive(Hardware):
         return self.name
 
 class Case(Hardware):
-    mb_support = models.ManyToManyField(FormFactor, verbose_name='Motherboard Compatibility')
+    mb_support = models.ManyToManyField(Choices.FormFactor, verbose_name='Motherboard Compatibility')
     installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
 
     upload_base = 'cases'
@@ -388,8 +337,8 @@ class SBC(models.Model):
         verbose_name_plural = 'Single-board Computers'
 
 class Peripheral(Hardware):
-    type = models.ForeignKey(PeripheralType, on_delete=models.SET_NULL, null=True)
-    ports = models.ManyToManyField(Port, blank=True)
+    type = models.ForeignKey(Choices.PeripheralType, on_delete=models.SET_NULL, null=True)
+    ports = models.ManyToManyField(Choices.Port, blank=True)
 
     upload_base = 'peripherals'
 
@@ -404,9 +353,9 @@ class Peripheral(Hardware):
         verbose_name_plural = 'Peripherals'
 
 class Cable(Hardware):
-    type = models.ForeignKey(CableType, on_delete=models.SET_NULL, null=True)
-    connectors_a = models.ManyToManyField(Port, related_name='cable_a', verbose_name='Connector(s) (A Side)')
-    connectors_b = models.ManyToManyField(Port, related_name='cable_b', verbose_name='Connector(s) (B Side)')
+    type = models.ForeignKey(Choices.CableType, on_delete=models.SET_NULL, null=True)
+    connectors_a = models.ManyToManyField(Choices.Port, related_name='cable_a', verbose_name='Connector(s) (A Side)')
+    connectors_b = models.ManyToManyField(Choices.Port, related_name='cable_b', verbose_name='Connector(s) (B Side)')
     quantity = models.IntegerField(default=1)
 
     upload_base = 'cables'

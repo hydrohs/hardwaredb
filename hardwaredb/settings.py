@@ -34,6 +34,7 @@ DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 
 INSTALLED_APPS = [
     'hardware.apps.HardwareConfig',
+    'choices.apps.ChoicesConfig',
     'baton',
     'django.contrib.admin',
     'django.contrib.auth',
