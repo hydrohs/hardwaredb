@@ -59,30 +59,6 @@ class GPUList(SingleTableView):
 class GPUDetail(DetailView):
     model = GPU
 
-    def get_context_data(self, **kwargs):
-        context = super(GPUDetail, self).get_context_data(**kwargs)
-
-        port_type = {'MDA': context['object'].mda,
-        'CGA': context['object'].cga,
-        'Composite': context['object'].composite,
-        'VGA': context['object'].vga,
-        'S-Video': context['object'].svideo,
-        'Component': context['object'].component,
-        'DVI': context['object'].dvi,
-        'HDMI': context['object'].hdmi,
-        'Mini HDMI': context['object'].minihdmi,
-        'Micro HDMI': context['object'].microhdmi,
-        'DisplayPort': context['object'].dp,
-        'Mini DisplayPort': context['object'].minidp}
-
-        ports = []
-        for key, value in port_type.items():
-            if value != 0:
-                ports.append('{} ({})'.format(key, value))
-
-        context['ports'] = ', '.join(ports)
-        return context
-
 class SoundCardList(SingleTableView):
     model = SoundCard
     table_class = SoundCardTable
@@ -90,11 +66,6 @@ class SoundCardList(SingleTableView):
 
 class SoundCardDetail(DetailView):
     model = SoundCard
-
-    def get_context_data(self, **kwargs):
-        context = super(SoundCardDetail, self).get_context_data(**kwargs)
-        context['interface'] = context['object'].get_interface_display()
-        return context
 
 class ExpansionCardList(SingleTableView):
     model = ExpansionCard
@@ -105,11 +76,6 @@ class ExpansionCardDetail(DetailView):
     model = ExpansionCard
     template_name = 'hardware/expansion_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(ExpansionCardDetail, self).get_context_data(**kwargs)
-        context['interface'] = context['object'].get_interface_display()
-        return context
-
 class NICList(SingleTableView):
     model = NIC
     table_class = NICTable
@@ -117,24 +83,6 @@ class NICList(SingleTableView):
 
 class NICDetail(DetailView):
     model = NIC
-
-    def get_context_data(self, **kwargs):
-        context = super(NICDetail, self).get_context_data(**kwargs)
-        context['interface'] = context['object'].get_interface_display()
-        port_type = {'AUI': context['object'].aui,
-        'BNC': context['object'].bnc,
-        'Ethernet': context['object'].tp}
-
-        ports = []
-        for key, value in port_type.items():
-            if value != 0:
-                ports.append('{} ({})'.format(key, value))
-
-        context['ports'] = ', '.join(ports)
-
-        context['speed'] = context['object'].get_speed_display()
-        context['ports'] = ', '.join(ports)
-        return context
 
 class MotherboardList(SingleTableView):
     model = Motherboard
@@ -144,27 +92,6 @@ class MotherboardList(SingleTableView):
 class MotherboardDetail(DetailView):
     model = Motherboard
 
-    def get_context_data(self, **kwargs):
-        context = super(MotherboardDetail, self).get_context_data(**kwargs)
-        context['form_factor'] = context['object'].get_form_factor_display()
-        slot_type = {'8-Bit ISA': context['object'].isa,
-        '16-Bit ISA': context['object'].isa16,
-        'VLB': context['object'].vlb,
-        'PCI': context['object'].pci,
-        'AGP': context['object'].agp,
-        'PCIe x1': context['object'].pcie1,
-        'PCIe x4': context['object'].pcie4,
-        'PCIe x8': context['object'].pcie8,
-        'PCIe x16': context['object'].pcie16}
-
-        slots = []
-        for key, value in slot_type.items():
-            if value != 0:
-                slots.append('{} ({})'.format(key, value))
-
-        context['slots'] = ', '.join(slots)
-        return context
-
 class PSUList(SingleTableView):
     model = PSU
     table_class = PSUTable
@@ -173,25 +100,6 @@ class PSUList(SingleTableView):
 class PSUDetail(DetailView):
     model = PSU
 
-    def get_context_data(self, **kwargs):
-        context = super(PSUDetail, self).get_context_data(**kwargs)
-        connector_type = {'Molex': context['object'].molex,
-        'Floppy': context['object'].floppy,
-        'SATA': context['object'].sata,
-        '4-Pin CPU': context['object'].cpu4pin,
-        '8-Pin CPU': context['object'].cpu8pin,
-        '6-Pin PEG': context['object'].pcie6pin,
-        '8-Pin PEG': context['object'].pcie8pin}
-
-        connectors = []
-        for key, value in connector_type.items():
-            if value != 0:
-                connectors.append('{} ({})'.format(key, value))
-
-        context['spec'] = context['object'].get_spec_display()
-        context['connectors'] = ', '.join(connectors)
-        return context
-
 class DriveList(SingleTableView):
     model = Drive
     table_class = DriveTable
@@ -199,14 +107,6 @@ class DriveList(SingleTableView):
 
 class DriveDetail(DetailView):
     model = Drive
-
-    def get_context_data(self, **kwargs):
-        context = super(DriveDetail, self).get_context_data(**kwargs)
-        context['type'] = context['object'].get_type_display()
-        context['interface'] = context['object'].get_interface_display()
-        if context['object'].capacity:
-            context['capacity'] = HumanReadable('size', context['object'].capacity, '')
-        return context
 
 class CaseList(SingleTableView):
     model = Case
@@ -223,21 +123,6 @@ class SystemList(ListView):
 
 class SystemDetail(DetailView):
     model = System
-
-    def get_context_data(self, **kwargs):
-        context = super(SystemDetail, self).get_context_data(**kwargs)
-
-        # Separate internal (HDD, SSD) from external (CD, DVD, Bluray) drives
-        context['external_drives'] = []
-        context['internal_drives'] = []
-        for drive in context['object'].drives.all():
-            if drive:
-                if drive.type in ('SSD', 'HDD'):
-                    context['internal_drives'].append(drive)
-                else:
-                    context['external_drives'].append(drive)
-
-        return context
 
 class MicroList(SingleTableView):
     model = Micro

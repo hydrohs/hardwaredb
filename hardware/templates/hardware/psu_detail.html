@@ -7,7 +7,7 @@
     <table class="table">
       <tr>
         <td><b>Spec:</b></td>
-        <td>{{ spec }}</td>
+        <td>{{ psu.spec }}</td>
       </tr>
       <tr>
         <td><b>Wattage:</b></td>
@@ -15,11 +15,11 @@
       </tr>
       <tr>
         <td><b>-5v Rail:</b></td>
-        <td>{{ psu.minus5v }}</td>
+        <td>{% if psu.minus5v %}Yes{% else %}No{% endif %}</td>
       </tr>
       <tr>
         <td><b>Connectors:</b></td>
-        <td>{{ connectors }}</td>
+        <td>{{ psu.connectors }}</td>
       </tr>
       <tr>
         <td><b>Notes:</b></td>
@@ -28,33 +28,32 @@
     </table>
   </div>
   <div class="col-sm">
-    {% if psu.image %}
+    {% if psu.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="psu-gallery">
-        <a href="/images/{{ psu.image }}" 
-          data-pswp-width="{{ psu.image.width }}" 
-          data-pswp-height="{{ psu.image.height }}" 
-          target="_blank">
-          <img src="/images/{{ psu.image }}" alt="Top" width="30%"/>
-        </a>
-      </div>
+      {% for image in psu.images.all %}
+      <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+        target="_blank">
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+      </a>
+      {% endfor %}
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
+    <script type="module">
+      // Include Lightbox 
+      import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+    
+      const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
         gallery: '#psu-gallery',
-
+    
         // Elements within gallery (slides)
         children: 'a',
-
+    
         // setup PhotoSwipe Core dynamic import
-        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
-        });
-        lightbox.init();
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+      });
+      lightbox.init();
     </script>
     {% endif %}
-</p>
+  </div>
+</div>
 {% endblock %}

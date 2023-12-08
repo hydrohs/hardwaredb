@@ -71,7 +71,7 @@ class System(Hardware):
         return f'{self.name}'
     
     def get_absolute_url(self):
-        return "/systems/%i" % self.id
+        return "/systems/custom/%i" % self.id
     
     def get_ram(self):
         # Loops through all RAM fields in order to add up total
@@ -84,11 +84,17 @@ class System(Hardware):
         if ram:
             return '{} {} {}'.format(
                 HumanReadable('size', ram, ''),
-                HumanReadable('ram', self.ram.first().speed, self.ram.first().get_type_display()),
-                self.ram.first().get_type_display()
+                HumanReadable('ram', self.ram.first().speed, self.ram.first().type.name),
+                self.ram.first().type.name
                 )
         else:
             return 0
+        
+    def internal_drives(self):
+        return self.drives.filter(internal=True)
+    
+    def external_drives(self):
+        return self.drives.filter(internal=False)
 
 class CPU(Hardware):
     speed = models.IntegerField()
@@ -130,7 +136,9 @@ class RAM(models.Model):
         else:
             is_ecc = ''
 
-        return f'{HumanReadable("size", self.size, "")} {HumanReadable("ram", self.speed, self.type.name)} {self.type.name} {is_ecc} {self.interface.name}'
+        return f'{HumanReadable("size", self.size, "")} \
+            {HumanReadable("ram", self.speed, self.type.name)} \
+            {self.type.name} {is_ecc} {self.interface.name}'
 
     class Meta:
         verbose_name = 'RAM'
@@ -161,6 +169,28 @@ class GPU(Hardware):
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.name)
+    
+    @property
+    def ports(self):
+        port_type = {'MDA': self.mda,
+        'CGA': self.cga,
+        'Composite': self.composite,
+        'VGA': self.vga,
+        'S-Video': self.svideo,
+        'Component': self.component,
+        'DVI': self.dvi,
+        'HDMI': self.hdmi,
+        'Mini HDMI': self.minihdmi,
+        'Micro HDMI': self.microhdmi,
+        'DisplayPort': self.dp,
+        'Mini DisplayPort': self.minidp}
+
+        ports = []
+        for key, value in port_type.items():
+            if value != 0:
+                ports.append('{} ({})'.format(key, value))
+
+        return ', '.join(ports)
 
     class Meta:
         verbose_name = 'GPU'
@@ -212,6 +242,19 @@ class NIC(Hardware):
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
 
+    @property
+    def ports(self):
+        port_type = {'AUI': self.aui,
+        'BNC': self.bnc,
+        'Ethernet': self.tp}
+
+        ports = []
+        for key, value in port_type.items():
+            if value != 0:
+                ports.append('{} ({})'.format(key, value))
+
+        return ', '.join(ports)
+
     class Meta:
         verbose_name = 'NIC'
         verbose_name_plural = 'NICs'
@@ -238,6 +281,25 @@ class Motherboard(Hardware):
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
+    
+    @property
+    def slots(self):
+        slot_type = {'8-Bit ISA': self.isa,
+        '16-Bit ISA': self.isa16,
+        'VLB': self.vlb,
+        'PCI': self.pci,
+        'AGP': self.agp,
+        'PCIe x1': self.pcie1,
+        'PCIe x4': self.pcie4,
+        'PCIe x8': self.pcie8,
+        'PCIe x16': self.pcie16}
+
+        slots = []
+        for key, value in slot_type.items():
+            if value != 0:
+                slots.append('{} ({})'.format(key, value))
+
+        return ', '.join(slots)
 
 class PSU(Hardware):
     wattage  = models.IntegerField()
@@ -260,6 +322,23 @@ class PSU(Hardware):
     def __str__(self):
         return f'{self.brand} {self.model}'
     
+    @property
+    def connectors(self):
+        connector_type = {'Molex': self.molex,
+        'Floppy': self.floppy,
+        'SATA': self.sata,
+        '4-Pin CPU': self.cpu4pin,
+        '8-Pin CPU': self.cpu8pin,
+        '6-Pin PEG': self.pcie6pin,
+        '8-Pin PEG': self.pcie8pin}
+
+        connectors = []
+        for key, value in connector_type.items():
+            if value != 0:
+                connectors.append('{} ({})'.format(key, value))
+
+        return ', '.join(connectors)
+    
     class Meta:
         verbose_name = 'PSU'
         verbose_name_plural = 'PSUs'
@@ -278,6 +357,13 @@ class Drive(Hardware):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def human_readable_capacity(self):
+        if self.capacity:
+            return HumanReadable('size', self.capacity, '')
+        else:
+            return
 
 class Case(Hardware):
     mb_support = models.ManyToManyField(Choices.FormFactor, verbose_name='Motherboard Compatibility')
@@ -291,6 +377,10 @@ class Case(Hardware):
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
     
+    @property
+    def all_mb_support(self):
+        return ', '.join(mb.name for mb in self.mb_support.all())
+    
     class Meta:
         verbose_name = 'Case'
 
@@ -298,7 +388,7 @@ class Proprietary(System):
     upload_base = 'systems/proprietary'
 
     def get_absolute_url(self):
-        return "/systems/%i" % self.id
+        return "/systems/proprietary/%i" % self.id
 
     def __str__(self):
         return f'{self.brand} {self.name}'
@@ -311,7 +401,7 @@ class Micro(Hardware):
     upload_base = 'systems/micros'
 
     def get_absolute_url(self):
-        return "/micros/%i" % self.id
+        return "/systems/micros/%i" % self.id
 
     def __str__(self):
         return f'{self.brand} {self.name}'
@@ -348,6 +438,10 @@ class Peripheral(Hardware):
     def __str__(self):
         return self.name
     
+    @property
+    def all_ports(self):
+        return ', '.join(p.name for p in self.ports.all())
+    
     class Meta:
         verbose_name = 'Perhipheral'
         verbose_name_plural = 'Peripherals'
@@ -372,6 +466,14 @@ class Cable(Hardware):
             return f'{connectors_a} Terminator'
         else:
             return f'{connectors_a} to {connectors_b} {self.type}'
+        
+    @property
+    def all_connectors_a(self):
+        return ', '.join(c.name for c in self.connectors_a.all())
+    
+    @property
+    def all_connectors_b(self):
+        return ', '.join(c.name for c in self.connectors_b.all())
 
     class Meta:
         verbose_name = 'Cable, Adapter, I/O Bracket'

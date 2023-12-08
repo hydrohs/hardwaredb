@@ -7,19 +7,19 @@
     <table class="table">
       <tr>
         <td><b>Interface:</b></td>
-        <td>{{ interface }}</td>
+        <td>{{ nic.interface }}</td>
       </tr>
       <tr>
         <td><b>Wireless</b></td>
-        <td>{{ nic.wireless }}</td>
+        <td>{% if nic.wireless %}Yes{% else %}No{% endif %}</td>
       </tr>
       <tr>
         <td><b>Speed:</b></td>
-        <td>{{ speed }}</td>
+        <td>{{ nic.speed }}</td>
       </tr>
       <tr>
         <td><b>Ports:</b></td>
-        <td>{{ ports }}</td>
+        <td>{{ nic.ports }}</td>
       </tr>
       <tr>
         <td><b>Notes:</b></td>
@@ -28,51 +28,32 @@
     </table>
   </div>
   <div class="col-sm">
-    {% if nic.top_img or nic.bottom_img or nic.io_img %}
+    {% if nic.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="nic-gallery">
-        {% if nic.top_img %}
-        <a href="/images/{{ nic.top_img }}" 
-          data-pswp-width="{{ nic.top_img.width }}" 
-          data-pswp-height="{{ nic.top_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ nic.top_img }}" alt="Top" width="30%"/>
-        </a>
-        {% endif %}
-        {% if nic.bottom_img %}
-        <a href="/images/{{ nic.bottom_img }}" 
-          data-pswp-width="{{ nic.bottom_img.width }}" 
-          data-pswp-height="{{ nic.bottom_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ nic.bottom_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-        {% if nic.io_img %}
-        <a href="/images/{{ nic.io_img }}" 
-          data-pswp-width="{{ nic.io_img.width }}" 
-          data-pswp-height="{{ nic.io_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ nic.io_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-      </div>
+      {% for image in nic.images.all %}
+      <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+        target="_blank">
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+      </a>
+      {% endfor %}
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
+    <script type="module">
+      // Include Lightbox 
+      import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+    
+      const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
         gallery: '#nic-gallery',
-
+    
         // Elements within gallery (slides)
         children: 'a',
-
+    
         // setup PhotoSwipe Core dynamic import
-        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
-        });
-        lightbox.init();
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+      });
+      lightbox.init();
     </script>
     {% endif %}
-</p>
+  </div>
+</div>
 {% endblock %}

@@ -5,6 +5,7 @@ from choices.models import *
 admin.site.register(FormFactor)
 admin.site.register(Slot)
 admin.site.register(DriveInterface)
+admin.site.register(DriveType)
 admin.site.register(Port)
 admin.site.register(PeripheralType)
 admin.site.register(CableType)

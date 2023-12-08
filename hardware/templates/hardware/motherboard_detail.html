@@ -7,7 +7,7 @@
     <table class="table">
       <tr>
         <td><b>Form Factor:</b></td>
-        <td>{{ form_factor }}</td>
+        <td>{{ motherboard.form_factor }}</td>
       </tr>
       <tr>
         <td><b>Socket:</b></td>
@@ -19,7 +19,7 @@
       </tr>
       <tr>
         <td><b>Slots:</b></td>
-        <td>{{ slots }}</td>
+        <td>{{ motherboard.slots }}</td>
       </tr>
       <tr>
         <td><b>Notes:</b></td>
@@ -28,51 +28,32 @@
     </table>
   </div>
   <div class="col-sm">
-    {% if motherboard.top_img or motherboard.bottom_img or motherboard.io_img %}
+    {% if motherboard.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="motherboard-gallery">
-        {% if motherboard.top_img %}
-        <a href="/images/{{ motherboard.top_img }}" 
-          data-pswp-width="{{ motherboard.top_img.width }}" 
-          data-pswp-height="{{ motherboard.top_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ motherboard.top_img }}" alt="Top" width="30%"/>
-        </a>
-        {% endif %}
-        {% if motherboard.bottom_img %}
-        <a href="/images/{{ motherboard.bottom_img }}" 
-          data-pswp-width="{{ motherboard.bottom_img.width }}" 
-          data-pswp-height="{{ motherboard.bottom_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ motherboard.bottom_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-        {% if motherboard.io_img %}
-        <a href="/images/{{ motherboard.io_img }}" 
-          data-pswp-width="{{ motherboard.io_img.width }}" 
-          data-pswp-height="{{ motherboard.io_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ motherboard.io_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-      </div>
+      {% for image in motherboard.images.all %}
+      <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+        target="_blank">
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+      </a>
+      {% endfor %}
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
+    <script type="module">
+      // Include Lightbox 
+      import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+    
+      const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
         gallery: '#motherboard-gallery',
-
+    
         // Elements within gallery (slides)
         children: 'a',
-
+    
         // setup PhotoSwipe Core dynamic import
-        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
-        });
-        lightbox.init();
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+      });
+      lightbox.init();
     </script>
     {% endif %}
-</p>
+  </div>
+</div>
 {% endblock %}
