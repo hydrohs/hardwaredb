@@ -7,7 +7,7 @@
     <table class="table">
       <tr>
         <td><b>Interface:</b></td>
-        <td>{{ interfacee }}</td>
+        <td>{{ soundcard.interface }}</td>
       </tr>
       <tr>
         <td><b>SB Compatability:</b></td>
@@ -20,51 +20,32 @@
     </table>
   </div>
   <div class="col-sm">
-    {% if soundcard.top_img or soundcard.bottom_img or soundcard.io_img %}
+    {% if soundcard.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="soundcard-gallery">
-        {% if soundcard.top_img %}
-        <a href="/images/{{ soundcard.top_img }}" 
-          data-pswp-width="{{ soundcard.top_img.width }}" 
-          data-pswp-height="{{ soundcard.top_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ soundcard.top_img }}" alt="Top" width="30%"/>
-        </a>
-        {% endif %}
-        {% if soundcard.bottom_img %}
-        <a href="/images/{{ soundcard.bottom_img }}" 
-          data-pswp-width="{{ soundcard.bottom_img.width }}" 
-          data-pswp-height="{{ soundcard.bottom_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ soundcard.bottom_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-        {% if soundcard.io_img %}
-        <a href="/images/{{ soundcard.io_img }}" 
-          data-pswp-width="{{ soundcard.io_img.width }}" 
-          data-pswp-height="{{ soundcard.io_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ soundcard.io_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-      </div>
+      {% for image in soundcard.images.all %}
+      <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+        target="_blank">
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+      </a>
+      {% endfor %}
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
+    <script type="module">
+      // Include Lightbox 
+      import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+    
+      const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
         gallery: '#soundcard-gallery',
-
+    
         // Elements within gallery (slides)
         children: 'a',
-
+    
         // setup PhotoSwipe Core dynamic import
-        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
-        });
-        lightbox.init();
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+      });
+      lightbox.init();
     </script>
     {% endif %}
-</p>
+  </div>
+</div>
 {% endblock %}

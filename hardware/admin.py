@@ -1,34 +1,83 @@
 from django.contrib import admin
-from django import forms
+from hardware.models import *
 
-from .models import CPU, RAM, GPU, SoundCard, ExpansionCard, NIC, Motherboard, PSU, Drive, Case, System, MicroProp, SBC, Peripheral, Cable
-
-admin.site.register(CPU)
 admin.site.register(RAM)
-admin.site.register(GPU)
-admin.site.register(SoundCard)
-admin.site.register(ExpansionCard)
-admin.site.register(NIC)
-admin.site.register(Motherboard)
-admin.site.register(PSU)
-admin.site.register(Drive)
-admin.site.register(Case)
-admin.site.register(Peripheral)
-admin.site.register(Cable)
-admin.site.register(MicroProp)
 admin.site.register(SBC)
 
-# Next 2 classes format RAM so that it's clear which id is being selected
-# from admin panel, since there are many identically named RAM sticks
-class RAMChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return "{} ({})".format(obj, obj.id)
+class ImageInline(admin.StackedInline):
+    model = Image
+    extra = 0
+
+class CPUInline(admin.TabularInline):
+    model = CPU
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class RAMInline(admin.TabularInline):
+    model = RAM
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
 
 @admin.register(System)
 class SystemAdmin(admin.ModelAdmin):
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ('ram1', 'ram2', 'ram3', 'ram4', 'ram5', 'ram6', 'ram7', 'ram8', 
-        'ram9', 'ram10', 'ram11', 'ram12', 'ram13', 'ram14', 'ram15', 'ram16'):
-            # Passing this list ignores the verbose_name from the System model, so adding a label restores it
-            return RAMChoiceField(queryset=RAM.objects.all(), label='RAM', required=False)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    inlines = (CPUInline, RAMInline, ImageInline, )
+    fields = [ 'name', 'os', 'notes', ]
+    exclude = [ 'brand', 'model', ]
+
+@admin.register(Proprietary)
+class ProprietaryAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+    fields = [ 'brand', 'model', 'name', 'os', 'notes' ]
+
+@admin.register(CPU)
+class CPUAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(GPU)
+class GPUAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(SoundCard)
+class SoundCardAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(ExpansionCard)
+class ExpansionCardAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(NIC)
+class NICAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(Motherboard)
+class MotherboardAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(PSU)
+class PSUAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(Drive)
+class DriveAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(Case)
+class CaseAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+
+@admin.register(Peripheral)
+class PeripheralAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+    filter_horizontal = ['ports', ]
+
+@admin.register(Cable)
+class CableAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )
+    exclude = [ 'brand', 'model', ]
+    filter_horizontal = ['connectors_a', 'connectors_b', ]
+
+@admin.register(Micro)
+class MicroPropAdmin(admin.ModelAdmin):
+    inlines = (ImageInline, )

@@ -1,6 +1,7 @@
 from django.db import models
-from multiselectfield import MultiSelectField
-from .interfaces import *
+from polymorphic.models import PolymorphicModel
+import choices.models as Choices
+import os.path
 
 def HumanReadable(calc, value, ram_type):
     # Converts db values into more friendly human readable numbers for display
@@ -34,30 +35,76 @@ def HumanReadable(calc, value, ram_type):
         return RamSpeed()
     else:
         return 'None'
+    
+def get_upload_path(instance, filename):
+    base = instance.part.upload_base
+    brand = instance.part.brand
+    model = instance.part.model.replace('/', '') if instance.part.model else instance.part.model
+    name = instance.part.name.replace('/', '') if instance.part.name else instance.part.name
+    pk = instance.part.pk
+    extension = os.path.splitext(filename)[1]
+    if 'custom' in base:
+        path = f'{base}/{name}/{instance.name}{extension}'
+    elif ('micros' in base) or ('proprietary' in base):
+        path = f'{base}/{brand}/{name}/{instance.name}{extension}'
+    else:
+        path = f'{base}/{brand}_{model}_{pk}/{instance.name}{extension}'
 
-class FormFactor(models.TextChoices):
-    # Both motherboards and cases should have access to the same
-    # form factors so this is global
-        AT = 'AT', 'AT'
-        BABY_AT = 'BABYAT', 'Baby AT'
-        ATX = 'ATX', 'ATX'
-        EATX = 'EATX', 'E-ATX'
-        MATX = 'MATX', 'Micro ATX'
-        ITX = 'ITX', 'Mini ITX'
-        PROP = 'PROP', 'Proprietary'
+    return path
 
-class CPU(models.Model):
-    brand = models.CharField(max_length=200)
+class Hardware(PolymorphicModel):
+    brand = models.CharField(max_length=200, null=True, blank=True)
     model = models.CharField(max_length=200, null=True, blank=True)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+
+class Image(models.Model):
+    name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to=get_upload_path)
+    part = models.ForeignKey(Hardware, related_name='images', on_delete=models.CASCADE)
+
+class System(Hardware):
+    os = models.CharField(max_length=64, verbose_name='OS')
+    upload_base = 'systems/custom'
+
+    def __str__(self):
+        return f'{self.name}'
+    
+    def get_absolute_url(self):
+        return "/systems/custom/%i" % self.id
+    
+    def get_ram(self):
+        # Loops through all RAM fields in order to add up total
+        # then adds on RAM type/speed (even though this could technically be different, in my use it wont come up)
+        # This function is used on system detail page to show total ram, rather than potentially many different ram
+        # sticks (all likely to be the same) in a list
+        ram = 0
+        for i in self.ram.all():
+            ram += i.size
+        if ram:
+            return '{} {} {}'.format(
+                HumanReadable('size', ram, ''),
+                HumanReadable('ram', self.ram.first().speed, self.ram.first().type.name),
+                self.ram.first().type.name
+                )
+        else:
+            return 0
+        
+    def internal_drives(self):
+        return self.drives.filter(internal=True)
+    
+    def external_drives(self):
+        return self.drives.filter(internal=False)
+
+class CPU(Hardware):
     speed = models.IntegerField()
     socket = models.CharField(max_length=200)
     cores = models.IntegerField()
     hyperthreading = models.BooleanField()
     cpu_world = models.TextField(null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='cpus', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpus')
+
+    upload_base = 'cpus'
 
     def get_absolute_url(self):
         return "/cpus/%i" % self.id
@@ -73,27 +120,12 @@ class CPU(models.Model):
         verbose_name_plural = 'CPUs'
 
 class RAM(models.Model):
-    class Type(models.TextChoices):
-        FPM = 'FPM', 'FPM'
-        EDO = 'EDO', 'EDO'
-        SDRAM = 'SDRAM', 'SDRAM'
-        DDR = 'DDR1', 'DDR'
-        DDR2 = 'DDR2', 'DDR2'
-        DDR3 = 'DDR3', 'DDR3'
-        DDR4 = 'DDR4', 'DDR4'
-        DDR5 = 'DDR5', 'DDR5'
-
-    class Interface(models.TextChoices):
-        SIMM30 = 'SIMM30', '30-pin SIMM'
-        SIMM72 = 'SIMM72', '72-pin SIMM'
-        DIMM = 'DIMM', 'DIMM'
-        SODIMM = 'SODIMM', 'SO-DIMM'
-
-    type = models.CharField(max_length=5, choices=Type.choices, default=Type.FPM)
-    interface = models.CharField(max_length=6, choices=Interface.choices, default=Interface.SIMM30)
+    type = models.ForeignKey(Choices.RAMType, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.RAMInterface, on_delete=models.SET_NULL, null=True)
     size = models.IntegerField(verbose_name='Size (MB)')
     speed = models.IntegerField(verbose_name='Speed (ns or MHz)')
     ecc = models.BooleanField(verbose_name='ECC')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram')
 
     def get_absolute_url(self):
         return "/ram/%i" % self.id
@@ -103,19 +135,18 @@ class RAM(models.Model):
             is_ecc = 'ECC'
         else:
             is_ecc = ''
-        
-        return '{} {} {} {} {}'.format(HumanReadable('size', self.size, ''), HumanReadable('ram', self.speed, self.type), self.get_type_display(), is_ecc, self.get_interface_display())
+
+        return f'{HumanReadable("size", self.size, "")} \
+            {HumanReadable("ram", self.speed, self.type.name)} \
+            {self.type.name} {is_ecc} {self.interface.name}'
 
     class Meta:
         verbose_name = 'RAM'
         verbose_name_plural = 'RAM'
 
-class GPU(models.Model):
-    brand = models.CharField(max_length=200)
-    gpu = models.CharField(max_length=32, verbose_name='GPU')
-    model = models.CharField(max_length=200, null=True, blank=True)
-    name = models.CharField(max_length=200)
-    interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
+class GPU(Hardware):
+    gpu_brand = models.CharField(max_length=32, verbose_name='GPU')
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
     mda = models.IntegerField(default=0, verbose_name='MDA Ports')
     cga = models.IntegerField(default=0, verbose_name='CGA Ports')
     composite = models.IntegerField(default=0, verbose_name = 'Composite Ports')
@@ -129,31 +160,48 @@ class GPU(models.Model):
     dp = models.IntegerField(default=0, verbose_name='Displayport Ports')
     minidp = models.IntegerField(default=0, verbose_name='Mini DisplayPort Ports')
     other = models.IntegerField(default=0, verbose_name='Other Ports (Use notes)')
-    notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='gpus', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='gpus', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
-    io_img = models.ImageField(upload_to='gpus', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpus')
+
+    upload_base = 'gpus'
 
     def get_absolute_url(self):
         return "/gpus/%i" % self.id
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.name)
+    
+    @property
+    def ports(self):
+        port_type = {'MDA': self.mda,
+        'CGA': self.cga,
+        'Composite': self.composite,
+        'VGA': self.vga,
+        'S-Video': self.svideo,
+        'Component': self.component,
+        'DVI': self.dvi,
+        'HDMI': self.hdmi,
+        'Mini HDMI': self.minihdmi,
+        'Micro HDMI': self.microhdmi,
+        'DisplayPort': self.dp,
+        'Mini DisplayPort': self.minidp}
+
+        ports = []
+        for key, value in port_type.items():
+            if value != 0:
+                ports.append('{} ({})'.format(key, value))
+
+        return ', '.join(ports)
 
     class Meta:
         verbose_name = 'GPU'
         verbose_name_plural = 'GPUs'
 
-class SoundCard(models.Model):
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200, null=True, blank=True)
-    name = models.CharField(max_length=200)
+class SoundCard(Hardware):
     sb = models.CharField(max_length=200, verbose_name='SB Compatibility')
-    interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
-    notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
-    io_img = models.ImageField(upload_to='sound_cards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcards')
+
+    upload_base = 'sound_cards'
 
     def get_absolute_url(self):
         return "/sound_cards/%i" % self.id
@@ -161,50 +209,32 @@ class SoundCard(models.Model):
     def __str__(self):
         return '{} {}'.format(self.brand, self.name)
 
-class ExpansionCard(models.Model):
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200, null=True, blank=True)
-    name = models.CharField(max_length=200)
-    interface = models.CharField(max_length=10, choices=Slots.choices, default=Slots.ISA)
+class ExpansionCard(Hardware):
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
     io_panel = models.CharField(max_length=255, null=True, blank=True, verbose_name='IO Panel (comma separated)')
-    notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='expansion_cards', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='expansion_cards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
-    io_img = models.ImageField(upload_to='expansion_cards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansioncards')
+
+    upload_base = 'expansion_cards'
 
     def get_absolute_url(self):
         return "/expansion_cards/%i" % self.id
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.name)
-
-class NIC(models.Model):
-
-    class Speed(models.TextChoices):
-        A = 'A'
-        B = 'B'
-        G = 'G'
-        N = 'N'
-        AC = 'AC', 'AC'
-        AX = 'AX', 'AX'
-        TEN = '10', '10 Megabit'
-        HUN = '100', '10/100 Megabit'
-        GIG = '1000', 'Gigabit'
-        TWOFIVE = '2500', '2.5 Gigabit'
-        TENG = '10G', '10 Gigabit'
+        if self.name is None:
+            return f'{self.brand} {self.model}'
+        else:
+            return f'{self.name}'
     
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
+class NIC(Hardware):   
     wireless = models.BooleanField()
-    speed = models.CharField(max_length=7, choices=Speed.choices, default=Speed.TEN)
-    interface = models.CharField(max_length=6, choices=Slots.choices, default=Slots.ISA)
+    speed = models.ForeignKey(Choices.NetSpeed, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
     aui = models.IntegerField(default=0, verbose_name='AUI Ports')
     bnc = models.IntegerField(default=0, verbose_name='BNC Ports')
     tp = models.IntegerField(default=0, verbose_name='Ethernet Ports')
-    notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='nics', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='nics', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
-    io_img = models.ImageField(upload_to='nics', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='nics')
+
+    upload_base = 'nics'
 
     def get_absolute_url(self):
         return "/nics/%i" % self.id
@@ -212,14 +242,25 @@ class NIC(models.Model):
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
 
+    @property
+    def ports(self):
+        port_type = {'AUI': self.aui,
+        'BNC': self.bnc,
+        'Ethernet': self.tp}
+
+        ports = []
+        for key, value in port_type.items():
+            if value != 0:
+                ports.append('{} ({})'.format(key, value))
+
+        return ', '.join(ports)
+
     class Meta:
         verbose_name = 'NIC'
         verbose_name_plural = 'NICs'
 
-class Motherboard(models.Model):
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
-    form_factor = models.CharField(max_length=6, choices=FormFactor.choices, default=FormFactor.ATX)
+class Motherboard(Hardware):
+    form_factor = models.ForeignKey(Choices.FormFactor, on_delete=models.SET_NULL, null=True)
     socket = models.CharField(max_length=200)
     isa = models.IntegerField(default=0, verbose_name='8-bit ISA Slots')
     isa16 = models.IntegerField(default=0, verbose_name='16-bit ISA Slots')
@@ -231,29 +272,38 @@ class Motherboard(models.Model):
     pcie8 = models.IntegerField(default=0, verbose_name='PCIe x8 Slots')
     pcie16 = models.IntegerField(default=0, verbose_name='PCIe x16 Slots')
     ram = models.IntegerField(default=0, verbose_name='RAM Slots')
-    notes = models.TextField(null=True, blank=True)
-    top_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Top Image')
-    bottom_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='Bottom Image')
-    io_img = models.ImageField(upload_to='motherboards', max_length=255, null=True, blank=True, verbose_name='IO Panel')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='motherboard')
+
+    upload_base = 'motherboards'
 
     def get_absolute_url(self):
         return "/motherboards/%i" % self.id
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
+    
+    @property
+    def slots(self):
+        slot_type = {'8-Bit ISA': self.isa,
+        '16-Bit ISA': self.isa16,
+        'VLB': self.vlb,
+        'PCI': self.pci,
+        'AGP': self.agp,
+        'PCIe x1': self.pcie1,
+        'PCIe x4': self.pcie4,
+        'PCIe x8': self.pcie8,
+        'PCIe x16': self.pcie16}
 
-class PSU(models.Model):
-    class Spec(models.TextChoices):
-        PROP = 'PROP', 'Proprietary'
-        AT = 'AT', 'AT'
-        ATX20 = 'AXT20', '20-pin ATX'
-        ATX24 = 'ATX24', '24-pin ATX'
-        ATX2_4 = 'ATX2_4', '20+4-pin ATX'
+        slots = []
+        for key, value in slot_type.items():
+            if value != 0:
+                slots.append('{} ({})'.format(key, value))
 
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
+        return ', '.join(slots)
+
+class PSU(Hardware):
     wattage  = models.IntegerField()
-    spec = models.CharField(max_length=6, choices=Spec.choices, default=Spec.AT)
+    spec = models.ForeignKey(Choices.PSUSpec, null=True, on_delete=models.SET_NULL)
     minus5v = models.BooleanField(verbose_name='-5v rail')
     molex = models.IntegerField(default=0, verbose_name='Molex Connectors')
     floppy = models.IntegerField(default=0, verbose_name='Floppy Connectors')
@@ -262,165 +312,103 @@ class PSU(models.Model):
     cpu8pin = models.IntegerField(default=0, verbose_name='8-pin CPU Connectors')
     pcie6pin = models.IntegerField(default=0, verbose_name='6-pin PCIe Connectors')
     pcie8pin = models.IntegerField(default=0, verbose_name='8-pin PCIe Connectors')
-    notes = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='psus', max_length=255, null=True, blank=True)
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='psu')
+
+    upload_base = 'psus'
 
     def get_absolute_url(self):
         return "/psus/%i" % self.id
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.model)
+        return f'{self.brand} {self.model}'
+    
+    @property
+    def connectors(self):
+        connector_type = {'Molex': self.molex,
+        'Floppy': self.floppy,
+        'SATA': self.sata,
+        '4-Pin CPU': self.cpu4pin,
+        '8-Pin CPU': self.cpu8pin,
+        '6-Pin PEG': self.pcie6pin,
+        '8-Pin PEG': self.pcie8pin}
+
+        connectors = []
+        for key, value in connector_type.items():
+            if value != 0:
+                connectors.append('{} ({})'.format(key, value))
+
+        return ', '.join(connectors)
     
     class Meta:
         verbose_name = 'PSU'
         verbose_name_plural = 'PSUs'
 
-class Drive(models.Model):
-    class Type(models.TextChoices):
-        FLOPPY5 = 'FLOPPY5', '5.25" Floppy'
-        FLOPPY3 = 'FLOPPY3', '3.5" Floppy'
-        ZIP = 'ZIP', 'Zip'
-        CD = 'CD', 'CD'
-        DVD = 'DVD', 'DVD'
-        BR = 'BR', 'Bluray'
-        HDD = 'HDD', 'HDD'
-        SSD = 'SSD', 'SSD'
-    
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
-    type = models.CharField(max_length=10, choices=Type.choices, default=Type.FLOPPY5)
-    interface = models.CharField(max_length=20, choices=Drives.choices, default=Drives.FLOPPYEDGE)
+class Drive(Hardware):
+    type = models.ForeignKey(Choices.DriveType, on_delete=models.SET_NULL, null=True)
+    interface = models.ForeignKey(Choices.DriveInterface, on_delete=models.SET_NULL, null=True)
     capacity = models.IntegerField(blank=True, null=True, verbose_name='Capacity (MB)')
-    top_img = models.ImageField(upload_to='drives', max_length=255, null=True, blank=True)
-    bezel_img = models.ImageField(upload_to='drives', max_length=255, null=True, blank=True)
-    rear_img = models.ImageField(upload_to='drives', max_length=255, null=True, blank=True)
+    internal = models.BooleanField(default=False)
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='drives')
+
+    upload_base= 'drives'
 
     def get_absolute_url(self):
         return "/drives/%i" % self.id
 
     def __str__(self):
         return self.name
+    
+    @property
+    def human_readable_capacity(self):
+        if self.capacity:
+            return HumanReadable('size', self.capacity, '')
+        else:
+            return
 
-class Case(models.Model):
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
-    mb_support = MultiSelectField(choices=FormFactor.choices, default=FormFactor.ATX, verbose_name='Motherboard Compatibility')
-    notes = models.TextField(null=True, blank=True)
-    image_1 = models.ImageField(upload_to='case', max_length=255, null=True, blank=True)
-    image_2 = models.ImageField(upload_to='cases', max_length=255, null=True, blank=True)
-    image_3 = models.ImageField(upload_to='cases', max_length=255, null=True, blank=True)
+class Case(Hardware):
+    mb_support = models.ManyToManyField(Choices.FormFactor, verbose_name='Motherboard Compatibility')
+    installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
+
+    upload_base = 'cases'
 
     def get_absolute_url(self):
         return "/cases/%i" % self.id
 
     def __str__(self):
         return '{} {}'.format(self.brand, self.model)
-
-class System(models.Model):
-    name = models.CharField(max_length=200)
-    os = models.CharField(max_length=200, blank=True, verbose_name='Operating System')
-    cpu1 = models.OneToOneField(CPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpu1', verbose_name='CPU')
-    cpu2 = models.OneToOneField(CPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpu2', verbose_name='CPU')
-    ram1 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram1', verbose_name='RAM')
-    ram2 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram2', verbose_name='RAM')
-    ram3 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram3', verbose_name='RAM')
-    ram4 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram4', verbose_name='RAM')
-    ram5 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram5', verbose_name='RAM')
-    ram6 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram6', verbose_name='RAM')
-    ram7 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram7', verbose_name='RAM')
-    ram8 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram8', verbose_name='RAM')
-    ram9 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram9', verbose_name='RAM')
-    ram10 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram10', verbose_name='RAM')
-    ram11 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram11', verbose_name='RAM')
-    ram12 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram12', verbose_name='RAM')
-    ram13 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram13', verbose_name='RAM')
-    ram14 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram14', verbose_name='RAM')
-    ram15 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram15', verbose_name='RAM')
-    ram16 = models.OneToOneField(RAM, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram16', verbose_name='RAM')
-    motherboard = models.OneToOneField(Motherboard, on_delete=models.SET_NULL, null=True, blank=True, related_name='motherboard')
-    gpu1 = models.OneToOneField(GPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpu1', verbose_name='GPU')
-    gpu2 = models.OneToOneField(GPU, on_delete=models.SET_NULL, null=True, blank=True, related_name='gpu2', verbose_name='GPU')
-    soundcard1 = models.OneToOneField(SoundCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcard1', verbose_name='Sound Card')
-    soundcard2 = models.OneToOneField(SoundCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='soundcard2', verbose_name='Sound Card')
-    nic = models.OneToOneField(NIC, on_delete=models.SET_NULL, null=True, blank=True, related_name='nic', verbose_name='NIC')
-    expansion1 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion1', verbose_name='Expansion Card')
-    expansion2 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion2', verbose_name='Expansion Card')
-    expansion3 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion3', verbose_name='Expansion Card')
-    expansion4 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion4', verbose_name='Expansion Card')
-    expansion5 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion5', verbose_name='Expansion Card')
-    expansion6 = models.OneToOneField(ExpansionCard, on_delete=models.SET_NULL, null=True, blank=True, related_name='expansion6', verbose_name='Expansion Card')
-    psu = models.OneToOneField(PSU, on_delete=models.SET_NULL, null=True, blank=True, related_name='psu', verbose_name='PSU')
-    drive1 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive1', verbose_name='Drive')
-    drive2 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive2', verbose_name='Drive')
-    drive3 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive3', verbose_name='Drive')
-    drive4 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive4', verbose_name='Drive')
-    drive5 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive5', verbose_name='Drive')
-    drive6 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive6', verbose_name='Drive')
-    drive7 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive7', verbose_name='Drive')
-    drive8 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive8', verbose_name='Drive')
-    drive9 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive9', verbose_name='Drive')
-    drive10 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive10', verbose_name='Drive')
-    drive11 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive11', verbose_name='Drive')
-    drive12 = models.OneToOneField(Drive, on_delete=models.SET_NULL, null=True, blank=True, related_name='drive12', verbose_name='Drive')
-    case = models.OneToOneField(Case, on_delete=models.SET_NULL, null=True, blank=True, related_name='case')
-    notes = models.TextField(blank=True, null=True)
-    image_1 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-    image_2 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-    image_3 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-    image_4 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return "/systems/%i" % self.id
-
-    def get_ram(self): 
-        # Loops through all RAM fields in order to add up total
-        # then adds on RAM type/speed (even though this could technically be different, in my use it wont come up)
-        # This function is used on system detail page to show total ram, rather than potentially many different ram
-        # sticks (all likely to be the same) in a list
-        fields = (self.ram1, self.ram2, self.ram3, self.ram4, self.ram5, self.ram6, self.ram7, self.ram8,
-        self.ram9, self.ram10, self.ram11, self.ram12, self.ram13, self.ram14, self.ram15, self.ram16)
-        ram = 0
-        for f in fields:
-            if f:
-                ram += f.size
-        if ram:
-            return '{} {} {}'.format(
-                HumanReadable('size', ram, ''),
-                HumanReadable('ram', self.ram1.speed, self.ram1.get_type_display()),
-                self.ram1.get_type_display()
-                )
-        else:
-            return 0
-
-class MicroProp(models.Model):
-    class Type(models.TextChoices):
-        MICRO = 'MICRO', 'Microcomputer'
-        PROP = 'PROP', 'Proprietary'
-
-    brand = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
-    type = models.CharField(max_length=20, choices=Type.choices, default=Type.PROP)
-    notes = models.TextField(null=True, blank=True)
-    image_1 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-    image_2 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-    image_3 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-    image_4 = models.ImageField(upload_to='systems', max_length=255, null=True, blank=True)
-
-    def get_absolute_url(self):
-        return "/microprop/%i" % self.id
-
-    def __str__(self):
-        return self.name
+    
+    @property
+    def all_mb_support(self):
+        return ', '.join(mb.name for mb in self.mb_support.all())
     
     class Meta:
-        verbose_name = 'Microcomputer/Proprietary System'
-        verbose_name_plural = 'Microcomputers/Proprietary Systems'
+        verbose_name = 'Case'
+
+class Proprietary(System):
+    upload_base = 'systems/proprietary'
+
+    def get_absolute_url(self):
+        return "/systems/proprietary/%i" % self.id
+
+    def __str__(self):
+        return f'{self.brand} {self.name}'
+    
+    class Meta:
+        verbose_name = 'Proprietary System'
+        verbose_name_plural = 'Proprietary Systems'
+
+class Micro(Hardware):
+    upload_base = 'systems/micros'
+
+    def get_absolute_url(self):
+        return "/systems/micros/%i" % self.id
+
+    def __str__(self):
+        return f'{self.brand} {self.name}'
+    
+    class Meta:
+        verbose_name = 'Microcomputer'
+        verbose_name_plural = 'Microcomputers'
 
 class SBC(models.Model):
     type = models.CharField(max_length=200)
@@ -438,59 +426,54 @@ class SBC(models.Model):
         verbose_name = 'Single-board Computer'
         verbose_name_plural = 'Single-board Computers'
 
-class Peripheral(models.Model):
-    class Type(models.TextChoices):
-        MOUSE = 'M', 'Mouse'
-        KB = 'KB', 'Keyboard'
-        ZIP = 'ZIP', 'Zip Drive'
-        FLOPPY = 'FLOPPY', 'Floppy Drive'
-        CASS = 'CASS', 'Cassette Player'
-        HDD = 'HDD', 'Hard Drive'
-        DISC = 'DISC', 'Disc Drive'
-        GAME = 'GAME', 'Gamepad'
-        JOY = 'JOY', 'Joystick'
-        MIDI = 'MIDI', 'Midi'
-        SPK = 'SPK', 'Speakers'
-        LCD = 'LCD', 'LCD'
-        CRT = 'CRT', 'CRT'
-        OTHER = 'OTHER', 'Other'
+class Peripheral(Hardware):
+    type = models.ForeignKey(Choices.PeripheralType, on_delete=models.SET_NULL, null=True)
+    ports = models.ManyToManyField(Choices.Port, blank=True)
 
-    brand = models.CharField(max_length=200)
-    model = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
-    type = models.CharField(max_length=10, choices=Type.choices, default=Type.MOUSE)
-    interface = MultiSelectField(choices=Peripherals.choices, default=Peripherals.USB)
-    notes = models.TextField(null=True, blank=True)
-    image_1 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
-    image_2 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
-    image_3 = models.ImageField(upload_to='peripherals', max_length=255, null=True, blank=True)
+    upload_base = 'peripherals'
 
     def get_absolute_url(self):
         return "/peripherals/%i" % self.id
 
     def __str__(self):
         return self.name
+    
+    @property
+    def all_ports(self):
+        return ', '.join(p.name for p in self.ports.all())
+    
+    class Meta:
+        verbose_name = 'Perhipheral'
+        verbose_name_plural = 'Peripherals'
 
-class Cable(models.Model):
-    class Type(models.TextChoices):
-        CABLE = 'CABLE', 'Cable'
-        IO = 'IO', 'I/O Bracket'
-        ADAPT = 'ADAPT', 'Adapter'
-
-    type = models.CharField(max_length=10, choices=Type.choices, default=Type.CABLE)
-    name = models.CharField(max_length=200)
-    interface_a = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface A")
-    interface_b = MultiSelectField(choices=Cables.choices, default=Cables.OTHER, verbose_name="Interface B")
+class Cable(Hardware):
+    type = models.ForeignKey(Choices.CableType, on_delete=models.SET_NULL, null=True)
+    connectors_a = models.ManyToManyField(Choices.Port, related_name='cable_a', verbose_name='Connector(s) (A Side)')
+    connectors_b = models.ManyToManyField(Choices.Port, related_name='cable_b', verbose_name='Connector(s) (B Side)')
     quantity = models.IntegerField(default=1)
-    notes = models.TextField(null=True, blank=True)
-    image_1 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
-    image_2 = models.ImageField(upload_to='cables', max_length=255, null=True, blank=True)
+
+    upload_base = 'cables'
 
     def get_absolute_url(self):
         return "/cables/%i" % self.id
 
-    def __str__(self):
-        return '{} to {} {}'.format(self.interface_a, self.interface_b, self.get_type_display())
+    def __str__(self):    
+        connectors_a = ', '.join([str(i) for i in self.connectors_a.all()])
+        connectors_b = ', '.join([str(i) for i in self.connectors_b.all()])
+        if ( connectors_a == connectors_b and self.type.id == 1) or (self.type.id == 2):
+            return f'{connectors_a} {self.type}'
+        elif connectors_b == 'None':
+            return f'{connectors_a} Terminator'
+        else:
+            return f'{connectors_a} to {connectors_b} {self.type}'
+        
+    @property
+    def all_connectors_a(self):
+        return ', '.join(c.name for c in self.connectors_a.all())
+    
+    @property
+    def all_connectors_b(self):
+        return ', '.join(c.name for c in self.connectors_b.all())
 
     class Meta:
         verbose_name = 'Cable, Adapter, I/O Bracket'

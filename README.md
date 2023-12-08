@@ -9,7 +9,7 @@ You can run it natively or with Docker, first:
 In order to pull in the repo as well as [Photoswipe](https://github.com/dimsemenov/PhotoSwipe) (for image viewing).
 
 ## Native
-Install ``python3`` and ``pip``, and then run ``setup.sh`` to install required Django version and python dependencies. Then ``./migrate.py migrate`` to create the database
+Install ``python3`` and ``pip``, and then run ``pip install -r requirements.txt`` to install Django and required Python dependencies. Then ``./migrate.py migrate`` to create the database
 
 ## Docker
 Using Compose:

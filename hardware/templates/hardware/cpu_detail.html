@@ -8,43 +8,32 @@
     {{ cpu.notes }}
   </div>
   <div class="col-sm">
-    {% if cpu.top_img or cpu.bottom_img %}
+    {% if cpu.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="cpu-gallery">
-        {% if cpu.top_img %}
-        <a href="/images/{{ cpu.top_img }}" 
-          data-pswp-width="{{ cpu.top_img.width }}" 
-          data-pswp-height="{{ cpu.top_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ cpu.top_img }}" alt="Top" width="40%"/>
-        </a>
-        {% endif %}
-        {% if cpu.bottom_img %}
-        <a href="/images/{{ cpu.bottom_img }}" 
-          data-pswp-width="{{ cpu.bottom_img.width }}" 
-          data-pswp-height="{{ cpu.bottom_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ cpu.bottom_img }}" alt="bottom" width="40%" />
-        </a>
-        {% endif %}
-      </div>
+      {% for image in cpu.images.all %}
+      <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+        target="_blank">
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+      </a>
+      {% endfor %}
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
+    <script type="module">
+      // Include Lightbox 
+      import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+    
+      const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
         gallery: '#cpu-gallery',
-
+    
         // Elements within gallery (slides)
         children: 'a',
-
+    
         // setup PhotoSwipe Core dynamic import
         pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
-        });
-        lightbox.init();
+      });
+      lightbox.init();
     </script>
     {% endif %}
-</p>
+  </div>
+</div>
 {% endblock %}

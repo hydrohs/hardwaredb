@@ -1,31 +1,23 @@
 {% extends "hardware/base.html" %}
-{% block title %}{{ gpu.name }}{% endblock %}
+{% block title %}{{ micro.brand }}{{ micro.name }}{% endblock %}
 {% block content %}
-<h1>{{ gpu.brand }} {{ gpu.name }} ({{ gpu.model }})</h1>
+<h1>{{ micro.brand }} {{ micro.name }} ({{ micro.model }})</h1>
 <div class="row align-items-center">
   <div class="col-sm">
     <table class="table">
       <tr>
-        <td><b>Interface:</b></td>
-        <td>{{ gpu.interface }}</td>
-      </tr>
-      <tr>
-        <td><b>Ports:</b></td>
-        <td>{{ gpu.ports }}</td>
-      </tr>
-      <tr>
         <td><b>Notes:</b></td>
-        <td>{{ gpu.notes }}</td>
+        <td>{{ micro.notes | safe }}</td>
       </tr>
     </table>
   </div>
   <div class="col-sm">
-    {% if gpu.images %}
-    <div class="pswp-gallery pswp-gallery--single-column" id="gpu-gallery">
-      {% for image in gpu.images.all %}
+    {% if micro.images %}
+    <div class="pswp-gallery pswp-gallery--single-column" id="micro-gallery">
+      {% for image in micro.images.all %}
       <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
         target="_blank">
-        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="30%" />
       </a>
       {% endfor %}
     </div>
@@ -35,7 +27,7 @@
     
       const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
-        gallery: '#gpu-gallery',
+        gallery: '#micro-gallery',
     
         // Elements within gallery (slides)
         children: 'a',

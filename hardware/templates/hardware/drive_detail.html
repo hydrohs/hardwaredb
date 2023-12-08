@@ -7,16 +7,16 @@
     <table class="table">
       <tr>
         <td><b>Type:</b></td>
-        <td>{{ type }}</td>
+        <td>{{ drive.type }}</td>
       </tr>
       <tr>
         <td><b>Interface:</b></td>
-        <td>{{ interface }}</td>
+        <td>{{ drive.interface }}</td>
       </tr>
       {% if drive.capacity %}
       <tr>
         <td><b>Capacity:</b></td>
-        <td>{{ capacity }}</td>
+        <td>{{ drive.human_readable_capacity }}</td>
       </tr>
       {% endif %}
       <tr>
@@ -26,51 +26,32 @@
     </table>
   </div>
   <div class="col-sm">
-    {% if drive.top_img or drive.bezel_img or drive.rear_img %}
+    {% if drive.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="drive-gallery">
-        {% if drive.top_img %}
-        <a href="/images/{{ drive.top_img }}" 
-          data-pswp-width="{{ drive.top_img.width }}" 
-          data-pswp-height="{{ drive.top_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ drive.top_img }}" alt="Top" width="30%"/>
-        </a>
-        {% endif %}
-        {% if drive.bezel_img %}
-        <a href="/images/{{ drive.bezel_img }}" 
-          data-pswp-width="{{ drive.bezel_img.width }}" 
-          data-pswp-height="{{ drive.bezel_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ drive.bezel_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-        {% if drive.rear_img %}
-        <a href="/images/{{ drive.rear_img }}" 
-          data-pswp-width="{{ drive.rear_img.width }}" 
-          data-pswp-height="{{ drive.rear_img.height }}" 
-          target="_blank">
-          <img src="/images/{{ drive.rear_img }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-      </div>
+      {% for image in drive.images.all %}
+      <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+        target="_blank">
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+      </a>
+      {% endfor %}
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
+    <script type="module">
+      // Include Lightbox 
+      import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+    
+      const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
         gallery: '#drive-gallery',
-
+    
         // Elements within gallery (slides)
         children: 'a',
-
+    
         // setup PhotoSwipe Core dynamic import
-        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
-        });
-        lightbox.init();
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+      });
+      lightbox.init();
     </script>
     {% endif %}
-</p>
+  </div>
+</div>
 {% endblock %}

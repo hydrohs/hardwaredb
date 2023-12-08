@@ -1,19 +1,19 @@
 {% extends "hardware/base.html" %}
-{% block title %}{{ system.name }}{% endblock %}
+{% block title %}{{ proprietary.brand }} {{ proprietary.name }}{% endblock %}
 {% block content %}
-<h1>{{ system.name }}</h1>
+<h1>{{ proprietary.brand }} {{ proprietary.name }} ({{ proprietary.model }})</h1>
 <div class="row align-items-center">
   <div class="col-sm">
     <table class="table">
-      {% if system.cpus.count > 0 %}
+      {% if proprietary.cpus.count > 0 %}
       <tr>
-        {% if system.cpus.count > 1 %}
+        {% if proprietary.cpus.count > 1 %}
         <td><b>CPUs:</b></td>
         {% else %}
         <td><b>CPU:</b></td>
         {% endif %}
         <td>
-          {% for cpu in system.cpus.all %}
+          {% for cpu in proprietary.cpus.all %}
           <a href="{{ cpu.get_absolute_url }}">{{ cpu }}</a> @ {{ cpu.get_speed_display }}<br>
           {% endfor %}
         </td>
@@ -22,157 +22,157 @@
       <tr>
         <td><b>RAM:</b></td>
         <td data-bs-toggle="collapse" data-bs-target="#ram-list" aria-expanded="false" aria-controls="ram-list">
-          {{ system.get_ram }}
+          {{ proprietary.get_ram }}
           <div class="collapse" id="ram-list">
             <ul>
-              {% for stick in system.ram.all %}
+              {% for stick in proprietary.ram.all %}
               <li>{{ stick }}</li>
               {% endfor %}
             </ul>
           </div>
         </td>
       </tr>
-      {% if system.motherboard.count > 0 %}
+      {% if proprietary.motherboard.count > 0 %}
       <tr>
-        {% if system.motherboard.count > 1 %}
+        {% if proprietary.motherboard.count > 1 %}
         <td><b>Motherboards:</b></td>
         {% else %}
         <td><b>Motherboard:</b></td>
         {% endif %}
         <td>
-          {% for mb in system.motherboard.all %}
+          {% for mb in proprietary.motherboard.all %}
           <a href="{{ mb.get_absolute_url }}">{{ mb }}</a><br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.gpus.count > 0 %}
+      {% if proprietary.gpus.count > 0 %}
       <tr>
-        {% if system.gpus.count > 1 %}
+        {% if proprietary.gpus.count > 1 %}
         <td><b>GPUs:</b></td>
         {% else %}
         <td><b>GPU:</b></td>
         {% endif %}
         <td>
-          {% for gpu in system.gpus.all %}
+          {% for gpu in proprietary.gpus.all %}
           <a href="{{ gpu.get_absolute_url }}">{{ gpu }}<br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.soundcards.count > 0 %}
+      {% if proprietary.soundcards.count > 0 %}
       <tr>
-        {% if system.soundcards.count > 1 %}
+        {% if proprietary.soundcards.count > 1 %}
         <td><b>Sound cards:</b></td>
         {% else %}
         <td><b>Sound card:</b></td>
         {% endif %}
         <td>
-          {% for soundcard in system.soundcards.all %}
+          {% for soundcard in proprietary.soundcards.all %}
           <a href="{{ soundcard.get_absolute_url }}">{{ soundcard }}<br>
             {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.nics.count > 0 %}
+      {% if proprietary.nics.count > 0 %}
       <tr>
-        {% if system.nics.count > 1 %}
+        {% if proprietary.nics.count > 1 %}
         <td><b>NICs:</b></td>
         {% else %}
         <td><b>NIC:</b></td>
         {% endif %}
         <td>
-          {% for nic in system.nics.all %}
+          {% for nic in proprietary.nics.all %}
           <a href="{{ nic.get_absolute_url }}">{{ nic }}<br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.expansioncards.count > 0 %}
+      {% if proprietary.expansioncards.count > 0 %}
       <tr>
-        {% if system.expansioncards.count > 1 %}
+        {% if proprietary.expansioncards.count > 1 %}
         <td><b>Expansion cards:</b></td>
         {% else %}
         <td><b>Expansion card:</b></td>
         {% endif %}
         <td>
-          {% for expansioncard in system.expansioncards.all %}
+          {% for expansioncard in proprietary.expansioncards.all %}
           <a href="{{ expansioncard.get_absolute_url }}">{{ expansioncard }}<br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.psu.count > 0 %}
+      {% if proprietary.psu.count > 0 %}
       <tr>
-        {% if system.psu.count > 1 %}
+        {% if proprietary.psu.count > 1 %}
         <td><b>PSUs:</b></td>
         {% else %}
         <td><b>PSU:</b></td>
         {% endif %}
         <td>
-          {% for psu in system.psu.all %}
+          {% for psu in proprietary.psu.all %}
           <a href="{{ psu.get_absolute_url }}">{{ psu }}<br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.external_drives.count > 0 %}
+      {% if proprietary.external_drives.count > 0 %}
       <tr>
-        {% if system.external_drives.count > 1 %}
+        {% if proprietary.external_drives.count > 1 %}
         <td><b>External Drives:</b></td>
         {% else %}
         <td><b>External Drive:</b></td>
         {% endif %}
         <td>
-          {% for drive in system.external_drives %}
+          {% for drive in proprietary.external_drives %}
           <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.internal_drives.count > 0 %}
+      {% if proprietary.internal_drives.count > 0 %}
       <tr>
-        {% if system.internal_drives.count > 1 %}
+        {% if proprietary.internal_drives.count > 1 %}
         <td><b>Internal Drives:</b></td>
         {% else %}
         <td><b>Internal Drive:</b></td>
         {% endif %}
         <td>
-          {% for drive in system.internal_drives %}
+          {% for drive in proprietary.internal_drives %}
           <a href="{{ drive.get_absolute_url }}">{{ drive }}</a><br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.case.count > 0 %}
+      {% if proprietary.case.count > 0 %}
       <tr>
-        {% if system.case.count > 1 %}
+        {% if proprietary.case.count > 1 %}
         <td><b>Cases:</b></td>
         {% else %}
         <td><b>Case:</b></td>
         {% endif %}
         <td>
-          {% for case in system.case.all %}
+          {% for case in proprietary.case.all %}
           <a href="{{ case.get_absolute_url }}">{{ case }}<br>
           {% endfor %}
         </td>
       </tr>
       {% endif %}
-      {% if system.notes %}
+      {% if proprietary.notes %}
       <tr>
         <td><b>Notes:</b></td>
-        <td>{{ system.notes }}</a></td>
+        <td>{{ proprietary.notes }}</a></td>
       </tr>
       {% endif %}
       </table>
       </div>
       <div class="col-sm">
-        {% if system.images %}
-        <div class="pswp-gallery pswp-gallery--single-column" id="system-gallery">
-          {% for image in system.images.all %}
+        {% if proprietary.images %}
+        <div class="pswp-gallery pswp-gallery--single-column" id="proprietary-gallery">
+          {% for image in proprietary.images.all %}
           <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
             target="_blank">
-            <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+            <img src="/images/{{ image.image }}" alt="{{ image }}" width="30%" />
           </a>
           {% endfor %}
         </div>
@@ -182,7 +182,7 @@
         
           const lightbox = new PhotoSwipeLightbox({
             // may select multiple "galleries"
-            gallery: '#system-gallery',
+            gallery: '#proprietary-gallery',
         
             // Elements within gallery (slides)
             children: 'a',
