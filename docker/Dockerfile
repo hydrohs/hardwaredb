@@ -2,9 +2,10 @@ FROM alpine
 
 COPY utils/ /bin
 COPY run.sh /bin
+COPY ../requirements.txt /tmp
 
 RUN add-pkg python3 py3-pip py3-pillow tzdata\
-    && pip3 install django==4.0.7 django-multiselectfield django-tables2 django-cleanup django-unused-media
+    && pip3 install -r /tmp/requirements.txt
 
 ENV TZ=America/Halifax
 
