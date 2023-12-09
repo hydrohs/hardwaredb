@@ -1,46 +1,8 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
 import choices.models as Choices
+import hardware.human_readable as human_readable
 import os.path
-    
-def human_readable(**kwargs):
-    size = kwargs.get('size', None)
-    cpu_speed = kwargs.get('cpu_speed', None)
-    ram_speed = kwargs.get('ram_speed', None)
-    ram_type = kwargs.get('ram_type', None)
-    
-    GIGABYTE = 1024 #1024MB in 1GB
-    TERABYTE = GIGABYTE**2
-    GHZ_THRESHOLD = 1000
-
-    def get_size(size):
-        if size >= TERABYTE:
-            return f'{int(size / TERABYTE)}TB'
-        elif size >= GIGABYTE:
-            return f'{int(size / GIGABYTE)}GB'
-        else:
-            return f'{size}MB'
-        
-    def get_frequency(speed):
-        if speed >= GHZ_THRESHOLD:
-            return f'{speed / GHZ_THRESHOLD}GHz'
-        else:
-            return f'{speed}MHz'
-        
-    def get_ramspeed(speed, type):
-        if type in ('FPM', 'EDO'):
-            return f'{speed}ns'
-        else:
-            return f'{speed}MHz'
-        
-    if size:
-        return get_size(size)
-    elif cpu_speed:
-        return get_frequency(cpu_speed)
-    elif ram_speed:
-        return get_ramspeed(ram_speed, ram_type)
-    else:
-        return None
     
 def get_upload_path(instance, filename):
     base = instance.part.upload_base
@@ -89,8 +51,8 @@ class System(Hardware):
             ram += i.size
         if ram:
             type = self.ram.first().type.name
-            total_size = human_readable(size=ram)
-            speed = human_readable(ram_speed=self.ram.first().speed, ram_type=type)
+            total_size = human_readable.get_size(ram)
+            speed = human_readable.get_ramspeed(self.ram.first().speed, type)
             return f'{total_size} {speed} {type}'
         else:
             return None
@@ -118,7 +80,8 @@ class CPU(Hardware):
         return f'{self.brand} {self.name}'
 
     def get_speed_display(self):
-        return f'{human_readable(cpu_speed=self.speed)}'
+        #return f'{human_readable(cpu_speed=self.speed)}'
+        return human_readable.get_frequency(self.speed)
 
     class Meta:
         verbose_name = 'CPU'
@@ -141,8 +104,8 @@ class RAM(models.Model):
         else:
             is_ecc = ''
 
-        size = human_readable(size=self.size)
-        speed = human_readable(ram_speed=self.speed, ram_type=self.type.name)
+        size = human_readable.get_size(self.size)
+        speed = human_readable.get_ramspeed(self.speed, self.type.name)
         return f'{size} {speed} {self.type.name} {is_ecc} {self.interface.name}'
 
     class Meta:
@@ -366,7 +329,7 @@ class Drive(Hardware):
     @property
     def human_readable_capacity(self):
         if self.capacity:
-            return f'{human_readable(self)}'
+            return f'{human_readable.get_size(self.capacity)}'
         else:
             return
 
