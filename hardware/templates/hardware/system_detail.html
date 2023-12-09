@@ -19,6 +19,7 @@
         </td>
       </tr>
       {% endif %}
+      {% if system.get_ram %}
       <tr>
         <td><b>RAM:</b></td>
         <td data-bs-toggle="collapse" data-bs-target="#ram-list" aria-expanded="false" aria-controls="ram-list">
@@ -32,6 +33,7 @@
           </div>
         </td>
       </tr>
+      {% endif %}
       {% if system.motherboard.count > 0 %}
       <tr>
         {% if system.motherboard.count > 1 %}
