@@ -8,24 +8,24 @@ def HumanReadable(calc, value, ram_type):
     def Size():
         if value >= 1048576: # If size is over this value we're dealing with terabytes
             size = value / 1048576
-            return '{}{}'.format(str(int(size) if float(size).is_integer() else size), 'TB')
+            return f'{str(int(size) if float(size).is_integer() else size)}TB'
         elif value >= 1024: # Over this value is gigabytes
             size = value / 1024
-            return '{}{}'.format(str(int(size) if float(size).is_integer() else size), 'GB')
+            return f'{str(int(size) if float(size).is_integer() else size)}GB'
         else: # Else just add MB to stored database value
-            return '{}{}'.format(str(value), 'MB')
+            return f'{str(value)}MB'
     
     def CpuFreq():
         if value >= 1000: # Simply convert large MHz into GHz
-            return '{}{}'.format(str(value / 1000), 'GHz')
+            return f'{str(value / 1000)}GHz'
         else:
-            return '{}{}'.format(value, 'MHz')
+            return f'{value}MHz'
     
     def RamSpeed(): # Add suffix based on RAM type
         if ram_type == 'FPM' or ram_type =='EDO':
-            return '{}{}'.format(str(int(value)), 'ns')
+            return f'{str(int(value))}ns'
         else:
-            return '{}{}'.format(str(int(value)), 'MHz')
+            return f'{str(int(value))}MHz'
 
     if calc == 'cpu':
         return CpuFreq()
@@ -71,7 +71,7 @@ class System(Hardware):
         return f'{self.name}'
     
     def get_absolute_url(self):
-        return "/systems/custom/%i" % self.id
+        return f'/systems/custom/{self.id}'
     
     def get_ram(self):
         # Loops through all RAM fields in order to add up total
@@ -82,11 +82,7 @@ class System(Hardware):
         for i in self.ram.all():
             ram += i.size
         if ram:
-            return '{} {} {}'.format(
-                HumanReadable('size', ram, ''),
-                HumanReadable('ram', self.ram.first().speed, self.ram.first().type.name),
-                self.ram.first().type.name
-                )
+            return f'{HumanReadable("size", ram, "")} {HumanReadable("ram", self.ram.first().speed, self.ram.first().type.name)} {self.ram.first().type.name}'
         else:
             return 0
         
@@ -107,10 +103,10 @@ class CPU(Hardware):
     upload_base = 'cpus'
 
     def get_absolute_url(self):
-        return "/cpus/%i" % self.id
+        return f'/cpus/{self.id}'
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.name)
+        return f'{self.brand} {self.name}'
 
     def get_speed_display(self):
         return HumanReadable('cpu', self.speed, '')
@@ -128,7 +124,7 @@ class RAM(models.Model):
     installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='ram')
 
     def get_absolute_url(self):
-        return "/ram/%i" % self.id
+        return f'/ram/{self.id}'
 
     def __str__(self):
         if self.ecc:
@@ -165,10 +161,10 @@ class GPU(Hardware):
     upload_base = 'gpus'
 
     def get_absolute_url(self):
-        return "/gpus/%i" % self.id
+        return f'/gpus/{self.id}'
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.name)
+        return f'{self.brand} {self.name}'
     
     @property
     def ports(self):
@@ -188,7 +184,7 @@ class GPU(Hardware):
         ports = []
         for key, value in port_type.items():
             if value != 0:
-                ports.append('{} ({})'.format(key, value))
+                ports.append(f'{key} ({value})')
 
         return ', '.join(ports)
 
@@ -204,10 +200,10 @@ class SoundCard(Hardware):
     upload_base = 'sound_cards'
 
     def get_absolute_url(self):
-        return "/sound_cards/%i" % self.id
+        return f'/sound_cards/{self.id}'
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.name)
+        return f'{self.brand} {self.model}'
 
 class ExpansionCard(Hardware):
     interface = models.ForeignKey(Choices.Slot, on_delete=models.SET_NULL, null=True)
@@ -217,7 +213,7 @@ class ExpansionCard(Hardware):
     upload_base = 'expansion_cards'
 
     def get_absolute_url(self):
-        return "/expansion_cards/%i" % self.id
+        return f'/expansion_cards/{self.id}'
 
     def __str__(self):
         if self.name is None:
@@ -237,10 +233,10 @@ class NIC(Hardware):
     upload_base = 'nics'
 
     def get_absolute_url(self):
-        return "/nics/%i" % self.id
+        return f'/nics/{self.id}'
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.model)
+        return f'{self.brand} {self.model}'
 
     @property
     def ports(self):
@@ -251,7 +247,7 @@ class NIC(Hardware):
         ports = []
         for key, value in port_type.items():
             if value != 0:
-                ports.append('{} ({})'.format(key, value))
+                ports.append(f'{key} ({value})')
 
         return ', '.join(ports)
 
@@ -277,10 +273,10 @@ class Motherboard(Hardware):
     upload_base = 'motherboards'
 
     def get_absolute_url(self):
-        return "/motherboards/%i" % self.id
+        return f'/motherboards/{self.id}'
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.model)
+        return f'{self.brand} {self.model}'
     
     @property
     def slots(self):
@@ -297,7 +293,7 @@ class Motherboard(Hardware):
         slots = []
         for key, value in slot_type.items():
             if value != 0:
-                slots.append('{} ({})'.format(key, value))
+                slots.append(f'{key} ({value})')
 
         return ', '.join(slots)
 
@@ -317,7 +313,7 @@ class PSU(Hardware):
     upload_base = 'psus'
 
     def get_absolute_url(self):
-        return "/psus/%i" % self.id
+        return f'/psus/{self.id}'
 
     def __str__(self):
         return f'{self.brand} {self.model}'
@@ -335,7 +331,7 @@ class PSU(Hardware):
         connectors = []
         for key, value in connector_type.items():
             if value != 0:
-                connectors.append('{} ({})'.format(key, value))
+                connectors.append(f'{key} ({value})')
 
         return ', '.join(connectors)
     
@@ -353,7 +349,7 @@ class Drive(Hardware):
     upload_base= 'drives'
 
     def get_absolute_url(self):
-        return "/drives/%i" % self.id
+        return f'/drives/{self.id}'
 
     def __str__(self):
         return self.name
@@ -372,10 +368,10 @@ class Case(Hardware):
     upload_base = 'cases'
 
     def get_absolute_url(self):
-        return "/cases/%i" % self.id
+        return f'/cases/{self.id}'
 
     def __str__(self):
-        return '{} {}'.format(self.brand, self.model)
+        return f'{self.brand} {self.model}'
     
     @property
     def all_mb_support(self):
@@ -388,7 +384,7 @@ class Proprietary(System):
     upload_base = 'systems/proprietary'
 
     def get_absolute_url(self):
-        return "/systems/proprietary/%i" % self.id
+        return f'/systems/proprietary/{self.id}'
 
     def __str__(self):
         return f'{self.brand} {self.name}'
@@ -401,7 +397,7 @@ class Micro(Hardware):
     upload_base = 'systems/micros'
 
     def get_absolute_url(self):
-        return "/systems/micros/%i" % self.id
+        return f'/systems/micros/{self.id}'
 
     def __str__(self):
         return f'{self.brand} {self.name}'
@@ -417,10 +413,10 @@ class SBC(models.Model):
     usage = models.TextField(null=True, blank=True)
 
     def get_absolute_url(self):
-        return "/sbc/%i" % self.id
+        return f'/sbc/{self.id}'
     
     def __str__(self):
-        return '{} {}'.format(self.type, self.model)
+        return f'{self.type} {self.model}'
     
     class Meta:
         verbose_name = 'Single-board Computer'
@@ -433,7 +429,7 @@ class Peripheral(Hardware):
     upload_base = 'peripherals'
 
     def get_absolute_url(self):
-        return "/peripherals/%i" % self.id
+        return f'/peripherals/{self.id}'
 
     def __str__(self):
         return self.name
@@ -455,7 +451,7 @@ class Cable(Hardware):
     upload_base = 'cables'
 
     def get_absolute_url(self):
-        return "/cables/%i" % self.id
+        return f'/cables/{self.id}'
 
     def __str__(self):    
         connectors_a = ', '.join([str(i) for i in self.connectors_a.all()])
