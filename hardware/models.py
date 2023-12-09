@@ -2,39 +2,45 @@ from django.db import models
 from polymorphic.models import PolymorphicModel
 import choices.models as Choices
 import os.path
-
-def HumanReadable(calc, value, ram_type):
-    # Converts db values into more friendly human readable numbers for display
-    def Size():
-        if value >= 1048576: # If size is over this value we're dealing with terabytes
-            size = value / 1048576
-            return f'{str(int(size) if float(size).is_integer() else size)}TB'
-        elif value >= 1024: # Over this value is gigabytes
-            size = value / 1024
-            return f'{str(int(size) if float(size).is_integer() else size)}GB'
-        else: # Else just add MB to stored database value
-            return f'{str(value)}MB'
     
-    def CpuFreq():
-        if value >= 1000: # Simply convert large MHz into GHz
-            return f'{str(value / 1000)}GHz'
-        else:
-            return f'{value}MHz'
+def human_readable(**kwargs):
+    size = kwargs.get('size', None)
+    cpu_speed = kwargs.get('cpu_speed', None)
+    ram_speed = kwargs.get('ram_speed', None)
+    ram_type = kwargs.get('ram_type', None)
     
-    def RamSpeed(): # Add suffix based on RAM type
-        if ram_type == 'FPM' or ram_type =='EDO':
-            return f'{str(int(value))}ns'
-        else:
-            return f'{str(int(value))}MHz'
+    GIGABYTE = 1024 #1024MB in 1GB
+    TERABYTE = GIGABYTE**2
+    GHZ_THRESHOLD = 1000
 
-    if calc == 'cpu':
-        return CpuFreq()
-    elif calc == 'size':
-        return Size()
-    elif calc == 'ram':
-        return RamSpeed()
+    def get_size(size):
+        if size >= TERABYTE:
+            return f'{int(size / TERABYTE)}TB'
+        elif size >= GIGABYTE:
+            return f'{int(size / GIGABYTE)}GB'
+        else:
+            return f'{size}MB'
+        
+    def get_frequency(speed):
+        if speed >= GHZ_THRESHOLD:
+            return f'{speed / GHZ_THRESHOLD}GHz'
+        else:
+            return f'{speed}MHz'
+        
+    def get_ramspeed(speed, type):
+        if type in ('FPM', 'EDO'):
+            return f'{speed}ns'
+        else:
+            return f'{speed}MHz'
+        
+    if size:
+        return get_size(size)
+    elif cpu_speed:
+        return get_frequency(cpu_speed)
+    elif ram_speed:
+        return get_ramspeed(ram_speed, ram_type)
     else:
-        return 'None'
+        return None
     
 def get_upload_path(instance, filename):
     base = instance.part.upload_base
@@ -82,9 +88,12 @@ class System(Hardware):
         for i in self.ram.all():
             ram += i.size
         if ram:
-            return f'{HumanReadable("size", ram, "")} {HumanReadable("ram", self.ram.first().speed, self.ram.first().type.name)} {self.ram.first().type.name}'
+            type = self.ram.first().type.name
+            total_size = human_readable(size=ram)
+            speed = human_readable(ram_speed=self.ram.first().speed, ram_type=type)
+            return f'{total_size} {speed} {type}'
         else:
-            return 0
+            return None
         
     def internal_drives(self):
         return self.drives.filter(internal=True)
@@ -109,7 +118,7 @@ class CPU(Hardware):
         return f'{self.brand} {self.name}'
 
     def get_speed_display(self):
-        return HumanReadable('cpu', self.speed, '')
+        return f'{human_readable(cpu_speed=self.speed)}'
 
     class Meta:
         verbose_name = 'CPU'
@@ -132,9 +141,9 @@ class RAM(models.Model):
         else:
             is_ecc = ''
 
-        return f'{HumanReadable("size", self.size, "")} \
-            {HumanReadable("ram", self.speed, self.type.name)} \
-            {self.type.name} {is_ecc} {self.interface.name}'
+        size = human_readable(size=self.size)
+        speed = human_readable(ram_speed=self.speed, ram_type=self.type.name)
+        return f'{size} {speed} {self.type.name} {is_ecc} {self.interface.name}'
 
     class Meta:
         verbose_name = 'RAM'
@@ -357,7 +366,7 @@ class Drive(Hardware):
     @property
     def human_readable_capacity(self):
         if self.capacity:
-            return HumanReadable('size', self.capacity, '')
+            return f'{human_readable(self)}'
         else:
             return
 
