@@ -97,7 +97,7 @@ class CPU(Hardware):
     socket = models.CharField(max_length=200)
     cores = models.IntegerField()
     hyperthreading = models.BooleanField()
-    cpu_world = models.TextField(null=True, blank=True)
+    cpu_world = models.TextField(null=True, blank=True, verbose_name='CPU-World Infobox')
     installed_in = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True, related_name='cpus')
 
     upload_base = 'cpus'

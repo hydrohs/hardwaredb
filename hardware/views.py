@@ -118,7 +118,7 @@ class CaseDetail(DetailView):
 
 class SystemList(ListView):
     model = System
-    queryset = System.objects.filter(brand=None)
+    queryset = System.objects.filter(proprietary__isnull=True)
     context_object_name = 'systems'
 
 class SystemDetail(DetailView):
