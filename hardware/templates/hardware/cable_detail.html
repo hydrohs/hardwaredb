@@ -10,12 +10,12 @@
         <td>{{ cable.type }}</td>
       </tr>
       <tr>
-        <td><b>Interface A:</b></td>
-        <td>{{ cable.interface_a }}</td>
+        <td><b>Ports (A Side):</b></td>
+        <td>{{ cable.all_connectors_a }}</td>
       </tr>
       <tr>
-        <td><b>Interface B:</b></td>
-        <td>{{ cable.interface_b }}</td>
+        <td><b>Ports (B Side):</b></td>
+        <td>{{ cable.all_connectors_b }}</td>
       </tr>
       <tr>
         <td><b>Notes:</b></td>
@@ -24,43 +24,32 @@
     </table>
   </div>
   <div class="col-sm">
-    {% if cable.image_1 or cable.image_2 %}
+    {% if cable.images %}
     <div class="pswp-gallery pswp-gallery--single-column" id="cable-gallery">
-        {% if cable.image_1 %}
-        <a href="/images/{{ cable.image_1 }}" 
-          data-pswp-width="{{ cable.image_1.width }}" 
-          data-pswp-height="{{ cable.image_1.height }}" 
-          target="_blank">
-          <img src="/images/{{ cable.image_1 }}" alt="Top" width="30%"/>
-        </a>
-        {% endif %}
-        {% if cable.image_2 %}
-        <a href="/images/{{ cable.image_2 }}" 
-          data-pswp-width="{{ cable.image_2.width }}" 
-          data-pswp-height="{{ cable.image_2.height }}" 
-          target="_blank">
-          <img src="/images/{{ cable.image_2 }}" alt="bottom" width="30%" />
-        </a>
-        {% endif %}
-      </div>
+      {% for image in cable.images.all %}
+      <a href="/images/{{ image.image }}" data-pswp-width="{{ image.image.width }}" data-pswp-height="{{ image.image.height }}"
+        target="_blank">
+        <img src="/images/{{ image.image }}" alt="{{ image }}" width="40%" />
+      </a>
+      {% endfor %}
     </div>
-    </div>
-      <script type="module">
-        // Include Lightbox 
-        import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
-
-        const lightbox = new PhotoSwipeLightbox({
+    <script type="module">
+      // Include Lightbox 
+      import PhotoSwipeLightbox from '/static/photoswipe/dist/photoswipe-lightbox.esm.js';
+    
+      const lightbox = new PhotoSwipeLightbox({
         // may select multiple "galleries"
         gallery: '#cable-gallery',
-
+    
         // Elements within gallery (slides)
         children: 'a',
-
+    
         // setup PhotoSwipe Core dynamic import
-        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js'),
-        });
-        lightbox.init();
+        pswpModule: () => import('/static/photoswipe/dist/photoswipe.esm.js')
+      });
+      lightbox.init();
     </script>
     {% endif %}
-</p>
+  </div>
+</div>
 {% endblock %}
