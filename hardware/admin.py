@@ -17,6 +17,54 @@ class RAMInline(admin.TabularInline):
     classes = [ 'collapse', ]
     extra = 0
 
+class MotherboardInline(admin.TabularInline):
+    model = Motherboard
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class GPUInline(admin.TabularInline):
+    model = GPU
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class SoundCardInline(admin.TabularInline):
+    model = SoundCard
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class ExpansionCardInline(admin.TabularInline):
+    model = ExpansionCard
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class NICInline(admin.TabularInline):
+    model = NIC
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class DriveInline(admin.TabularInline):
+    model = Drive
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class PSUInline(admin.TabularInline):
+    model = PSU
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
+class CaseInline(admin.TabularInline):
+    model = Case
+    fk_name = 'installed_in'
+    classes = [ 'collapse', ]
+    extra = 0
+
 @admin.register(CPU)
 class CPUAdmin(admin.ModelAdmin):
     inlines = (ImageInline, )
@@ -99,7 +147,8 @@ class SoundCardAdmin(admin.ModelAdmin):
 
 @admin.register(System)
 class SystemAdmin(admin.ModelAdmin):
-    inlines = (CPUInline, RAMInline, ImageInline, )
+    inlines = (CPUInline, RAMInline, MotherboardInline, GPUInline, SoundCardInline, 
+               ExpansionCardInline, NICInline, PSUInline, DriveInline, CaseInline, ImageInline, )
     fields = [ 'name', 'os', 'notes', ]
     exclude = [ 'brand', 'model', ]
 
